@@ -4,7 +4,11 @@ export function AboutCard() {
       <div>
         <h2 className="text-2xl font-bold mb-4">About</h2>
         <p className="text-gray-400 leading-relaxed">
-          10年の正社員経験を経て独立。PHP / Laravel を軸に、大規模人事システムから大学の研究開発まで幅広く対応します。
+        バックエンドとフロントエンド、両方を自分の手で動かせるフルスタックエンジニアです。
+        PHP / Laravel・Ruby / Rails によるAPI設計から、React を使ったインタラクティブな UI 実装まで幅広く対応。
+        人事・教育・不動産・研究など多様な領域のプロダクト開発を経験し、現在はフリーランスとして稼働中。
+        個人プロジェクトとして LINE と生成AI を組み合わせたチャットボットを開発・運用しています。
+        「動くものをちゃんと作る」を信条に、実用的なプロダクト開発を続けています。
         </p>
       </div>
       {/* 稼働ステータス — Phase 2 スコープ */}
