@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Web Studio Wanderlust — Portfolio
 
-## Getting Started
+フリーランスエンジニア・金子陽一のポートフォリオサイトです。
+Next.js 16 (App Router) + Tailwind CSS v4 で構築された、Bento Grid レイアウトのシングルページアプリケーションです。
 
-First, run the development server:
+## 技術スタック
+
+| 要素 | 採用技術 |
+|---|---|
+| フレームワーク | Next.js 16 (Static Export) |
+| 言語 | TypeScript |
+| スタイリング | Tailwind CSS v4 |
+| E2E テスト | Playwright |
+| パッケージマネージャ | pnpm |
+
+## 開発サーバーの起動
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) をブラウザで開くと確認できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ビルド
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build
+```
 
-## Learn More
+## E2E テスト
 
-To learn more about Next.js, take a look at the following resources:
+Playwright を使用した E2E テストを実装しています。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 初回セットアップ（ブラウザのインストール）
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm exec playwright install --with-deps chromium
+```
 
-## Deploy on Vercel
+### テスト実行
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+開発サーバーを起動した状態でテストを実行する場合：
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm test:e2e
+```
+
+`playwright.config.ts` の `webServer` 設定により、未起動の場合は自動的に `pnpm dev` が立ち上がります。
+
+### UI モードで実行（デバッグ用）
+
+```bash
+pnpm test:e2e:ui
+```
+
+### テスト内容
+
+| テスト | 説明 |
+|---|---|
+| トップページが表示される | ページタイトルに "Wanderlust" が含まれること |
+| ヘッダーが表示される | "Web Studio Wanderlust" の見出しが存在すること |
+| About カードが表示される | "About" の見出しが存在すること |
+| 稼働ステータスバッジが表示される | "Available" テキストが存在すること |
+| GitHub Contributions カードが表示される | ラベルが存在すること |
+| Tech Stack カードが表示される | ラベルが存在すること |
+| Social カードが表示される | ラベルが存在すること |
+| Recent Projects カードが表示される | 見出しが存在すること |
+| Life Log カードが表示される | ラベルと "Mountaineering" テキストが存在すること |
