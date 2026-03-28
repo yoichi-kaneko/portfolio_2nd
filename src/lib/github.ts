@@ -1,4 +1,5 @@
 import { createClient } from "redis";
+import { CONTRIBUTION_WEEKS } from "@/config/github";
 
 const GITHUB_LOGIN = "yoichi-kaneko";
 
@@ -47,7 +48,7 @@ async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
   const to = new Date(today.getTime() - 1000);
 
   const from = new Date(today);
-  from.setUTCDate(today.getUTCDate() - 35);
+  from.setUTCDate(today.getUTCDate() - CONTRIBUTION_WEEKS * 7);
 
   const toISO = to.toISOString().replace(".999Z", "Z");
   const fromISO = from.toISOString().replace(".000Z", "Z");
@@ -87,14 +88,14 @@ async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
   const yesterdayStr = to.toISOString().slice(0, 10);
   const yesterdayTime = new Date(yesterdayStr).getTime();
 
-  const weekCounts: number[] = [0, 0, 0, 0, 0]; // index 0=W1, 4=W5
+  const weekCounts: number[] = Array(CONTRIBUTION_WEEKS).fill(0); // index 0=W1, (CONTRIBUTION_WEEKS-1)=W5
 
   for (const day of allDays) {
     const dayTime = new Date(day.date).getTime();
     const diffDays = Math.round((yesterdayTime - dayTime) / 86400000);
     // diffDays: 0(昨日)〜34(35日前の翌日=34日前)
     const weekIndex = Math.floor(diffDays / 7); // 0〜4
-    if (weekIndex >= 0 && weekIndex < 5) {
+    if (weekIndex >= 0 && weekIndex < CONTRIBUTION_WEEKS) {
       weekCounts[weekIndex] += day.contributionCount;
     }
   }

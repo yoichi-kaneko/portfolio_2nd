@@ -1,5 +1,6 @@
 "use client";
 
+import { BAR_COLOR_STEPS } from "@/config/chart";
 import {
   BarChart,
   Bar,
@@ -15,12 +16,8 @@ type DataPoint = {
   count: number;
 };
 
-// mainブランチの色スキームに合わせた4段階
 function getBarColor(count: number): string {
-  if (count === 0) return "#1f2937"; // gray-800
-  if (count <= 5) return "#14532d"; // green-900
-  if (count <= 15) return "#15803d"; // green-700
-  return "#22c55e"; // green-500
+  return (BAR_COLOR_STEPS.find((step) => count <= step.max) ?? BAR_COLOR_STEPS[BAR_COLOR_STEPS.length - 1]).color;
 }
 
 function renderTooltip({ active, payload }: TooltipContentProps) {
