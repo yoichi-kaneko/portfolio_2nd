@@ -1,3 +1,5 @@
+import { createClient } from "redis";
+
 const GITHUB_LOGIN = "yoichi-kaneko";
 
 const GITHUB_GRAPHQL_QUERY = `
@@ -17,27 +19,35 @@ const GITHUB_GRAPHQL_QUERY = `
   }
 `;
 
+const REDIS_KEY = "github:weekly_contributions";
+const REDIS_TTL = 1 * 24 * 60 * 60; // 1日
+
+type CachePayload = {
+  date: string; // UTC date string (YYYY-MM-DD)
+  result: WeeklyContribution[];
+};
+
 export type WeeklyContribution = {
   // 例: "2026-W1" (直近週が W1、最古週が W5)
   week: string;
   count: number;
 };
 
-export async function fetchWeeklyContributions(): Promise<WeeklyContribution[]> {
-  const pat = process.env.GITHUB_PAT;
-  if (!pat) {
-    throw new Error("GITHUB_PAT is not set");
-  }
-
+/**
+ * 
+ * @param pat GraphQLを実行する。REDISのキャッシュがない場合に実行する
+ * @returns 
+ */
+async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
   // 今日を除いた昨日〜35日前を取得範囲とする
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
 
-  // today の1秒前 = 昨日 23:59:59
+  // today の1秒前 = 昨日 23:59:59 UTC
   const to = new Date(today.getTime() - 1000);
 
   const from = new Date(today);
-  from.setDate(today.getDate() - 35);
+  from.setUTCDate(today.getUTCDate() - 35);
 
   const toISO = to.toISOString().replace(".999Z", "Z");
   const fromISO = from.toISOString().replace(".000Z", "Z");
@@ -93,4 +103,51 @@ export async function fetchWeeklyContributions(): Promise<WeeklyContribution[]> 
     week: `W${i + 1}`,
     count,
   }));
+}
+
+export async function fetchWeeklyContributions(): Promise<WeeklyContribution[]> {
+  const pat = process.env.GITHUB_PAT;
+  if (!pat) {
+    throw new Error("GITHUB_PAT is not set");
+  }
+
+  const todayUTC = new Date().toISOString().slice(0, 10);
+
+  // Redis キャッシュを試みる
+  let redisClient;
+  try {
+    redisClient = createClient({ url: process.env.REDIS_URL });
+    await redisClient.connect();
+
+    const cached = await redisClient.get(REDIS_KEY);
+    if (cached) {
+      const payload: CachePayload = JSON.parse(cached);
+      if (payload.date === todayUTC) {
+        await redisClient.quit();
+        return payload.result;
+      }
+    }
+  } catch (err) {
+    console.error("[github] Redis error, falling back to GraphQL:", err);
+    try {
+      await redisClient?.quit();
+    } catch {
+      // disconnect failure is ignorable
+    }
+    return fetchFromGraphQL(pat);
+  }
+
+  // GraphQL 実行 → キャッシュ保存
+  const result = await fetchFromGraphQL(pat);
+
+  try {
+    const payload: CachePayload = { date: todayUTC, result };
+    await redisClient.set(REDIS_KEY, JSON.stringify(payload), { EX: REDIS_TTL });
+  } catch (err) {
+    console.error("[github] Redis write error (result not cached):", err);
+  } finally {
+    await redisClient.quit();
+  }
+
+  return result;
 }
