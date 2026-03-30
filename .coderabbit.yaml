@@ -1,0 +1,84 @@
+# CodeRabbit 設定ファイル
+# ドキュメント: https://docs.coderabbit.ai
+
+# レビューコメントの言語設定
+language: "ja-JP"
+
+reviews:
+  # レビューの厳しさ: "chill"（軽め）または "assertive"（より詳細）
+  profile: "chill"
+
+  # ウォークスルーに高レベルサマリーを含める
+  high_level_summary: true
+
+  # ウォークスルーのコメントを折りたたむか
+  collapse_walkthrough: false
+
+  auto_review:
+    # PR 作成・更新時に自動レビューを実行する
+    enabled: true
+
+    # プッシュのたびに差分レビューを再実行する
+    auto_incremental_review: true
+
+    # ドラフト PR もレビュー対象にするか
+    drafts: false
+
+    # タイトルにこれらのキーワードが含まれる PR はスキップ
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+
+    # デフォルトブランチ以外でレビューするベースブランチ（正規表現可）
+    # base_branches:
+    #   - "develop"
+    #   - "release/.*"
+
+  # レビューから除外するパス（glob パターン）
+  path_filters:
+    - "!**/node_modules/**"
+    - "!**/dist/**"
+    - "!**/.next/**"
+    - "!**/coverage/**"
+
+  # パスごとのレビュー指示
+  path_instructions:
+    - path: "**/*.test.ts"
+      instructions: |
+        E2E テストファイルです。以下の点を重点的に確認してください:
+        - テストケースの網羅性（正常系・異常系）
+        - セレクターの安定性（テスト専用の data-testid 属性の使用を推奨）
+        - 不要な `page.waitForTimeout()` などの固定待機の使用
+    - path: "**/*.spec.ts"
+      instructions: |
+        E2E テストファイルです。アサーションの適切さとテストの独立性を確認してください。
+    - path: "**/*.md"
+      instructions: |
+        ドキュメントファイルです。技術スタックの説明が正確かつ最新であることを確認してください。
+
+  finishing_touches:
+    # ドキュメントコメント自動生成機能
+    docstrings:
+      enabled: true
+    # ユニットテスト自動生成機能
+    unit_tests:
+      enabled: true
+
+  tools:
+    # TypeScript / JavaScript プロジェクト向けに有効にするツール
+    biome:
+      enabled: true
+    eslint:
+      enabled: true
+    markdownlint:
+      enabled: true
+    # シークレットスキャン
+    gitleaks:
+      enabled: true
+    trufflehog:
+      enabled: true
+
+chat:
+  # CodeRabbit へのメンション不要で自動返信
+  auto_reply: true
+  

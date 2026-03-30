@@ -27,6 +27,54 @@ pnpm dev
 pnpm build
 ```
 
+## GitHub Contributions 集計ロジック
+
+`src/lib/github.ts` の `fetchWeeklyContributions()` が実装している集計の仕様です。
+
+### 取得期間
+
+- **from**: 実行日の 35 日前 00:00:00 UTC
+- **to**: 実行日の前日 23:59:59 UTC（当日は含まない）
+
+### 週の区切り
+
+GitHub の GraphQL API (`contributionsCollection`) は週を**日曜日始まり**で固定しているため、
+任意の曜日始まりには対応できません。
+
+そのため、API から取得した `contributionCalendar.weeks` を一度**日単位に平坦化**し、
+「昨日から何日前か (`diffDays`)」をもとに以下のルールで再集計しています。
+
+| weekIndex | diffDays の範囲 | 対応する期間 |
+|---|---|---|
+| 0 (W1・直近) | 0〜6 | 昨日〜7日前 |
+| 1 (W2) | 7〜13 | 8日前〜14日前 |
+| 2 (W3) | 14〜20 | 15日前〜21日前 |
+| 3 (W4) | 21〜27 | 22日前〜28日前 |
+| 4 (W5・最古) | 28〜34 | 29日前〜35日前 |
+
+```
+weekIndex = Math.floor(diffDays / 7)
+```
+
+### 返却値
+
+```ts
+type WeeklyContribution = {
+  week: string;  // "W1"（直近）〜 "W5"（最古）
+  count: number; // 該当週のコントリビューション合計数
+};
+```
+
+チャート表示時は W5→W1 の順（古い順）に並べて棒グラフに渡します。
+
+### 環境変数
+
+| キー | 説明 |
+|---|---|
+| `GITHUB_PAT` | GitHub Personal Access Token。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録 |
+
+---
+
 ## E2E テスト
 
 Playwright を使用した E2E テストを実装しています。
