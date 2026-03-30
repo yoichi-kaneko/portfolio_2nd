@@ -1,3 +1,5 @@
+import projects from "../../../data/projects.json";
+
 export function RecentProjectsCard() {
   return (
     <>
@@ -7,20 +9,16 @@ export function RecentProjectsCard() {
           View All
         </a>
       </div>
-      {/* Phase 3 で data/projects.json と連携 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-          <p className="font-bold text-sm">株式会社カオナビ</p>
-          <p className="text-xs text-gray-400 mt-1">
-            人事開発システムの開発 (2020–2024)
-          </p>
-        </div>
-        <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-          <p className="font-bold text-sm">筑波大学 研究室</p>
-          <p className="text-xs text-gray-400 mt-1">
-            シミュレーション受託開発
-          </p>
-        </div>
+        {projects.projects.map((project) => (
+          <div
+            key={project.name}
+            className="p-3 bg-white/5 rounded-lg border border-white/5"
+          >
+            <p className="font-bold text-sm">{project.name}</p>
+            <p className="text-xs text-gray-400 mt-1">{project.description}</p>
+          </div>
+        ))}
       </div>
     </>
   );
