@@ -6,7 +6,7 @@ export function SocialCard() {
       <h3 className="text-xs font-semibold text-gray-500 mb-4 uppercase tracking-widest">
         Social
       </h3>
-      <div className="flex gap-4 text-sm">
+      <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
         {social.links.map((link) => (
           <a
             key={link.label}
