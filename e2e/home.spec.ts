@@ -50,13 +50,51 @@ test.describe("Bento Grid 各要素の存在確認", () => {
   });
 });
 
+const MOCK_WEEKLY = [
+  { week: "W5", count: 10 },
+  { week: "W4", count: 20 },
+  { week: "W3", count: 15 },
+  { week: "W2", count: 5 },
+  { week: "W1", count: 30 },
+];
+
 test.describe("GitHubContributionChart の詳細確認", () => {
-  test.beforeEach(async ({ page }) => {
+  test("BarChart 要素が表示される", async ({ page }) => {
+    await page.route("/api/github/contributions", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ weekly: MOCK_WEEKLY }),
+      });
+    });
     await page.goto("/");
+    await expect(page.locator(".recharts-surface")).toBeVisible();
   });
 
-  test("BarChart 要素が表示される", async ({ page }) => {
-    await expect(page.locator(".recharts-surface")).toBeVisible();
+  test("API通信で失敗した場合にNo Dataが表示される", async ({ page }) => {
+    await page.route("/api/github/contributions", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Internal Server Error" }),
+      });
+    });
+    await page.goto("/");
+    await expect(page.getByText("No Data")).toBeVisible();
+  });
+
+  test("API通信の結果が返ってくるまではSkeletonが表示される", async ({ page }) => {
+    await page.route("/api/github/contributions", async (route) => {
+      // レスポンスを遅延させてスケルトンが表示される時間を確保
+      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ weekly: MOCK_WEEKLY }),
+      });
+    });
+    await page.goto("/");
+    await expect(page.getByTestId("github-card-skeleton")).toBeVisible();
   });
 });
 
