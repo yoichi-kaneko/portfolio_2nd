@@ -111,6 +111,7 @@ export function ProjectsModal({ isOpen, onClose }: ProjectsModalProps) {
               {filtered.map((project) => (
                 <div
                   key={project.name}
+                  data-testid="project-card"
                   onClick={() =>
                     setSelectedProject(
                       selectedProject?.name === project.name ? null : project

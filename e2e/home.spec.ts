@@ -98,6 +98,86 @@ test.describe("GitHubContributionChart の詳細確認", () => {
   });
 });
 
+test.describe("ProjectsModal の動作確認", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+  });
+
+  test("View All ボタンをクリックするとモーダルが開く", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    await expect(
+      page.getByRole("heading", { name: "All Projects" })
+    ).toBeVisible();
+  });
+
+  test("モーダルにタブが4つ表示される", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    await expect(page.getByRole("button", { name: "All", exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "業務委託 / 受託" })
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "正社員" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "個人開発" })
+    ).toBeVisible();
+  });
+
+  test("All タブでプロジェクトカードが複数表示される", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    const cards = page.locator('[data-testid="project-card"]');
+    await expect(cards.first()).toBeVisible();
+    expect(await cards.count()).toBeGreaterThan(1);
+  });
+
+  test("タブ切り替えで表示件数が絞り込まれる", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    const allCards = page.locator('[data-testid="project-card"]');
+    const allCount = await allCards.count();
+
+    await page.getByRole("button", { name: "正社員" }).click();
+    const employeeCount = await allCards.count();
+    expect(employeeCount).toBeLessThan(allCount);
+  });
+
+  test("カードをクリックすると詳細パネルが表示される", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    await page.locator('[data-testid="project-card"]').first().click();
+    await expect(page.getByText("Technologies")).toBeVisible();
+  });
+
+  test("詳細パネルの ✕ で詳細が閉じる", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    await page.locator('[data-testid="project-card"]').first().click();
+    await expect(page.getByText("Technologies")).toBeVisible();
+    await page.getByRole("button", { name: "Close detail" }).click();
+    await expect(page.getByText("Technologies")).not.toBeVisible();
+  });
+
+  test("✕ ボタンでモーダルが閉じる", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    await page.getByRole("button", { name: "Close" }).click();
+    await expect(
+      page.getByRole("heading", { name: "All Projects" })
+    ).not.toBeVisible();
+  });
+
+  test("Esc キーでモーダルが閉じる", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    await page.keyboard.press("Escape");
+    await expect(
+      page.getByRole("heading", { name: "All Projects" })
+    ).not.toBeVisible();
+  });
+
+  test("バックドロップクリックでモーダルが閉じる", async ({ page }) => {
+    await page.getByRole("button", { name: "View All" }).click();
+    await page.mouse.click(10, 10);
+    await expect(
+      page.getByRole("heading", { name: "All Projects" })
+    ).not.toBeVisible();
+  });
+});
+
 test.describe("TechStackCard の詳細確認", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
