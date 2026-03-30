@@ -1,0 +1,27 @@
+{
+  "categories": [
+    {
+      "name": "Backend",
+      "skills": [
+        { "name": "PHP / Laravel", "level": "Expert" },
+        { "name": "Ruby / Rails", "level": "Intermediate" }
+      ]
+    },
+    {
+      "name": "Frontend",
+      "skills": [
+        { "name": "TypeScript / Next.js", "level": "Intermediate" },
+        { "name": "React", "level": "Learning" }
+      ]
+    },
+    {
+      "name": "Infra & Tools",
+      "skills": [
+        { "name": "AWS", "level": "Intermediate" },
+        { "name": "Docker", "level": "Pro" },
+        { "name": "GCP / Firebase", "level": "Learning" },
+        { "name": "LINE / Gemini API", "level": "Intermediate" }
+      ]
+    }
+  ]
+}

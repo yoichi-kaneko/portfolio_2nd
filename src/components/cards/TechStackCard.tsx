@@ -1,3 +1,12 @@
+import skills from "../../../data/skills.json";
+
+const levelColorMap: Record<string, string> = {
+  Expert: "text-blue-400",
+  Pro: "text-blue-400",
+  Intermediate: "text-gray-400",
+  Learning: "text-gray-400",
+};
+
 export function TechStackCard() {
   return (
     <>
@@ -5,55 +14,23 @@ export function TechStackCard() {
         Tech Stack
       </h3>
       <div className="space-y-5 text-sm">
-        <div>
-          <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Backend</p>
-          <div className="space-y-1.5">
-            <div className="flex justify-between">
-              <span>PHP / Laravel</span>
-              <span className="text-blue-400">Expert</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Ruby / Rails</span>
-              <span className="text-gray-400">Intermediate</span>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Frontend</p>
-          <div className="space-y-1.5">
-            <div className="flex justify-between">
-              <span>TypeScript / Next.js</span>
-              <span className="text-gray-400">Intermediate</span>
-            </div>
-            <div className="flex justify-between">
-              <span>React</span>
-              <span className="text-gray-400">Learning</span>
+        {skills.categories.map((category) => (
+          <div key={category.name}>
+            <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">
+              {category.name}
+            </p>
+            <div className="space-y-1.5">
+              {category.skills.map((skill) => (
+                <div key={skill.name} className="flex justify-between">
+                  <span>{skill.name}</span>
+                  <span className={levelColorMap[skill.level] ?? "text-gray-400"}>
+                    {skill.level}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-
-        <div>
-          <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Infra & Tools</p>
-          <div className="space-y-1.5">
-            <div className="flex justify-between">
-              <span>AWS</span>
-              <span className="text-gray-400">Intermediate</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Docker</span>
-              <span className="text-gray-400">Pro</span>
-            </div>
-            <div className="flex justify-between">
-              <span>GCP / Firebase</span>
-              <span className="text-gray-400">Learning</span>
-            </div>
-            <div className="flex justify-between">
-              <span>LINE / Gemini API</span>
-              <span className="text-gray-400">Intermediate</span>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </>
   );
