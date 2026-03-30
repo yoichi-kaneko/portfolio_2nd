@@ -1,8 +1,15 @@
 "use client";
 
+import { useState } from "react";
+import { MountainMapModal } from "./MountainMapModal";
+
 export function LifeLogCard() {
+  const [isMapOpen, setIsMapOpen] = useState(false);
+
   return (
     <>
+      <MountainMapModal isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
+
       {/* Header row */}
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -46,7 +53,7 @@ export function LifeLogCard() {
           <p className="text-[10px] text-gray-500">Goal to 100 Famous Mountains</p>
           <button
             className="text-[10px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
-            onClick={() => {/* TODO: Mapモーダルを開く */}}
+            onClick={() => setIsMapOpen(true)}
           >
             🗺️ Map
           </button>

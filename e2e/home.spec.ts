@@ -178,6 +178,48 @@ test.describe("ProjectsModal の動作確認", () => {
   });
 });
 
+test.describe("MountainMapModal の動作確認", () => {
+  test.beforeEach(async ({ page }) => {
+    // Google Maps のスクリプトをブロックしてマップを読み込まない
+    await page.route("**/maps.googleapis.com/**", (route) => route.abort());
+    await page.goto("/");
+  });
+
+  test("🗺️ Map ボタンをクリックするとモーダルが開く", async ({ page }) => {
+    await page.getByRole("button", { name: /Map/ }).click();
+    await expect(page.getByTestId("mountain-map-modal")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Mountain Map" })
+    ).toBeVisible();
+  });
+
+  test("モーダルにサブタイトルが表示される", async ({ page }) => {
+    await page.getByRole("button", { name: /Map/ }).click();
+    await expect(page.getByText("登頂した山々")).toBeVisible();
+  });
+
+  test("✕ ボタンでモーダルが閉じる", async ({ page }) => {
+    await page.getByRole("button", { name: /Map/ }).click();
+    await expect(page.getByTestId("mountain-map-modal")).toBeVisible();
+    await page.getByRole("button", { name: "Close" }).click();
+    await expect(page.getByTestId("mountain-map-modal")).not.toBeVisible();
+  });
+
+  test("Esc キーでモーダルが閉じる", async ({ page }) => {
+    await page.getByRole("button", { name: /Map/ }).click();
+    await expect(page.getByTestId("mountain-map-modal")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("mountain-map-modal")).not.toBeVisible();
+  });
+
+  test("バックドロップクリックでモーダルが閉じる", async ({ page }) => {
+    await page.getByRole("button", { name: /Map/ }).click();
+    await expect(page.getByTestId("mountain-map-modal")).toBeVisible();
+    await page.mouse.click(10, 10);
+    await expect(page.getByTestId("mountain-map-modal")).not.toBeVisible();
+  });
+});
+
 test.describe("TechStackCard の詳細確認", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
