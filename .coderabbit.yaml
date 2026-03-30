@@ -30,8 +30,8 @@ reviews:
       - "DO NOT MERGE"
 
     # デフォルトブランチ以外でレビューするベースブランチ（正規表現可）
-    # base_branches:
-    #   - "develop"
+    base_branches:
+      - "develop"
     #   - "release/.*"
 
   # レビューから除外するパス（glob パターン）
