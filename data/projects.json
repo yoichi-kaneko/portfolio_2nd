@@ -7,7 +7,7 @@
       "recent": false,
       "description": "キャラクター型LINE AIアシスタントの開発",
       "detail": "個人開発したLINE上で動作するAIアシスタント「碧衣」。Anthropic Claude APIをベースにキャラクタープロファイルとスキルシステムを設計し、GCP Cloud Functions上のWebhookで応答を処理。Google Calendar・Todoist・OpenWeatherMap・Google Maps等の複数外部APIと連携し、Firestoreで会話コンテキストを管理。プロンプトエンジニアリングとキャラクター設計を軸に、設計・実装・運用をひとりで担当。",
-      "tags": ["TypeScript", "Claude Code", "LINE Messaging API", "GCP", "Cloud Functions", "Firebase", "Firestore"]
+      "tags": ["TypeScript", "Claude Code", "Gemini API(Nano Banana)", "LINE Messaging API", "GCP", "Cloud Functions", "Firebase", "Firestore"]
     },  
     {
       "name": "スリーエス株式会社",
