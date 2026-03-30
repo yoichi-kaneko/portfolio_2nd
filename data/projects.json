@@ -14,7 +14,7 @@
       "period": "2026-",
       "type": "contract",
       "recent": true,
-      "description": "定期巡回システム開発の開発",
+      "description": "定期巡回システムの開発",
       "detail": "定期巡回システムの開発に業務委託として参画。TypeScriptをベースとし、バックエンドとフロントエンド両方を担当。要件定義・設計・実装・テストを担当。",
       "tags": ["TypeScript", "Next.js", "React", "Postgres", "GCP"]
     },
