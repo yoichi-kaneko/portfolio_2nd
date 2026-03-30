@@ -37,16 +37,16 @@ export default function Home() {
             <AboutCard />
           </BentoCard>
 
-          {/* GitHub Contributions — col-span-2 */}
-          <BentoCard className="md:col-span-2 flex items-center justify-center min-h-40">
+          {/* Tech Stack — col-span-1, row-span-2 */}
+          <BentoCard className="md:row-span-2">
+            <TechStackCard />
+          </BentoCard>
+
+          {/* GitHub Contributions — col-span-1 */}
+          <BentoCard className="flex items-center justify-center min-h-40">
             <Suspense fallback={<GitHubCardSkeleton />}>
               <GitHubCard />
             </Suspense>
-          </BentoCard>
-
-          {/* Tech Stack — col-span-1 */}
-          <BentoCard>
-            <TechStackCard />
           </BentoCard>
 
           {/* Social — col-span-1 */}
