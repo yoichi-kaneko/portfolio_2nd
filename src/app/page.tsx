@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { BentoCard } from "@/components/BentoCard";
 import { AboutCard } from "@/components/cards/AboutCard";
 import { GitHubCard } from "@/components/cards/GitHubCard";
@@ -6,16 +5,6 @@ import { TechStackCard } from "@/components/cards/TechStackCard";
 import { SocialCard } from "@/components/cards/SocialCard";
 import { RecentProjectsCard } from "@/components/cards/RecentProjectsCard";
 import { LifeLogCard } from "@/components/cards/LifeLogCard";
-
-function GitHubCardSkeleton() {
-  return (
-    <div className="text-center animate-pulse w-full">
-      <div className="h-2 w-32 bg-gray-800 rounded mx-auto mb-3" />
-      <div className="h-12 bg-gray-800 rounded" />
-      <div className="h-2 w-20 bg-gray-800 rounded mx-auto mt-3" />
-    </div>
-  );
-}
 
 export default function Home() {
   return (
@@ -37,16 +26,14 @@ export default function Home() {
             <AboutCard />
           </BentoCard>
 
-          {/* GitHub Contributions — col-span-2 */}
-          <BentoCard className="md:col-span-2 flex items-center justify-center min-h-40">
-            <Suspense fallback={<GitHubCardSkeleton />}>
-              <GitHubCard />
-            </Suspense>
+          {/* Tech Stack — col-span-1, row-span-2 */}
+          <BentoCard className="md:row-span-2">
+            <TechStackCard />
           </BentoCard>
 
-          {/* Tech Stack — col-span-1 */}
-          <BentoCard>
-            <TechStackCard />
+          {/* GitHub Contributions — col-span-1 */}
+          <BentoCard className="flex items-center justify-center min-h-40">
+            <GitHubCard />
           </BentoCard>
 
           {/* Social — col-span-1 */}
