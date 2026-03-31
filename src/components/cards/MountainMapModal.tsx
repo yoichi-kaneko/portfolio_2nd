@@ -26,6 +26,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
+        data-testid="mountain-map-backdrop"
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
@@ -33,12 +34,17 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
       {/* Modal */}
       <div
         data-testid="mountain-map-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mountain-map-title"
         className="relative w-full max-w-4xl h-[80vh] bg-[#161616] border border-[#262626] rounded-2xl flex flex-col overflow-hidden shadow-2xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#262626] shrink-0">
           <div>
-            <h2 className="text-xl font-bold">Mountain Map</h2>
+            <h2 id="mountain-map-title" className="text-xl font-bold">
+              Mountain Map
+            </h2>
             <p className="text-xs text-gray-500 mt-0.5">登頂した山々</p>
           </div>
           <button

@@ -171,7 +171,9 @@ test.describe("ProjectsModal の動作確認", () => {
 
   test("バックドロップクリックでモーダルが閉じる", async ({ page }) => {
     await page.getByRole("button", { name: "View All" }).click();
-    await page.mouse.click(10, 10);
+    const backdrop = page.getByTestId("projects-modal-backdrop");
+    await expect(backdrop).toBeVisible();
+    await backdrop.click({ position: { x: 1, y: 1 } });
     await expect(
       page.getByRole("heading", { name: "All Projects" })
     ).not.toBeVisible();
@@ -215,7 +217,9 @@ test.describe("MountainMapModal の動作確認", () => {
   test("バックドロップクリックでモーダルが閉じる", async ({ page }) => {
     await page.getByRole("button", { name: /Map/ }).click();
     await expect(page.getByTestId("mountain-map-modal")).toBeVisible();
-    await page.mouse.click(10, 10);
+    const backdrop = page.getByTestId("mountain-map-backdrop");
+    await expect(backdrop).toBeVisible();
+    await backdrop.click({ position: { x: 1, y: 1 } });
     await expect(page.getByTestId("mountain-map-modal")).not.toBeVisible();
   });
 });
