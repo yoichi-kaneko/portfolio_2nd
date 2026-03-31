@@ -10,6 +10,7 @@ export const MOUNTAIN_MAP_OPTIONS = {
   mapTypeId: "hybrid",
   mapTypeControl: false,
   scaleControl: true,
+  fullscreenControl: false,
   zoomControlOptions: {
     position: 1,
   },

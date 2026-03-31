@@ -79,6 +79,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
                 scaleControl={MOUNTAIN_MAP_OPTIONS.scaleControl}
                 zoomControlOptions={MOUNTAIN_MAP_OPTIONS.zoomControlOptions}
                 streetViewControl={MOUNTAIN_MAP_OPTIONS.streetViewControl}
+                fullscreenControl={MOUNTAIN_MAP_OPTIONS.fullscreenControl}
                 mapId={MOUNTAIN_MAP_OPTIONS.mapId}
                 gestureHandling="greedy"
                 disableDefaultUI={false}
