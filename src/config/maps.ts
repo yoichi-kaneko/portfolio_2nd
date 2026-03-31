@@ -14,5 +14,5 @@ export const MOUNTAIN_MAP_OPTIONS = {
   zoomControlOptions: {
     position: 1,
   },
-  streetViewControl: true,
+  streetViewControl: false,
 } as const;

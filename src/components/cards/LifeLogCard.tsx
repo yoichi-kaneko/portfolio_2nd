@@ -1,5 +1,7 @@
 "use client";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { MountainMapModal } from "./MountainMapModal";
 import { mountains } from "@/hooks/useMountainMapModal";
@@ -54,10 +56,11 @@ export function LifeLogCard() {
         <div className="flex justify-between items-center mb-1">
           <p className="text-[10px] text-gray-500">Goal to 100 Famous Mountains</p>
           <button
-            className="text-[10px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
+            className="text-[12px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
             onClick={() => setIsMapOpen(true)}
           >
-            🗺️ Map
+            Map
+            <FontAwesomeIcon icon={faMapLocationDot} className="w-4 h-4 inline-block mr-1 ml-1" aria-hidden="true" />
           </button>
         </div>
         <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
