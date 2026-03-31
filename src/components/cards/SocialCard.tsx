@@ -12,6 +12,7 @@ export function SocialCard() {
             key={link.label}
             href={link.url}
             target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-blue-400 transition-colors"
           >
             {link.label}
