@@ -1,11 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { projects, type Project, type ProjectType } from "@/data/modules/projects";
+import { useProjectsModal, type ProjectsTab } from "@/hooks/useProjectsModal";
 
-type Tab = "all" | ProjectType;
-
-const TAB_LABELS: Record<Tab, string> = {
+const TAB_LABELS: Record<ProjectsTab, string> = {
   all: "All",
   contract: "業務委託 / 受託",
   employee: "正社員",
@@ -24,33 +21,14 @@ export function ProjectsModal({ isOpen, onClose }: ProjectsModalProps) {
 }
 
 function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) {
-  const [activeTab, setActiveTab] = useState<Tab>("all");
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-
-  const handleClose = useCallback(() => {
-    // Reset local UI state when closing the modal.
-    setSelectedProject(null);
-    setActiveTab("all");
-    onClose();
-  }, [onClose]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleClose();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleClose]);
-
-  const filtered =
-    activeTab === "all"
-      ? projects
-      : projects.filter((p) => p.type === activeTab);
-
-  const handleTabChange = (tab: Tab) => {
-    setActiveTab(tab);
-    setSelectedProject(null);
-  };
+  const {
+    activeTab,
+    selectedProject,
+    filteredProjects,
+    setSelectedProject,
+    handleClose,
+    handleTabChange,
+  } = useProjectsModal({ onClose });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -77,7 +55,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
 
         {/* Tabs */}
         <div className="flex gap-2 px-6 py-3 border-b border-[#262626] shrink-0 overflow-x-auto">
-          {(Object.keys(TAB_LABELS) as Tab[]).map((tab) => (
+          {(Object.keys(TAB_LABELS) as ProjectsTab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
@@ -101,7 +79,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
             }`}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {filtered.map((project) => (
+              {filteredProjects.map((project) => (
                 <div
                   key={project.name}
                   data-testid="project-card"

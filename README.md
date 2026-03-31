@@ -73,6 +73,34 @@ type WeeklyContribution = {
 |---|---|
 | `GITHUB_PAT` | GitHub Personal Access Token。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録 |
 | `REDIS_URL` | アクセスするRedisのURL。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録 |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Google MapsのAPIキー。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録 |
+
+---
+
+## ユニットテスト（E2E 以外）
+
+Vitest を使用したユニットテストを実装しています。
+
+### テスト対象（概要）
+
+- `src/hooks/__tests__`
+  - カスタムフックの状態遷移、キーボード操作、APIレスポンスに応じた挙動を検証
+- `src/data/modules/__tests__`
+  - データモジュールの生成処理・バリデーション（正常系/異常系）を検証
+
+### 実行方法
+
+全ユニットテストを実行:
+
+```bash
+pnpm test
+```
+
+特定ファイルのみ実行（例）:
+
+```bash
+pnpm test src/hooks/__tests__/useProjectsModal.test.ts
+```
 
 ---
 
