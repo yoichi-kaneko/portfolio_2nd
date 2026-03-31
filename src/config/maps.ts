@@ -1,4 +1,4 @@
-export const MOUNTAIN_MARKER_ZOOM = 7;
+export const MOUNTAIN_MARKER_ZOOM = 11;
 
 export const MOUNTAIN_MAP_OPTIONS = {
   mapId: "b86f8d865b37b547b7840834",
@@ -7,7 +7,7 @@ export const MOUNTAIN_MAP_OPTIONS = {
     lng: 138.3684228,
   },
   zoom: 8,
-  mapTypeId: "terrain",
+  mapTypeId: "hybrid",
   mapTypeControl: false,
   scaleControl: true,
   zoomControlOptions: {

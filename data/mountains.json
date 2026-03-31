@@ -1,27 +1,6 @@
 {
   "mountains": [
     {
-      "name": "白山",
-      "date": "2018-07-15",
-      "url": "https://yamap.com/activities/18750775",
-      "latitude": 36.149134,
-      "longitude": 136.767879
-    },
-    {
-      "name": "谷川岳",
-      "date": "2019-06-22",
-      "url": "https://yamap.com/activities/3948351",
-      "latitude": 36.834478,
-      "longitude": 138.930238
-    },
-    {
-      "name": "赤城山",
-      "date": "2019-07-13",
-      "url": "https://yamap.com/activities/4060134",
-      "latitude": 36.560384,
-      "longitude": 139.193316
-    },
-    {
       "name": "鳥海山",
       "date": "2019-08-05",
       "url": "https://yamap.com/activities/4230852",
@@ -29,18 +8,11 @@
       "longitude": 140.048877
     },
     {
-      "name": "金峰山",
-      "date": "2019-11-03",
-      "url": "https://yamap.com/activities/4942392",
-      "latitude": 35.871850,
-      "longitude": 138.625384
-    },
-    {
       "name": "大菩薩嶺",
       "date": "2019-11-09",
       "url": "https://yamap.com/activities/4994172",
       "latitude": 35.748739,
-      "longitude": 138.845630
+      "longitude": 138.84563
     },
     {
       "name": "伊吹山",
@@ -57,17 +29,10 @@
       "longitude": 139.001799
     },
     {
-      "name": "那須岳",
-      "date": "2020-08-02",
-      "url": "https://yamap.com/activities/7116380",
-      "latitude": 37.125542,
-      "longitude": 139.963696
-    },
-    {
       "name": "雨飾山",
       "date": "2020-08-24",
       "url": "https://yamap.com/activities/7437553",
-      "latitude": 36.902000,
+      "latitude": 36.902,
       "longitude": 137.962709
     },
     {
@@ -92,11 +57,11 @@
       "longitude": 139.132955
     },
     {
-      "name": "四阿山",
-      "date": "2020-10-11",
-      "url": "https://yamap.com/activities/8085677",
-      "latitude": 36.541624,
-      "longitude": 138.412790
+      "name": "赤城山",
+      "date": "2020-10-18",
+      "url": "https://yamap.com/activities/8189470",
+      "latitude": 36.560384,
+      "longitude": 139.193316
     },
     {
       "name": "大台ヶ原",
@@ -134,25 +99,11 @@
       "longitude": 130.861438
     },
     {
-      "name": "瑞牆山",
-      "date": "2021-05-23",
-      "url": "https://yamap.com/activities/11348938",
-      "latitude": 35.893505,
-      "longitude": 138.592085
-    },
-    {
       "name": "日光男体山",
       "date": "2021-05-29",
       "url": "https://yamap.com/activities/11433475",
       "latitude": 36.747776,
       "longitude": 139.489186
-    },
-    {
-      "name": "筑波山",
-      "date": "2021-06-13",
-      "url": "https://yamap.com/activities/11715951",
-      "latitude": 36.225904,
-      "longitude": 140.098545
     },
     {
       "name": "甲武信ヶ岳",
@@ -183,13 +134,6 @@
       "longitude": 138.752193
     },
     {
-      "name": "羅臼岳",
-      "date": "2021-07-18",
-      "url": "https://yamap.com/activities/12167791",
-      "latitude": 44.073970,
-      "longitude": 145.130714
-    },
-    {
       "name": "甲斐駒ヶ岳",
       "date": "2021-07-23",
       "url": "https://yamap.com/activities/12269283",
@@ -208,14 +152,7 @@
       "date": "2021-08-01",
       "url": "https://yamap.com/activities/12439093",
       "latitude": 37.600961,
-      "longitude": 140.072210
-    },
-    {
-      "name": "安達太良山",
-      "date": "2021-09-12",
-      "url": "https://yamap.com/activities/13002350",
-      "latitude": 37.621140,
-      "longitude": 140.287824
+      "longitude": 140.07221
     },
     {
       "name": "浅間山",
@@ -244,6 +181,153 @@
       "url": "https://yamap.com/activities/13878384",
       "latitude": 36.798667,
       "longitude": 139.375912
+    },
+    {
+      "name": "石鎚山",
+      "date": "2022-04-30",
+      "url": "https://yamap.com/activities/16932351",
+      "latitude": 33.7682686,
+      "longitude": 133.1039742
+    },
+    {
+      "name": "白山",
+      "date": "2022-07-30",
+      "url": "https://yamap.com/activities/18750775",
+      "latitude": 36.149134,
+      "longitude": 136.767879
+    },
+    {
+      "name": "金峰山",
+      "date": "2022-08-11",
+      "url": "https://yamap.com/activities/18959953",
+      "latitude": 35.87185,
+      "longitude": 138.625384
+    },
+    {
+      "name": "皇海山",
+      "date": "2023-05-22",
+      "url": "https://yamap.com/activities/24443220",
+      "latitude": 36.6898981,
+      "longitude": 139.3268286
+    },
+    {
+      "name": "岩木山",
+      "date": "2023-06-11",
+      "url": "https://yamap.com/activities/24841021",
+      "latitude": 40.655383,
+      "longitude": 140.303525
+    },
+    {
+      "name": "燧ヶ岳",
+      "date": "2023-09-02",
+      "url": "https://yamap.com/activities/26523544",
+      "latitude": 36.9552289,
+      "longitude": 139.2464622
+    },
+    {
+      "name": "至仏山",
+      "date": "2023-09-03",
+      "url": "https://yamap.com/activities/26523544",
+      "latitude": 36.9032682,
+      "longitude": 139.163019
+    },
+    {
+      "name": "妙高山",
+      "date": "2023-10-08",
+      "url": "https://yamap.com/activities/27311982",
+      "latitude": 36.8925277,
+      "longitude": 138.1027247
+    },
+    {
+      "name": "火打山",
+      "date": "2023-10-09",
+      "url": "https://yamap.com/activities/27335781",
+      "latitude": 36.9227314,
+      "longitude": 138.0578082
+    },
+    {
+      "name": "四阿山",
+      "date": "2023-10-22",
+      "url": "https://yamap.com/activities/27649886",
+      "latitude": 36.541624,
+      "longitude": 138.41279
+    },
+    {
+      "name": "伯耆大山",
+      "date": "2023-10-25",
+      "url": "https://yamap.com/activities/27717701",
+      "latitude": 35.3723578,
+      "longitude": 133.5260277
+    },
+    {
+      "name": "開聞岳",
+      "date": "2024-05-05",
+      "url": "https://yamap.com/activities/31549118",
+      "latitude": 31.1801538,
+      "longitude": 130.5179833
+    },
+    {
+      "name": "飯豊山",
+      "date": "2024-08-16",
+      "url": "https://yamap.com/activities/33845358",
+      "latitude": 37.85485,
+      "longitude": 139.6967855
+    },
+    {
+      "name": "瑞牆山",
+      "date": "2024-09-06",
+      "url": "https://yamap.com/activities/34186966",
+      "latitude": 35.893505,
+      "longitude": 138.592085
+    },
+    {
+      "name": "那須岳",
+      "date": "2024-09-15",
+      "url": "https://yamap.com/activities/34418672",
+      "latitude": 37.125542,
+      "longitude": 139.963696
+    },
+    {
+      "name": "阿蘇山",
+      "date": "2024-11-03",
+      "url": "https://yamap.com/activities/35613464",
+      "latitude": 32.8875316,
+      "longitude": 131.0748793
+    },
+    {
+      "name": "筑波山",
+      "date": "2025-03-01",
+      "url": "https://yamap.com/activities/38175887",
+      "latitude": 36.225904,
+      "longitude": 140.098545
+    },
+    {
+      "name": "早池峰山",
+      "date": "2025-06-07",
+      "url": "https://yamap.com/activities/40584480",
+      "latitude": 39.5584251,
+      "longitude": 141.4786647
+    },
+    {
+      "name": "月山",
+      "date": "2025-08-10",
+      "url": "https://yamap.com/activities/42083071",
+      "latitude": 38.5495172,
+      "longitude": 139.9880714
+    },
+    {
+      "name": "谷川岳",
+      "date": "2025-08-31",
+      "url": "https://yamap.com/activities/42592154",
+      "latitude": 36.834478,
+      "longitude": 138.930238
+    },
+    {
+      "name": "安達太良山",
+      "date": "2025-09-14",
+      "url": "https://yamap.com/activities/42862708",
+      "latitude": 37.62114,
+      "longitude": 140.287824
     }
   ]
 }
