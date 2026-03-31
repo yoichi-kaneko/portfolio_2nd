@@ -54,7 +54,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
             <h2 id="mountain-map-title" className="text-xl font-bold">
               Mountain Map
             </h2>
-            <p className="text-xs text-gray-500 mt-0.5">登頂した山々 — {mountains.length}座</p>
+            <p className="text-xs text-gray-500 mt-0.5">登頂した百名山 — {mountains.length}座</p>
           </div>
           <button
             onClick={onClose}
@@ -105,7 +105,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
           </div>
 
           {/* Right panel */}
-          <div className="w-72 border-l border-[#262626] flex flex-col shrink-0 bg-[#161616]">
+          <div className="w-36 sm:w-56 md:w-72 border-l border-[#262626] flex flex-col shrink-0 bg-[#161616]">
             {/* Detail */}
             <div className="p-5 border-b border-[#262626] shrink-0 min-h-[160px] flex flex-col justify-center">
               {selected ? (

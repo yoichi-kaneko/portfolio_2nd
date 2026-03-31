@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import projectsData from "../../../data/projects.json";
 
 type ProjectType = "contract" | "employee" | "personal";
@@ -38,13 +38,20 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
   const [activeTab, setActiveTab] = useState<Tab>("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+  const handleClose = useCallback(() => {
+    // Reset local UI state when closing the modal.
+    setSelectedProject(null);
+    setActiveTab("all");
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [handleClose]);
 
   const projects = projectsData.projects as Project[];
   const filtered =
@@ -63,7 +70,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
       <div
         data-testid="projects-modal-backdrop"
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       {/* Modal */}
@@ -72,7 +79,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#262626] shrink-0">
           <h2 className="text-xl font-bold">All Projects</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Close"
           >
