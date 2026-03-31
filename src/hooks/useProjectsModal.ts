@@ -7,6 +7,13 @@ interface UseProjectsModalProps {
   onClose: () => void;
 }
 
+/**
+ * Projects モーダルの UI 状態（タブ・選択中プロジェクト）と操作ハンドラを管理するフック。
+ *
+ * モーダルクローズ時は状態を初期化し、`Escape` キーでも閉じられるようにする。
+ *
+ * @param onClose モーダルを閉じるコールバック
+ */
 export function useProjectsModal({ onClose }: UseProjectsModalProps) {
   const [activeTab, setActiveTab] = useState<ProjectsTab>("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);

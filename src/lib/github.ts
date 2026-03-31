@@ -35,9 +35,15 @@ export type WeeklyContribution = {
 };
 
 /**
- * 
- * @param pat GraphQLを実行する。REDISのキャッシュがない場合に実行する
- * @returns 
+ * GitHub GraphQL API から直近 `CONTRIBUTION_WEEKS` 週分のコントリビューションを取得し、
+ * 「昨日基準の7日区切り」で再集計して返す。
+ *
+ * GitHub の `contributionCalendar.weeks` は日曜始まり固定のため、
+ * 日単位に平坦化して `diffDays` から週インデックスを算出する。
+ *
+ * @param pat GitHub GraphQL API 呼び出しに使用する Personal Access Token
+ * @returns `W1`(直近) 〜 `Wn`(最古) の週次集計配列
+ * @throws GitHub API 応答が非 2xx の場合
  */
 async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
   // 今日を除いた昨日〜35日前を取得範囲とする
@@ -106,6 +112,16 @@ async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
   }));
 }
 
+/**
+ * 週次コントリビューションを取得する。
+ *
+ * まず Redis キャッシュを参照し、当日キャッシュがあればそれを返す。
+ * キャッシュミスまたは Redis エラー時は GraphQL から取得し、
+ * 取得成功時は TTL 付きで Redis に保存する。
+ *
+ * @returns `W1`(直近) 〜 `Wn`(最古) の週次集計配列
+ * @throws `GITHUB_PAT` 未設定時
+ */
 export async function fetchWeeklyContributions(): Promise<WeeklyContribution[]> {
   const pat = process.env.GITHUB_PAT;
   if (!pat) {
