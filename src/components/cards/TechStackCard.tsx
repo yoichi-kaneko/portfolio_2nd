@@ -1,4 +1,4 @@
-import skills from "../../../data/skills.json";
+import { skillCategories } from "@/data/modules/skills";
 
 const levelColorMap: Record<string, string> = {
   Expert: "text-blue-400",
@@ -14,7 +14,7 @@ export function TechStackCard() {
         Tech Stack
       </h3>
       <div className="space-y-5 text-sm">
-        {skills.categories.map((category) => (
+        {skillCategories.map((category) => (
           <div key={category.name}>
             <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">
               {category.name}

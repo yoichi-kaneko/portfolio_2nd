@@ -1,4 +1,4 @@
-import status from "../../../data/status.json";
+import { statuses } from "@/data/modules/status";
 
 export function AboutCard() {
   return (
@@ -14,7 +14,7 @@ export function AboutCard() {
         </p>
       </div>
       <div className="mt-8 flex flex-wrap gap-2">
-        {status.statuses.map((s) => (
+        {statuses.map((s) => (
           <span
             key={s.label}
             className="bg-green-500/10 text-green-500 px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-2"

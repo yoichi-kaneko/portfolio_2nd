@@ -1,4 +1,4 @@
-import social from "../../../data/social.json";
+import { socialLinks } from "@/data/modules/social";
 
 export function SocialCard() {
   return (
@@ -7,11 +7,12 @@ export function SocialCard() {
         Social
       </h3>
       <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
-        {social.links.map((link) => (
+        {socialLinks.map((link) => (
           <a
             key={link.label}
             href={link.url}
             target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-blue-400 transition-colors"
           >
             {link.label}

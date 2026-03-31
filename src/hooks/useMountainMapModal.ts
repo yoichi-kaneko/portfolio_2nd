@@ -6,6 +6,16 @@ interface UseMountainMapModalProps {
   onClose: () => void;
 }
 
+/**
+ * 山行マップモーダルの選択状態・キーボード操作・一覧スクロール同期を管理するフック。
+ *
+ * - `Escape` でモーダルを閉じる
+ * - `ArrowLeft` / `ArrowRight` で選択中の山を移動する
+ * - 選択変更時に右ペインの該当リスト項目へスクロールする
+ *
+ * @param isOpen モーダル表示状態。`true` の間だけキーボードイベントを購読する
+ * @param onClose モーダルを閉じるコールバック
+ */
 export function useMountainMapModal({ isOpen, onClose }: UseMountainMapModalProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
