@@ -328,6 +328,62 @@
       "url": "https://yamap.com/activities/42862708",
       "latitude": 37.62114,
       "longitude": 140.287824
+    },
+    {
+      "name": "荒島岳",
+      "date": "2024-03-14",
+      "url": "https://yamap.com/activities/30533882",
+      "latitude": 35.9344552,
+      "longitude": 136.5908871
+    },
+    {
+      "name": "恵那山",
+      "date": "2025-11-16",
+      "url": "https://yamap.com/activities/44384404",
+      "latitude": 35.4432966,
+      "longitude": 137.5867021
+    },
+    {
+      "name": "御嶽山",
+      "date": "2022-08-21",
+      "url": "https://yamap.com/activities/19156036",
+      "latitude": 35.882343,
+      "longitude": 137.4382125
+    },
+    {
+      "name": "木曽駒ヶ岳",
+      "date": "2022-08-14",
+      "url": "https://yamap.com/activities/19023976",
+      "latitude": 35.7894604,
+      "longitude": 137.7941228
+    },
+    {
+      "name": "乗鞍岳",
+      "date": "2024-08-11",
+      "url": "https://yamap.com/activities/33699434",
+      "latitude": 36.1163423,
+      "longitude": 137.5256965
+    },
+    {
+      "name": "焼岳",
+      "date": "2023-08-11",
+      "url": "https://yamap.com/activities/26111040",
+      "latitude": 36.2270934,
+      "longitude": 137.5766661
+    },
+    {
+      "name": "槍ヶ岳",
+      "date": "2025-07-27",
+      "url": "https://yamap.com/activities/41787757",
+      "latitude": 36.3420495,
+      "longitude": 137.6373001
+    },
+    {
+      "name": "常念岳",
+      "date": "2024-07-29",
+      "url": "https://yamap.com/activities/33426331",
+      "latitude": 36.3242648,
+      "longitude": 137.7225965
     }
   ]
 }
