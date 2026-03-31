@@ -2,17 +2,18 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { MountainMapModal } from "./MountainMapModal";
 import { mountains } from "@/hooks/useMountainMapModal";
 
 export function LifeLogCard() {
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const handleCloseMap = useCallback(() => setIsMapOpen(false), []);
   const latestMountain = mountains.reduce((a, b) => (a.date > b.date ? a : b));
 
   return (
     <>
-      <MountainMapModal isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
+      <MountainMapModal isOpen={isMapOpen} onClose={handleCloseMap} />
 
       {/* Header row */}
       <div className="flex justify-between items-start mb-4">
