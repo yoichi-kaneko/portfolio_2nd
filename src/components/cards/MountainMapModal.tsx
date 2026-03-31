@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import { MOUNTAIN_MAP_OPTIONS } from "@/config/maps";
 
 interface MountainMapModalProps {
   isOpen: boolean;
@@ -54,9 +55,14 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
           <APIProvider apiKey={apiKey}>
             <Map
               style={{ width: "100%", height: "100%" }}
-              defaultCenter={{ lat: 36.5, lng: 137.5 }}
-              defaultZoom={6}
-              mapId="mountain-map"
+              defaultCenter={MOUNTAIN_MAP_OPTIONS.center}
+              defaultZoom={MOUNTAIN_MAP_OPTIONS.zoom}
+              mapTypeId={MOUNTAIN_MAP_OPTIONS.mapTypeId}
+              mapTypeControl={MOUNTAIN_MAP_OPTIONS.mapTypeControl}
+              scaleControl={MOUNTAIN_MAP_OPTIONS.scaleControl}
+              zoomControlOptions={MOUNTAIN_MAP_OPTIONS.zoomControlOptions}
+              streetViewControl={MOUNTAIN_MAP_OPTIONS.streetViewControl}
+              mapId={MOUNTAIN_MAP_OPTIONS.mapId}
               gestureHandling="greedy"
               disableDefaultUI={false}
             />
