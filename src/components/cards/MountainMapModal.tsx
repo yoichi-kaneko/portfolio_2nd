@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
 import { MOUNTAIN_MAP_OPTIONS, MOUNTAIN_MARKER_ZOOM } from "@/config/maps";
-import { useMountainMapModal, mountains } from "@/hooks/useMountainMapModal";
+import { useMountainMapModal } from "@/hooks/useMountainMapModal";
+import { mountains } from "@/data/modules/mountains";
 
 function MapController({ selectedIndex }: { selectedIndex: number | null }) {
   const map = useMap();

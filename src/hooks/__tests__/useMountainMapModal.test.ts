@@ -2,15 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useMountainMapModal } from "../useMountainMapModal";
 
-// mountains.json を 3件に固定してテストを安定させる
-vi.mock("@/../data/mountains.json", () => ({
-  default: {
-    mountains: [
-      { name: "山A", date: "2021-01-01", url: "https://example.com/1", latitude: 35.0, longitude: 138.0 },
-      { name: "山B", date: "2021-02-01", url: "https://example.com/2", latitude: 36.0, longitude: 139.0 },
-      { name: "山C", date: "2021-03-01", url: "https://example.com/3", latitude: 37.0, longitude: 140.0 },
-    ],
-  },
+vi.mock("@/data/modules/mountains", () => ({
+  mountains: [
+    { name: "山A", date: "2021-01-01", url: "https://example.com/1", latitude: 35.0, longitude: 138.0 },
+    { name: "山B", date: "2021-02-01", url: "https://example.com/2", latitude: 36.0, longitude: 139.0 },
+    { name: "山C", date: "2021-03-01", url: "https://example.com/3", latitude: 37.0, longitude: 140.0 },
+  ],
 }));
 
 describe("useMountainMapModal", () => {

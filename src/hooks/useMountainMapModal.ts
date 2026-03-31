@@ -1,15 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import mountainsData from "@/../data/mountains.json";
-
-export interface Mountain {
-  name: string;
-  date: string;
-  url: string;
-  latitude: number;
-  longitude: number;
-}
-
-export const mountains: Mountain[] = mountainsData.mountains;
+import { mountains } from "@/data/modules/mountains";
 
 interface UseMountainMapModalProps {
   isOpen: boolean;

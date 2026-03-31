@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useState } from "react";
 import { MountainMapModal } from "./MountainMapModal";
-import { mountains } from "@/hooks/useMountainMapModal";
+import { mountains } from "@/data/modules/mountains";
 
 export function LifeLogCard() {
   const [isMapOpen, setIsMapOpen] = useState(false);
