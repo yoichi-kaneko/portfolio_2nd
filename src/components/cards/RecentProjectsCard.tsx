@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import projects from "../../../data/projects.json";
+import { projects } from "@/data/modules/projects";
 import { ProjectsModal } from "./ProjectsModal";
 
-const recentProjects = projects.projects.filter((p) => p.recent);
+const recentProjects = projects.filter((p) => p.recent);
 
 export function RecentProjectsCard() {
   const [modalOpen, setModalOpen] = useState(false);

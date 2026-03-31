@@ -1,20 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import projectsData from "../../../data/projects.json";
+import { projects, type Project, type ProjectType } from "@/data/modules/projects";
 
-type ProjectType = "contract" | "employee" | "personal";
 type Tab = "all" | ProjectType;
-
-interface Project {
-  name: string;
-  period: string;
-  type: ProjectType;
-  recent: boolean;
-  description: string;
-  detail: string;
-  tags: string[];
-}
 
 const TAB_LABELS: Record<Tab, string> = {
   all: "All",
@@ -53,7 +42,6 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleClose]);
 
-  const projects = projectsData.projects as Project[];
   const filtered =
     activeTab === "all"
       ? projects

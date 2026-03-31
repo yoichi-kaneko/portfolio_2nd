@@ -197,7 +197,7 @@ test.describe("MountainMapModal の動作確認", () => {
 
   test("モーダルにサブタイトルが表示される", async ({ page }) => {
     await page.getByRole("button", { name: /Map/ }).click();
-    await expect(page.getByText("登頂した山々")).toBeVisible();
+    await expect(page.getByText("登頂した百名山")).toBeVisible();
   });
 
   test("✕ ボタンでモーダルが閉じる", async ({ page }) => {
