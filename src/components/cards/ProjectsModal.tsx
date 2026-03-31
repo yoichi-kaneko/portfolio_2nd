@@ -29,25 +29,22 @@ interface ProjectsModalProps {
 }
 
 export function ProjectsModal({ isOpen, onClose }: ProjectsModalProps) {
+  if (!isOpen) return null;
+
+  return <ProjectsModalContent onClose={onClose} />;
+}
+
+function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) {
   const [activeTab, setActiveTab] = useState<Tab>("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedProject(null);
-      setActiveTab("all");
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-    if (isOpen) document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
+  }, [onClose]);
 
   const projects = projectsData.projects as Project[];
   const filtered =
