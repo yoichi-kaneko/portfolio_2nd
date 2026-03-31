@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { useCallback, useState } from "react";
 import { MountainMapModal } from "./MountainMapModal";
+import { mountains } from "@/data/modules/mountains";
 
 export function LifeLogCard() {
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const handleCloseMap = useCallback(() => setIsMapOpen(false), []);
+  const latestMountain = mountains.reduce((a, b) => (a.date > b.date ? a : b));
 
   return (
     <>
-      <MountainMapModal isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
+      <MountainMapModal isOpen={isMapOpen} onClose={handleCloseMap} />
 
       {/* Header row */}
       <div className="flex justify-between items-start mb-4">
@@ -34,14 +39,14 @@ export function LifeLogCard() {
       <div className="grid grid-cols-2 gap-4 mb-4">
         {/* 最近の登頂 */}
         <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-          <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">最近の登頂</p>
-          <p className="text-sm font-semibold">谷川岳</p>
+          <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">最近の登頂（日本百名山）</p>
+          <p className="text-sm font-semibold">{latestMountain.name}</p>
         </div>
         {/* レポート件数 */}
         <div className="p-3 bg-white/5 rounded-lg border border-white/5">
           <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">登山レポート</p>
           <p className="text-sm font-semibold">
-            <span className="text-xl font-bold text-blue-400">142</span>
+            <span className="text-xl font-bold text-blue-400">{mountains.length}</span>
             <span className="text-gray-400 ml-1">件</span>
           </p>
         </div>
@@ -52,16 +57,17 @@ export function LifeLogCard() {
         <div className="flex justify-between items-center mb-1">
           <p className="text-[10px] text-gray-500">Goal to 100 Famous Mountains</p>
           <button
-            className="text-[10px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
+            className="text-[12px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
             onClick={() => setIsMapOpen(true)}
           >
-            🗺️ Map
+            Map
+            <FontAwesomeIcon icon={faMapLocationDot} className="w-4 h-4 inline-block mr-1 ml-1" aria-hidden="true" />
           </button>
         </div>
         <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
-          <div className="w-3/4 h-full bg-blue-500" />
+          <div className="h-full bg-blue-500" style={{ width: `${mountains.length}%` }} />
         </div>
-        <p className="mt-1 text-[10px] text-right text-gray-600">75 / 100</p>
+        <p className="mt-1 text-[10px] text-right text-gray-600">{mountains.length} / 100</p>
       </div>
     </>
   );
