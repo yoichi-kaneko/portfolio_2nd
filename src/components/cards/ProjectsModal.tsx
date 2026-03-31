@@ -81,15 +81,15 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {filteredProjects.map((project) => (
                 <div
-                  key={project.name}
+                  key={project.id}
                   data-testid="project-card"
                   onClick={() =>
                     setSelectedProject(
-                      selectedProject?.name === project.name ? null : project
+                      selectedProject?.id === project.id ? null : project
                     )
                   }
                   className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                    selectedProject?.name === project.name
+                    selectedProject?.id === project.id
                       ? "bg-blue-500/10 border-blue-500/40"
                       : "bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/8"
                   }`}

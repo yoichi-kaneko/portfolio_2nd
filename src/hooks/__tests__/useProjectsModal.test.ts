@@ -5,6 +5,7 @@ import { useProjectsModal } from "../useProjectsModal";
 vi.mock("@/data/modules/projects", () => ({
   projects: [
     {
+      id: "contract-app",
       name: "contract-app",
       period: "2024",
       type: "contract",
@@ -14,6 +15,7 @@ vi.mock("@/data/modules/projects", () => ({
       tags: ["TypeScript"],
     },
     {
+      id: "employee-app",
       name: "employee-app",
       period: "2023",
       type: "employee",
@@ -23,6 +25,7 @@ vi.mock("@/data/modules/projects", () => ({
       tags: ["React"],
     },
     {
+      id: "personal-app",
       name: "personal-app",
       period: "2025",
       type: "personal",

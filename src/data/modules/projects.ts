@@ -6,6 +6,7 @@ const PROJECTS_MIN_COUNT = 1;
 export type ProjectType = "contract" | "employee" | "personal";
 
 export interface Project {
+  id: string;
   name: string;
   period: string;
   type: ProjectType;

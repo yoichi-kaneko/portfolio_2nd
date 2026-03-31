@@ -3,6 +3,7 @@ import { createProjectsFromJson, type Project } from "../projects";
 
 function createDummyProject(index: number): Project {
   return {
+    id: `project-${index}`,
     name: `project-${index}`,
     period: "2026",
     type: "personal",
