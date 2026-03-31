@@ -41,13 +41,13 @@ export default function Home() {
             <SocialCard />
           </BentoCard>
 
-          {/* Recent Projects — col-span-3 */}
-          <BentoCard className="md:col-span-3">
+          {/* Recent Projects — col-span-2 */}
+          <BentoCard className="md:col-span-2">
             <RecentProjectsCard />
           </BentoCard>
 
-          {/* Life Log — col-span-1 */}
-          <BentoCard className="bg-gradient-to-br from-blue-900/20 to-[#161616]">
+          {/* Life Log — col-span-2 */}
+          <BentoCard className="md:col-span-2 bg-gradient-to-br from-blue-900/20 to-[#161616]">
             <LifeLogCard />
           </BentoCard>
         </div>

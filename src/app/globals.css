@@ -21,6 +21,13 @@ body {
 }
 
 /* Custom scrollbar — dark theme */
+/* Standard (Chrome 121+, Firefox) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #333333 transparent;
+}
+
+/* WebKit fallback */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

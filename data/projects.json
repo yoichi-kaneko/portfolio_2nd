@@ -1,17 +1,17 @@
 {
   "projects": [
     {
-      "name": "LINE AI Bot「碧衣」",
+      "name": "LINE AI Bot「碧衣(Aoi)」",
       "period": "2026-",
       "type": "personal",
-      "recent": false,
-      "description": "キャラクター型LINE AIアシスタントの開発",
+      "recent": true,
+      "description": "キャラクター型LINE AIアシスタント開発",
       "detail": "個人開発したLINE上で動作するAIアシスタント「碧衣」。Anthropic Claude APIをベースにキャラクタープロファイルとスキルシステムを設計し、GCP Cloud Functions上のWebhookで応答を処理。Google Calendar・Todoist・OpenWeatherMap・Google Maps等の複数外部APIと連携し、Firestoreで会話コンテキストを管理。プロンプトエンジニアリングとキャラクター設計を軸に、設計・実装・運用をひとりで担当。",
       "tags": ["TypeScript", "Claude Code", "Gemini API(Nano Banana)", "LINE Messaging API", "GCP", "Cloud Functions", "Firebase", "Firestore"]
     },  
     {
       "name": "スリーエス株式会社",
-      "period": "2026-",
+      "period": "2025-",
       "type": "contract",
       "recent": true,
       "description": "定期巡回システムの開発",
@@ -31,7 +31,7 @@
       "name": "株式会社スマレジ",
       "period": "2024–2025",
       "type": "contract",
-      "recent": false,
+      "recent": true,
       "description": "勤怠管理システムの開発",
       "detail": "勤怠管理システムの開発に業務委託として参画。Ruby on Railsをベースとしたバックエンド開発を担当。後半はLineBotとの連携について、要件定義・設計・実装を担当。",
       "tags": ["PHP", "CakePHP", "MySQL", "AWS", "Docker", "LINE Bot"]
