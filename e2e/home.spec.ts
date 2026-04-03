@@ -224,6 +224,46 @@ test.describe("MountainMapModal の動作確認", () => {
   });
 });
 
+test.describe("登山レポート件数の表示確認", () => {
+  test("API成功時に件数が表示される", async ({ page }) => {
+    await page.route("/api/mountains/report-count", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ count: 999 }),
+      });
+    });
+    await page.goto("/");
+    await expect(page.getByText("999")).toBeVisible();
+    await expect(page.getByText("登山レポート（総計）")).toBeVisible();
+  });
+
+  test("API失敗時に ??? が表示される", async ({ page }) => {
+    await page.route("/api/mountains/report-count", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Internal Server Error" }),
+      });
+    });
+    await page.goto("/");
+    await expect(page.getByText("???")).toBeVisible();
+  });
+
+  test("API通信の結果が返ってくるまではSkeletonが表示される", async ({ page }) => {
+    await page.route("/api/mountains/report-count", async (route) => {
+      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ count: 999 }),
+      });
+    });
+    await page.goto("/");
+    await expect(page.getByTestId("report-count-skeleton")).toBeVisible();
+  });
+});
+
 test.describe("TechStackCard の詳細確認", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");

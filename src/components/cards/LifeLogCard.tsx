@@ -5,11 +5,13 @@ import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useState } from "react";
 import { MountainMapModal } from "./MountainMapModal";
 import { mountains } from "@/data/modules/mountains";
+import { useMountainReportCount } from "@/hooks/useMountainReportCount";
 
 export function LifeLogCard() {
   const [isMapOpen, setIsMapOpen] = useState(false);
   const handleCloseMap = useCallback(() => setIsMapOpen(false), []);
   const latestMountain = mountains.reduce((a, b) => (a.date > b.date ? a : b));
+  const { count: reportCount, loading: reportCountLoading } = useMountainReportCount();
 
   return (
     <>
@@ -44,10 +46,21 @@ export function LifeLogCard() {
         </div>
         {/* レポート件数 */}
         <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-          <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">登山レポート</p>
+          <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">登山レポート（総計）</p>
           <p className="text-sm font-semibold">
-            <span className="text-xl font-bold text-blue-400">{mountains.length}</span>
-            <span className="text-gray-400 ml-1">件</span>
+            {reportCountLoading ? (
+              <span
+                className="inline-block h-6 w-12 bg-gray-800 rounded animate-pulse align-middle"
+                data-testid="report-count-skeleton"
+              />
+            ) : (
+              <>
+                <span className="text-xl font-bold text-blue-400">
+                  {reportCount !== null ? reportCount : "???"}
+                </span>
+                <span className="text-gray-400 ml-1">件</span>
+              </>
+            )}
           </p>
         </div>
       </div>
