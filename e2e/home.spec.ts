@@ -83,7 +83,7 @@ test.describe("GitHubContributionChart の詳細確認", () => {
     await expect(page.getByText("No Data")).toBeVisible();
   });
 
-  test("API通信の結果が返ってくるまではSkeletonが表示される", async ({ page }) => {
+  test("API通信中はSkeleton表示、完了後にグラフへ切り替わる", async ({ page }) => {
     await page.route("/api/github/contributions", async (route) => {
       // レスポンスを遅延させてスケルトンが表示される時間を確保
       await new Promise<void>((resolve) => setTimeout(resolve, 2000));
@@ -95,6 +95,8 @@ test.describe("GitHubContributionChart の詳細確認", () => {
     });
     await page.goto("/");
     await expect(page.getByTestId("github-card-skeleton")).toBeVisible();
+    await expect(page.getByTestId("github-card-skeleton")).not.toBeVisible();
+    await expect(page.locator(".recharts-surface")).toBeVisible();
   });
 });
 
@@ -250,7 +252,7 @@ test.describe("登山レポート件数の表示確認", () => {
     await expect(page.getByText("???")).toBeVisible();
   });
 
-  test("API通信の結果が返ってくるまではSkeletonが表示される", async ({ page }) => {
+  test("API通信中はSkeleton表示、完了後に件数表示へ切り替わる", async ({ page }) => {
     await page.route("/api/mountains/report-count", async (route) => {
       await new Promise<void>((resolve) => setTimeout(resolve, 2000));
       await route.fulfill({
@@ -261,6 +263,8 @@ test.describe("登山レポート件数の表示確認", () => {
     });
     await page.goto("/");
     await expect(page.getByTestId("report-count-skeleton")).toBeVisible();
+    await expect(page.getByTestId("report-count-skeleton")).not.toBeVisible();
+    await expect(page.getByText("999")).toBeVisible();
   });
 });
 

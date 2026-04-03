@@ -11,8 +11,22 @@ const REDIS_KEY = "mountains:report_count";
 const REDIS_TTL = 24 * 60 * 60; // 24時間
 
 type CachePayload = {
-  count: string;
+  count: number;
 };
+
+function parseReportCount(raw: string): number {
+  const digitsOnly = raw.replace(/[^\d]/g, "");
+  if (!digitsOnly) {
+    throw new Error("Failed to parse report count as number");
+  }
+
+  const parsed = Number(digitsOnly);
+  if (!Number.isFinite(parsed)) {
+    throw new Error("Failed to parse report count as number");
+  }
+
+  return parsed;
+}
 
 /**
  * 登山レポート件数を JSON で返す API エンドポイント。
@@ -31,6 +45,9 @@ export async function GET() {
       const cached = await redisClient.get(REDIS_KEY);
       if (cached) {
         const payload: CachePayload = JSON.parse(cached);
+        if (!Number.isFinite(payload.count)) {
+          throw new Error("Cached report count is invalid");
+        }
         return Response.json({ count: payload.count });
       }
     } catch (e) {
@@ -51,7 +68,10 @@ export async function GET() {
     const html = await page.content();
 
     const $ = cheerio.load(html);
-    const count = $("ul.markuplint-ignore-permitted-contents").find("[role='status']:first").text();
+    const countText = $("ul.markuplint-ignore-permitted-contents")
+      .find("[role='status']:first")
+      .text();
+    const count = parseReportCount(countText);
 
     try {
       if (!redisClient) {
@@ -65,7 +85,7 @@ export async function GET() {
       console.error("[mountains] Redis write error (result not cached):", e);
     }
 
-    return Response.json({ count: count });
+    return Response.json({ count });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
     return Response.json({ error: message }, { status: 500 });
