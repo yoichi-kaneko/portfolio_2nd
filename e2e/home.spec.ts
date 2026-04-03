@@ -184,8 +184,6 @@ test.describe("ProjectsModal の動作確認", () => {
 
 test.describe("MountainMapModal の動作確認", () => {
   test.beforeEach(async ({ page }) => {
-    // Google Maps のスクリプトをブロックしてマップを読み込まない
-    await page.route("**/maps.googleapis.com/**", (route) => route.abort());
     await page.goto("/");
   });
 
