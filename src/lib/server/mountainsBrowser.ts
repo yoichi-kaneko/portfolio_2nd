@@ -17,7 +17,7 @@ function parseMode(value: string | undefined): BrowserMode {
 
   if (value) {
     throw new Error(
-      `${MODE_ENV} must be one of: auto | local | serverless (received: "${value}")`
+      `${MODE_ENV} must be one of: auto | local | serverless (received: "${value}")`,
     );
   }
 
@@ -50,7 +50,9 @@ function resolveHeadless(): boolean {
     return false;
   }
 
-  throw new Error(`${HEADLESS_ENV} must be "true" or "false" (received: "${value}")`);
+  throw new Error(
+    `${HEADLESS_ENV} must be "true" or "false" (received: "${value}")`,
+  );
 }
 
 /** パスが存在し実行可能かどうかを返す。 */
@@ -72,7 +74,7 @@ async function resolveLocalExecutablePath(): Promise<string> {
 
   if (configuredPath) {
     throw new Error(
-      `${LOCAL_PATH_ENV} points to a non-executable path: "${configuredPath}"`
+      `${LOCAL_PATH_ENV} points to a non-executable path: "${configuredPath}"`,
     );
   }
 
@@ -81,7 +83,11 @@ async function resolveLocalExecutablePath(): Promise<string> {
       "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
       "/Applications/Chromium.app/Contents/MacOS/Chromium",
     ],
-    linux: ["/usr/bin/google-chrome", "/usr/bin/chromium-browser", "/usr/bin/chromium"],
+    linux: [
+      "/usr/bin/google-chrome",
+      "/usr/bin/chromium-browser",
+      "/usr/bin/chromium",
+    ],
     win32: [
       "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
       "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
@@ -106,7 +112,7 @@ async function resolveLocalExecutablePath(): Promise<string> {
       "Could not find a local Chrome/Chromium executable.",
       `Set ${LOCAL_PATH_ENV} in your environment.`,
       `Current platform: ${process.platform}`,
-    ].join(" ")
+    ].join(" "),
   );
 }
 
@@ -118,6 +124,12 @@ async function resolveLocalExecutablePath(): Promise<string> {
 export async function launchMountainsBrowser() {
   const mode = resolveMode();
   const headless = resolveHeadless();
+
+  if (mode === "serverless" && !headless) {
+    throw new Error(
+      `${HEADLESS_ENV}=false is not supported when ${MODE_ENV}=serverless`,
+    );
+  }
 
   if (mode === "serverless") {
     return playwright.launch({
