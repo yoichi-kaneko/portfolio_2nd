@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSocialLinksFromJson, type SocialLink } from "../social";
+import { createSocialLinksFromJson, type SocialLink } from "./social";
 
 function createDummySocialLink(index: number): SocialLink {
   return {

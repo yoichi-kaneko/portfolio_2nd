@@ -83,10 +83,13 @@ test.describe("GitHubContributionChart の詳細確認", () => {
     await expect(page.getByText("No Data")).toBeVisible();
   });
 
-  test("API通信の結果が返ってくるまではSkeletonが表示される", async ({ page }) => {
+  test("API通信中はSkeleton表示、完了後にグラフへ切り替わる", async ({ page }) => {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
     await page.route("/api/github/contributions", async (route) => {
-      // レスポンスを遅延させてスケルトンが表示される時間を確保
-      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+      await gate;
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -95,6 +98,9 @@ test.describe("GitHubContributionChart の詳細確認", () => {
     });
     await page.goto("/");
     await expect(page.getByTestId("github-card-skeleton")).toBeVisible();
+    release();
+    await expect(page.getByTestId("github-card-skeleton")).not.toBeVisible();
+    await expect(page.locator(".recharts-surface")).toBeVisible();
   });
 });
 
@@ -182,8 +188,6 @@ test.describe("ProjectsModal の動作確認", () => {
 
 test.describe("MountainMapModal の動作確認", () => {
   test.beforeEach(async ({ page }) => {
-    // Google Maps のスクリプトをブロックしてマップを読み込まない
-    await page.route("**/maps.googleapis.com/**", (route) => route.abort());
     await page.goto("/");
   });
 
@@ -221,6 +225,56 @@ test.describe("MountainMapModal の動作確認", () => {
     await expect(backdrop).toBeVisible();
     await backdrop.click({ position: { x: 1, y: 1 } });
     await expect(page.getByTestId("mountain-map-modal")).not.toBeVisible();
+  });
+});
+
+test.describe("登山レポート件数の表示確認", () => {
+  test("API成功時に件数が表示される", async ({ page }) => {
+    await page.route("/api/mountains/report-count", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ count: 999 }),
+      });
+    });
+    await page.goto("/");
+    const lifeLogCard = page.getByTestId("life-log-card");
+    await expect(lifeLogCard.getByText("999")).toBeVisible();
+    await expect(lifeLogCard.getByText("登山レポート（総計）")).toBeVisible();
+  });
+
+  test("API失敗時に ??? が表示される", async ({ page }) => {
+    await page.route("/api/mountains/report-count", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Internal Server Error" }),
+      });
+    });
+    await page.goto("/");
+    const lifeLogCard = page.getByTestId("life-log-card");
+    await expect(lifeLogCard.getByText("???")).toBeVisible();
+  });
+
+  test("API通信中はSkeleton表示、完了後に件数表示へ切り替わる", async ({ page }) => {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route("/api/mountains/report-count", async (route) => {
+      await gate;
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ count: 999 }),
+      });
+    });
+    await page.goto("/");
+    await expect(page.getByTestId("report-count-skeleton")).toBeVisible();
+    release();
+    await expect(page.getByTestId("report-count-skeleton")).not.toBeVisible();
+    const lifeLogCard = page.getByTestId("life-log-card");
+    await expect(lifeLogCard.getByText("999")).toBeVisible();
   });
 });
 

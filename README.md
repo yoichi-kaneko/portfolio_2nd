@@ -67,6 +67,30 @@ type WeeklyContribution = {
 
 チャート表示時は W5→W1 の順（古い順）に並べて棒グラフに渡します。
 
+## 登山レポート件数 API ロジック
+
+`src/app/api/mountains/report-count/route.ts` の `GET()` が実装している仕様です。
+
+### エンドポイント
+
+- `GET /api/mountains/report-count`
+- 成功時: `{ "count": number }`
+- 失敗時: `{ "error": string }`（HTTP 500）
+
+### 取得フロー
+
+1. `REDIS_URL` に接続し、`mountains:report_count` のキャッシュを参照
+2. キャッシュがあればその値を返却
+3. キャッシュがない場合は YAMAP のユーザーページをスクレイピング
+4. 取得した件数を Redis に 24 時間（`EX: 86400`）保存して返却
+5. Redis の読み書きに失敗した場合でも、スクレイピング結果は返却する（フォールバック）
+
+### 件数表示（UI）
+
+- `src/hooks/useMountainReportCount.ts` が `/api/mountains/report-count` を取得
+- `src/components/cards/LifeLogCard.tsx` で件数を表示
+- 取得中は Skeleton、取得失敗時は `???` を表示
+
 ### 環境変数
 
 | キー | 説明 |
@@ -74,6 +98,10 @@ type WeeklyContribution = {
 | `GITHUB_PAT` | GitHub Personal Access Token。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録 |
 | `REDIS_URL` | アクセスするRedisのURL。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録 |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Google MapsのAPIキー。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録 |
+| `MOUNTAIN_SCRAPER_BROWSER_MODE` | スクレイピング時のブラウザ起動モード。`auto` / `local` / `serverless`（未指定時は `auto`） |
+| `MOUNTAIN_SCRAPER_HEADLESS` | スクレイピング時のヘッドレス実行有無。`true` / `false`（未指定時は `true`） |
+| `LOCAL_CHROMIUM_EXECUTABLE_PATH` | `local` モード時に利用する Chrome / Chromium 実行ファイルのパス（任意） |
+| `NEXT_PUBLIC_DISABLE_EXTERNAL_MAPS` | `1` の場合、Mountain Map で外部地図読込を無効化（主にE2E向け） |
 
 ---
 
@@ -83,9 +111,11 @@ Vitest を使用したユニットテストを実装しています。
 
 ### テスト対象（概要）
 
-- `src/hooks/__tests__`
+- `src/hooks/*.test.ts`
   - カスタムフックの状態遷移、キーボード操作、APIレスポンスに応じた挙動を検証
-- `src/data/modules/__tests__`
+- `src/app/api/**/route.test.ts`
+  - APIルートの正常系/異常系（キャッシュ、フォールバック、エラー処理）を検証
+- `src/data/modules/*.test.ts`
   - データモジュールの生成処理・バリデーション（正常系/異常系）を検証
 
 ### 実行方法
@@ -99,7 +129,7 @@ pnpm test
 特定ファイルのみ実行（例）:
 
 ```bash
-pnpm test src/hooks/__tests__/useProjectsModal.test.ts
+pnpm test src/hooks/useProjectsModal.test.ts
 ```
 
 ---
@@ -166,7 +196,7 @@ pnpm test:e2e:ui
 |---|---|
 | BarChart 要素が表示される | API モック使用時に recharts のグラフが表示されること |
 | API通信で失敗した場合にNo Dataが表示される | 500 エラー時にフォールバック表示されること |
-| API通信の結果が返ってくるまではSkeletonが表示される | 遅延レスポンス中にスケルトンが表示されること |
+| API通信中はSkeleton表示、完了後にグラフへ切り替わる | 遅延レスポンス中にスケルトンが表示され、完了後にグラフ表示へ遷移すること |
 
 #### TechStackCard の詳細確認
 
@@ -175,3 +205,11 @@ pnpm test:e2e:ui
 | Backend セクションがあり、説明項目が1つ以上ある | セクションとスキル項目が存在すること |
 | Frontend セクションがあり、説明項目が1つ以上ある | セクションとスキル項目が存在すること |
 | Infra & Tools セクションがあり、説明項目が1つ以上ある | セクションとスキル項目が存在すること |
+
+#### 登山レポート件数の表示確認
+
+| テスト | 説明 |
+|---|---|
+| API成功時に件数が表示される | `/api/mountains/report-count` 成功時に数値件数が表示されること |
+| API失敗時に ??? が表示される | API 500 エラー時に `???` が表示されること |
+| API通信中はSkeleton表示、完了後に件数表示へ切り替わる | 読み込み中にスケルトン表示され、完了後に件数表示へ遷移すること |

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createStatusesFromJson, type Status } from "../status";
+import { createStatusesFromJson, type Status } from "./status";
 
 function createDummyStatus(index: number): Status {
   return {

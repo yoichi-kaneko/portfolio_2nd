@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "feature/**"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm のセットアップとキャッシュ
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9 # package.json または pnpm-lock.yaml のバージョンに合わせる
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      # ユニットテスト (Vitest)
+      - name: Run Unit Tests
+        run: pnpm test
+
+      # Playwright (E2E) 用のブラウザをインストール
+      # プロジェクトで使用している Chromium のみを対象にして時間を短縮
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      # E2E テストの実行
+      # 環境変数設定が必要な場合はここに env を記述
+      - name: Run E2E Tests
+        run: pnpm test:e2e
+        env:
+          # E2E では外部依存を無効化するため、意図的に空文字を注入
+          GITHUB_PAT: ""
+          REDIS_URL: ""
+          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: "dummy"
+
+      # テスト失敗時にレポートを保存（デバッグ用）
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

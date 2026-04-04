@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createMountainsFromJson, type Mountain } from "../mountains";
+import { createMountainsFromJson, type Mountain } from "./mountains";
 
 function createDummyMountain(index: number): Mountain {
   return {

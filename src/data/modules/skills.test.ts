@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSkillCategoriesFromJson, type SkillCategory } from "../skills";
+import { createSkillCategoriesFromJson, type SkillCategory } from "./skills";
 
 function createDummySkillCategory(index: number): SkillCategory {
   return {
