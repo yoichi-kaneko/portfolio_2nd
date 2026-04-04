@@ -84,9 +84,12 @@ test.describe("GitHubContributionChart の詳細確認", () => {
   });
 
   test("API通信中はSkeleton表示、完了後にグラフへ切り替わる", async ({ page }) => {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
     await page.route("/api/github/contributions", async (route) => {
-      // レスポンスを遅延させてスケルトンが表示される時間を確保
-      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+      await gate;
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -95,6 +98,7 @@ test.describe("GitHubContributionChart の詳細確認", () => {
     });
     await page.goto("/");
     await expect(page.getByTestId("github-card-skeleton")).toBeVisible();
+    release();
     await expect(page.getByTestId("github-card-skeleton")).not.toBeVisible();
     await expect(page.locator(".recharts-surface")).toBeVisible();
   });
@@ -234,8 +238,9 @@ test.describe("登山レポート件数の表示確認", () => {
       });
     });
     await page.goto("/");
-    await expect(page.getByText("999")).toBeVisible();
-    await expect(page.getByText("登山レポート（総計）")).toBeVisible();
+    const lifeLogCard = page.getByTestId("life-log-card");
+    await expect(lifeLogCard.getByText("999")).toBeVisible();
+    await expect(lifeLogCard.getByText("登山レポート（総計）")).toBeVisible();
   });
 
   test("API失敗時に ??? が表示される", async ({ page }) => {
@@ -247,12 +252,17 @@ test.describe("登山レポート件数の表示確認", () => {
       });
     });
     await page.goto("/");
-    await expect(page.getByText("???")).toBeVisible();
+    const lifeLogCard = page.getByTestId("life-log-card");
+    await expect(lifeLogCard.getByText("???")).toBeVisible();
   });
 
   test("API通信中はSkeleton表示、完了後に件数表示へ切り替わる", async ({ page }) => {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
     await page.route("/api/mountains/report-count", async (route) => {
-      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+      await gate;
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -261,8 +271,10 @@ test.describe("登山レポート件数の表示確認", () => {
     });
     await page.goto("/");
     await expect(page.getByTestId("report-count-skeleton")).toBeVisible();
+    release();
     await expect(page.getByTestId("report-count-skeleton")).not.toBeVisible();
-    await expect(page.getByText("999")).toBeVisible();
+    const lifeLogCard = page.getByTestId("life-log-card");
+    await expect(lifeLogCard.getByText("999")).toBeVisible();
   });
 });
 
