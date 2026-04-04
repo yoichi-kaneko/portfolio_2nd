@@ -48,10 +48,12 @@ export default function Home() {
           {/* Life Log — col-span-2 */}
           <BentoCard
             className="md:col-span-2"
+            clipOverflow
             style={{
               backgroundImage: "url('/images/life-log-bg.jpg')",
               backgroundSize: "120%",
               backgroundPosition: "32% 30%",
+              backgroundRepeat: "no-repeat",
             }}
           >
             <LifeLogCard />
