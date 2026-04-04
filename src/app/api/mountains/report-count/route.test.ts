@@ -27,6 +27,7 @@ function createRedisClientMock() {
 function createBrowserMock(html: string) {
   const page = {
     goto: vi.fn().mockResolvedValue(undefined),
+    waitForSelector: vi.fn().mockResolvedValue(undefined),
     content: vi.fn().mockResolvedValue(html),
   };
 
@@ -102,7 +103,17 @@ describe("/api/mountains/report-count GET", () => {
     expect(response.status).toBe(200);
     expect(json).toEqual({ count: 1234 });
     expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
-    expect(page.goto).toHaveBeenCalledTimes(1);
+    expect(page.goto).toHaveBeenCalledWith(
+      "https://yamap.com/users/1027860",
+      expect.objectContaining({
+        waitUntil: "domcontentloaded",
+        timeout: 10_000,
+      }),
+    );
+    expect(page.waitForSelector).toHaveBeenCalledWith(
+      "ul.markuplint-ignore-permitted-contents [role='status']",
+      { timeout: 5_000 },
+    );
     expect(redisClient.set).toHaveBeenCalledWith(
       "mountains:report_count",
       JSON.stringify({ count: 1234 }),

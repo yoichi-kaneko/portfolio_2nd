@@ -7,6 +7,9 @@ export const maxDuration = 30;
 export const runtime = "nodejs";
 
 const TARGET_URL = "https://yamap.com/users/1027860";
+/** YAMAP プロフィール上のレポート件数が載る要素（Playwright / Cheerio 双方で使用） */
+const REPORT_COUNT_SELECTOR =
+  "ul.markuplint-ignore-permitted-contents [role='status']";
 const REDIS_KEY = "mountains:report_count";
 const REDIS_TTL = 24 * 60 * 60; // 24時間
 
@@ -76,14 +79,16 @@ export async function GET() {
     browser = await launchMountainsBrowser();
     const page = await browser.newPage();
 
-    await page.goto(TARGET_URL, { waitUntil: "networkidle" });
+    await page.goto(TARGET_URL, {
+      waitUntil: "domcontentloaded",
+      timeout: 10_000,
+    });
+    await page.waitForSelector(REPORT_COUNT_SELECTOR, { timeout: 5_000 });
 
     const html = await page.content();
 
     const $ = cheerio.load(html);
-    const countText = $("ul.markuplint-ignore-permitted-contents")
-      .find("[role='status']:first")
-      .text();
+    const countText = $(REPORT_COUNT_SELECTOR).first().text();
     const count = parseReportCount(countText);
 
     try {
