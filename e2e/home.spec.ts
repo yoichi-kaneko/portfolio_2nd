@@ -12,14 +12,12 @@ test.describe("Bento Grid 各要素の存在確認", () => {
 
   test("ヘッダーが表示される", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: /Web Studio.*Wanderlust/i })
+      page.getByRole("heading", { name: /Web Studio.*Wanderlust/i }),
     ).toBeVisible();
   });
 
   test("About カードが表示される", async ({ page }) => {
-    await expect(
-      page.getByRole("heading", { name: "About" })
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "About" })).toBeVisible();
   });
 
   test("稼働ステータスバッジが表示される", async ({ page }) => {
@@ -40,13 +38,38 @@ test.describe("Bento Grid 各要素の存在確認", () => {
 
   test("Recent Projects カードが表示される", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: "Recent Projects" })
+      page.getByRole("heading", { name: "Recent Projects" }),
     ).toBeVisible();
   });
 
   test("Life Log カードが表示される", async ({ page }) => {
     await expect(page.getByText(/Life Log/i)).toBeVisible();
     await expect(page.getByText(/Mountaineering/i)).toBeVisible();
+  });
+
+  test("Life Log カードの背景画像が参照されており配信される（リンク切れしない）", async ({
+    page,
+    request,
+  }) => {
+    await page.goto("/");
+    const bgImage = await page
+      .getByTestId("life-log-card")
+      .evaluate((el: Element) => {
+        let node: Element | null = el;
+        while (node) {
+          const bg = window.getComputedStyle(node).backgroundImage;
+          if (bg && bg !== "none" && bg.includes("life-log-bg")) {
+            return bg;
+          }
+          node = node.parentElement;
+        }
+        return "";
+      });
+    expect(bgImage).toContain("life-log-bg.jpg");
+
+    const res = await request.get("/images/life-log-bg.jpg");
+    expect(res.ok()).toBeTruthy();
+    expect(res.headers()["content-type"]?.toLowerCase()).toMatch(/jpe?g|image/);
   });
 });
 
@@ -83,7 +106,9 @@ test.describe("GitHubContributionChart の詳細確認", () => {
     await expect(page.getByText("No Data")).toBeVisible();
   });
 
-  test("API通信中はSkeleton表示、完了後にグラフへ切り替わる", async ({ page }) => {
+  test("API通信中はSkeleton表示、完了後にグラフへ切り替わる", async ({
+    page,
+  }) => {
     let release!: () => void;
     const gate = new Promise<void>((resolve) => {
       release = resolve;
@@ -112,20 +137,20 @@ test.describe("ProjectsModal の動作確認", () => {
   test("View All ボタンをクリックするとモーダルが開く", async ({ page }) => {
     await page.getByRole("button", { name: "View All" }).click();
     await expect(
-      page.getByRole("heading", { name: "All Projects" })
+      page.getByRole("heading", { name: "All Projects" }),
     ).toBeVisible();
   });
 
   test("モーダルにタブが4つ表示される", async ({ page }) => {
     await page.getByRole("button", { name: "View All" }).click();
-    await expect(page.getByRole("button", { name: "All", exact: true })).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "業務委託 / 受託" })
+      page.getByRole("button", { name: "All", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "業務委託 / 受託" }),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "正社員" })).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "個人開発" })
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "個人開発" })).toBeVisible();
   });
 
   test("All タブでプロジェクトカードが複数表示される", async ({ page }) => {
@@ -163,7 +188,7 @@ test.describe("ProjectsModal の動作確認", () => {
     await page.getByRole("button", { name: "View All" }).click();
     await page.getByRole("button", { name: "Close" }).click();
     await expect(
-      page.getByRole("heading", { name: "All Projects" })
+      page.getByRole("heading", { name: "All Projects" }),
     ).not.toBeVisible();
   });
 
@@ -171,7 +196,7 @@ test.describe("ProjectsModal の動作確認", () => {
     await page.getByRole("button", { name: "View All" }).click();
     await page.keyboard.press("Escape");
     await expect(
-      page.getByRole("heading", { name: "All Projects" })
+      page.getByRole("heading", { name: "All Projects" }),
     ).not.toBeVisible();
   });
 
@@ -181,7 +206,7 @@ test.describe("ProjectsModal の動作確認", () => {
     await expect(backdrop).toBeVisible();
     await backdrop.click({ position: { x: 1, y: 1 } });
     await expect(
-      page.getByRole("heading", { name: "All Projects" })
+      page.getByRole("heading", { name: "All Projects" }),
     ).not.toBeVisible();
   });
 });
@@ -195,7 +220,7 @@ test.describe("MountainMapModal の動作確認", () => {
     await page.getByRole("button", { name: /Map/ }).click();
     await expect(page.getByTestId("mountain-map-modal")).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Mountain Map" })
+      page.getByRole("heading", { name: "Mountain Map" }),
     ).toBeVisible();
   });
 
@@ -256,7 +281,9 @@ test.describe("登山レポート件数の表示確認", () => {
     await expect(lifeLogCard.getByText("???")).toBeVisible();
   });
 
-  test("API通信中はSkeleton表示、完了後に件数表示へ切り替わる", async ({ page }) => {
+  test("API通信中はSkeleton表示、完了後に件数表示へ切り替わる", async ({
+    page,
+  }) => {
     let release!: () => void;
     const gate = new Promise<void>((resolve) => {
       release = resolve;
@@ -285,13 +312,17 @@ test.describe("TechStackCard の詳細確認", () => {
 
   test("Backend セクションがあり、説明項目が1つ以上ある", async ({ page }) => {
     await expect(page.getByText("Backend")).toBeVisible();
-    const backendSection = page.locator("p", { hasText: "Backend" }).locator("..");
+    const backendSection = page
+      .locator("p", { hasText: "Backend" })
+      .locator("..");
     await expect(backendSection.locator("span").first()).toBeVisible();
   });
 
   test("Frontend セクションがあり、説明項目が1つ以上ある", async ({ page }) => {
     await expect(page.getByText("Frontend")).toBeVisible();
-    const frontendSection = page.locator("p", { hasText: "Frontend" }).locator("..");
+    const frontendSection = page
+      .locator("p", { hasText: "Frontend" })
+      .locator("..");
     await expect(frontendSection.locator("span").first()).toBeVisible();
   });
 
@@ -299,7 +330,9 @@ test.describe("TechStackCard の詳細確認", () => {
     page,
   }) => {
     await expect(page.getByText("Infra & Tools")).toBeVisible();
-    const infraSection = page.locator("p", { hasText: "Infra & Tools" }).locator("..");
+    const infraSection = page
+      .locator("p", { hasText: "Infra & Tools" })
+      .locator("..");
     await expect(infraSection.locator("span").first()).toBeVisible();
   });
 });

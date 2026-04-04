@@ -24,10 +24,12 @@ export function LifeLogCard() {
           {/* Header row */}
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
+              <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-widest">
                 Life Log
               </h3>
-              <p className="text-2xl font-bold mt-1">Mountaineering</p>
+              <p className="text-2xl font-bold text-gray-700 mt-1">
+                Mountaineering
+              </p>
             </div>
             {/* 音声リンク: 目立たせず右上に小さく配置 */}
             <button
@@ -52,18 +54,20 @@ export function LifeLogCard() {
           <div className="grid grid-cols-2 gap-4 mb-4">
             {/* 最近の登頂 */}
             <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">
+              <p className="text-[10px] text-gray-700 uppercase tracking-widest mb-1">
                 最近の登頂（百名山）
               </p>
-              <p className="text-sm font-semibold">{latestMountain.name}</p>
+              <p className="text-sm text-gray-700 font-semibold">
+                {latestMountain.name}
+              </p>
             </div>
             {/* レポート件数 */}
             <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">
+              <p className="text-[10px] text-gray-700 uppercase tracking-widest mb-1">
                 登山レポート（総計）
               </p>
               <p
-                className="text-sm font-semibold"
+                className="text-sm text-gray-700 font-semibold"
                 aria-live="polite"
                 aria-atomic="true"
               >
@@ -75,10 +79,10 @@ export function LifeLogCard() {
                   />
                 ) : (
                   <>
-                    <span className="text-xl font-bold text-blue-400">
+                    <span className="text-xl font-bold text-gray-700">
                       {reportCount !== null ? reportCount : "???"}
                     </span>
-                    <span className="text-gray-400 ml-1">件</span>
+                    <span className="text-gray-700 ml-1">件</span>
                   </>
                 )}
               </p>
@@ -88,7 +92,7 @@ export function LifeLogCard() {
           {/* Progress bar + Map link */}
           <div>
             <div className="flex justify-between items-center mb-1">
-              <p className="text-[10px] text-gray-500">
+              <p className="text-[10px] text-gray-200">
                 Goal to 100 Famous Mountains
               </p>
               <button
@@ -109,7 +113,7 @@ export function LifeLogCard() {
                 style={{ width: `${mountains.length}%` }}
               />
             </div>
-            <p className="mt-1 text-[10px] text-right text-gray-600">
+            <p className="mt-1 text-[10px] text-right text-gray-200">
               {mountains.length} / 100
             </p>
           </div>
