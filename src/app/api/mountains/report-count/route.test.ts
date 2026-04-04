@@ -63,7 +63,7 @@ describe("/api/mountains/report-count GET", () => {
     createClientMock.mockReturnValue(redisClient);
 
     const { browser, page } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">1,234 件</li></ul>'
+      '<ul class="markuplint-ignore-permitted-contents"><li role="status">1,234 件</li></ul>',
     );
     launchMountainsBrowserMock.mockResolvedValue(browser);
 
@@ -77,7 +77,7 @@ describe("/api/mountains/report-count GET", () => {
     expect(redisClient.set).toHaveBeenCalledWith(
       "mountains:report_count",
       JSON.stringify({ count: 1234 }),
-      { EX: 24 * 60 * 60 }
+      { EX: 24 * 60 * 60 },
     );
     expect(browser.close).toHaveBeenCalledTimes(1);
   });
@@ -87,7 +87,7 @@ describe("/api/mountains/report-count GET", () => {
     createClientMock.mockReturnValue(redisClient);
 
     const { browser } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">N/A</li></ul>'
+      '<ul class="markuplint-ignore-permitted-contents"><li role="status">N/A</li></ul>',
     );
     launchMountainsBrowserMock.mockResolvedValue(browser);
 
@@ -104,10 +104,12 @@ describe("/api/mountains/report-count GET", () => {
     brokenRedisClient.connect.mockRejectedValue(new Error("redis down"));
 
     const writeRedisClient = createRedisClientMock();
-    createClientMock.mockReturnValueOnce(brokenRedisClient).mockReturnValueOnce(writeRedisClient);
+    createClientMock
+      .mockReturnValueOnce(brokenRedisClient)
+      .mockReturnValueOnce(writeRedisClient);
 
     const { browser } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">555</li></ul>'
+      '<ul class="markuplint-ignore-permitted-contents"><li role="status">555</li></ul>',
     );
     launchMountainsBrowserMock.mockResolvedValue(browser);
 
@@ -118,5 +120,59 @@ describe("/api/mountains/report-count GET", () => {
     expect(json).toEqual({ count: 555 });
     expect(createClientMock).toHaveBeenCalledTimes(2);
     expect(writeRedisClient.set).toHaveBeenCalledTimes(1);
+  });
+
+  it("キャッシュが不正な JSON のときはスクレイピングにフォールバックする", async () => {
+    const readRedisClient = createRedisClientMock();
+    readRedisClient.get.mockResolvedValue("not-json{");
+
+    const writeRedisClient = createRedisClientMock();
+    createClientMock
+      .mockReturnValueOnce(readRedisClient)
+      .mockReturnValueOnce(writeRedisClient);
+
+    const { browser } = createBrowserMock(
+      '<ul class="markuplint-ignore-permitted-contents"><li role="status">777</li></ul>',
+    );
+    launchMountainsBrowserMock.mockResolvedValue(browser);
+
+    const response = await GET();
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json).toEqual({ count: 777 });
+    expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
+    expect(writeRedisClient.set).toHaveBeenCalledWith(
+      "mountains:report_count",
+      JSON.stringify({ count: 777 }),
+      { EX: 24 * 60 * 60 },
+    );
+  });
+
+  it("キャッシュの count が有限数でないときはスクレイピングにフォールバックする", async () => {
+    const readRedisClient = createRedisClientMock();
+    readRedisClient.get.mockResolvedValue(JSON.stringify({ count: "x" }));
+
+    const writeRedisClient = createRedisClientMock();
+    createClientMock
+      .mockReturnValueOnce(readRedisClient)
+      .mockReturnValueOnce(writeRedisClient);
+
+    const { browser } = createBrowserMock(
+      '<ul class="markuplint-ignore-permitted-contents"><li role="status">888</li></ul>',
+    );
+    launchMountainsBrowserMock.mockResolvedValue(browser);
+
+    const response = await GET();
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json).toEqual({ count: 888 });
+    expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
+    expect(writeRedisClient.set).toHaveBeenCalledWith(
+      "mountains:report_count",
+      JSON.stringify({ count: 888 }),
+      { EX: 24 * 60 * 60 },
+    );
   });
 });

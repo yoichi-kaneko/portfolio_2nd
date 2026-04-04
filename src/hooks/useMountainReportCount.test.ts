@@ -2,22 +2,27 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useMountainReportCount } from "./useMountainReportCount";
 
+const ENDPOINT = "/api/mountains/report-count";
+
 describe("useMountainReportCount", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
 
   it("初期状態では loading=true、count=null である", () => {
-    vi.spyOn(global, "fetch").mockReturnValue(new Promise(() => {}));
+    const fetchMock = vi
+      .spyOn(global, "fetch")
+      .mockReturnValue(new Promise(() => {}));
 
     const { result } = renderHook(() => useMountainReportCount());
 
     expect(result.current.loading).toBe(true);
     expect(result.current.count).toBeNull();
+    expect(fetchMock).toHaveBeenCalledWith(ENDPOINT);
   });
 
   it("API成功時に count が返る", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue({
+    const fetchMock = vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({ count: 999 }),
     } as Response);
@@ -29,10 +34,11 @@ describe("useMountainReportCount", () => {
     });
 
     expect(result.current.count).toBe(999);
+    expect(fetchMock).toHaveBeenCalledWith(ENDPOINT);
   });
 
   it("API失敗時は count=null で終了する", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue({
+    const fetchMock = vi.spyOn(global, "fetch").mockResolvedValue({
       ok: false,
       status: 500,
       json: async () => ({}),
@@ -45,10 +51,13 @@ describe("useMountainReportCount", () => {
     });
 
     expect(result.current.count).toBeNull();
+    expect(fetchMock).toHaveBeenCalledWith(ENDPOINT);
   });
 
   it("ネットワークエラー時は count=null で終了する", async () => {
-    vi.spyOn(global, "fetch").mockRejectedValue(new Error("Network Error"));
+    const fetchMock = vi
+      .spyOn(global, "fetch")
+      .mockRejectedValue(new Error("Network Error"));
 
     const { result } = renderHook(() => useMountainReportCount());
 
@@ -57,5 +66,6 @@ describe("useMountainReportCount", () => {
     });
 
     expect(result.current.count).toBeNull();
+    expect(fetchMock).toHaveBeenCalledWith(ENDPOINT);
   });
 });
