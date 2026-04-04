@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { createClientMock, launchMountainsBrowserMock } = vi.hoisted(() => ({
   createClientMock: vi.fn(),
@@ -39,8 +39,37 @@ function createBrowserMock(html: string) {
 }
 
 describe("/api/mountains/report-count GET", () => {
+  const originalRedisUrl = process.env.REDIS_URL;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.REDIS_URL = "redis://test";
+  });
+
+  afterEach(() => {
+    if (originalRedisUrl === undefined) {
+      delete process.env.REDIS_URL;
+    } else {
+      process.env.REDIS_URL = originalRedisUrl;
+    }
+  });
+
+  it("REDIS_URL 未設定時は Redis を使わずスクレイピングのみ行う", async () => {
+    delete process.env.REDIS_URL;
+
+    const { browser } = createBrowserMock(
+      '<ul class="markuplint-ignore-permitted-contents"><li role="status">42 件</li></ul>',
+    );
+    launchMountainsBrowserMock.mockResolvedValue(browser);
+
+    const response = await GET();
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json).toEqual({ count: 42 });
+    expect(createClientMock).not.toHaveBeenCalled();
+    expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
+    expect(browser.close).toHaveBeenCalledTimes(1);
   });
 
   it("Redis キャッシュがあればキャッシュ値を返す", async () => {

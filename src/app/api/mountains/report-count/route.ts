@@ -43,33 +43,39 @@ function parseReportCount(raw: string): number {
 export async function GET() {
   let browser: Awaited<ReturnType<typeof launchMountainsBrowser>> | undefined;
   let redisClient: ReturnType<typeof createClient> | undefined;
+  const redisUrl = process.env.REDIS_URL;
 
   try {
-    try {
-      redisClient = createClient({ url: process.env.REDIS_URL });
-      await redisClient.connect();
-
-      const cached = await redisClient.get(REDIS_KEY);
-      if (cached) {
-        const payload: CachePayload = JSON.parse(cached);
-        if (!Number.isFinite(payload.count)) {
-          throw new Error("Cached report count is invalid");
-        }
-        return Response.json({ count: payload.count });
-      }
-    } catch (e) {
-      console.error("[mountains] Redis read error, falling back to scrape:", e);
+    if (redisUrl) {
       try {
-        await redisClient?.quit();
-      } catch {
-        // disconnect failure is ignorable
+        redisClient = createClient({ url: redisUrl });
+        await redisClient.connect();
+
+        const cached = await redisClient.get(REDIS_KEY);
+        if (cached) {
+          const payload: CachePayload = JSON.parse(cached);
+          if (!Number.isFinite(payload.count)) {
+            throw new Error("Cached report count is invalid");
+          }
+          return Response.json({ count: payload.count });
+        }
+      } catch (e) {
+        console.error(
+          "[mountains] Redis read error, falling back to scrape:",
+          e,
+        );
+        try {
+          await redisClient?.quit();
+        } catch {
+          // disconnect failure is ignorable
+        }
+        redisClient = undefined;
       }
-      redisClient = undefined;
     }
 
     browser = await launchMountainsBrowser();
     const page = await browser.newPage();
-  
+
     await page.goto(TARGET_URL, { waitUntil: "networkidle" });
 
     const html = await page.content();
@@ -81,13 +87,17 @@ export async function GET() {
     const count = parseReportCount(countText);
 
     try {
-      if (!redisClient) {
-        redisClient = createClient({ url: process.env.REDIS_URL });
+      if (redisUrl && !redisClient) {
+        redisClient = createClient({ url: redisUrl });
         await redisClient.connect();
       }
 
-      const payload: CachePayload = { count };
-      await redisClient.set(REDIS_KEY, JSON.stringify(payload), { EX: REDIS_TTL });
+      if (redisClient) {
+        const payload: CachePayload = { count };
+        await redisClient.set(REDIS_KEY, JSON.stringify(payload), {
+          EX: REDIS_TTL,
+        });
+      }
     } catch (e) {
       console.error("[mountains] Redis write error (result not cached):", e);
     }
