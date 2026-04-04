@@ -6,6 +6,7 @@ import { MOUNTAIN_MAP_OPTIONS, MOUNTAIN_MARKER_ZOOM } from "@/config/maps";
 import { useMountainMapModal } from "@/hooks/useMountainMapModal";
 import { mountains } from "@/data/modules/mountains";
 
+/** 選択中の山に合わせて地図の中心とズームを更新する内部コンポーネント。 */
 function MapController({ selectedIndex }: { selectedIndex: number | null }) {
   const map = useMap();
 
@@ -24,6 +25,7 @@ interface MountainMapModalProps {
   onClose: () => void;
 }
 
+/** 百名山の位置を Google マップ上で一覧・詳細表示するモーダル。E2E 時は外部マップを無効化できる。 */
 export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
   const { selectedIndex, setSelectedIndex, listRef, handlePrev, handleNext, selected } =
     useMountainMapModal({ isOpen, onClose });

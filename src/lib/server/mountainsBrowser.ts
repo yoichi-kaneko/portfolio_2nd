@@ -9,6 +9,7 @@ const MODE_ENV = "MOUNTAIN_SCRAPER_BROWSER_MODE";
 const HEADLESS_ENV = "MOUNTAIN_SCRAPER_HEADLESS";
 const LOCAL_PATH_ENV = "LOCAL_CHROMIUM_EXECUTABLE_PATH";
 
+/** 環境変数の文字列をブラウザ起動モードとして解釈する。 */
 function parseMode(value: string | undefined): BrowserMode {
   if (value === "local" || value === "serverless" || value === "auto") {
     return value;
@@ -23,6 +24,7 @@ function parseMode(value: string | undefined): BrowserMode {
   return "auto";
 }
 
+/** 実際に使うモード（local / serverless）を決定する。`auto` のときは Vercel かどうかで切り替える。 */
 function resolveMode(): Exclude<BrowserMode, "auto"> {
   const mode = parseMode(process.env[MODE_ENV]);
   if (mode === "local" || mode === "serverless") {
@@ -32,6 +34,7 @@ function resolveMode(): Exclude<BrowserMode, "auto"> {
   return process.env.VERCEL === "1" ? "serverless" : "local";
 }
 
+/** `MOUNTAIN_SCRAPER_HEADLESS` から headless 実行の要否を解決する。未設定時は true。 */
 function resolveHeadless(): boolean {
   const value = process.env[HEADLESS_ENV];
 
@@ -50,6 +53,7 @@ function resolveHeadless(): boolean {
   throw new Error(`${HEADLESS_ENV} must be "true" or "false" (received: "${value}")`);
 }
 
+/** パスが存在し実行可能かどうかを返す。 */
 async function existsExecutable(path: string): Promise<boolean> {
   try {
     await access(path, constants.X_OK);
@@ -59,6 +63,7 @@ async function existsExecutable(path: string): Promise<boolean> {
   }
 }
 
+/** ローカル環境で使う Chrome/Chromium の実行ファイルパスを解決する。 */
 async function resolveLocalExecutablePath(): Promise<string> {
   const configuredPath = process.env[LOCAL_PATH_ENV];
   if (configuredPath && (await existsExecutable(configuredPath))) {
@@ -105,6 +110,11 @@ async function resolveLocalExecutablePath(): Promise<string> {
   );
 }
 
+/**
+ * 山レポート取得用に Playwright の Chromium を起動する。
+ *
+ * serverless では `@sparticuz/chromium`、ローカルでは OS 標準候補または `LOCAL_CHROMIUM_EXECUTABLE_PATH` を使用する。
+ */
 export async function launchMountainsBrowser() {
   const mode = resolveMode();
   const headless = resolveHeadless();

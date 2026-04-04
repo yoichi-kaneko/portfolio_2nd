@@ -7,6 +7,7 @@ import { MountainMapModal } from "./MountainMapModal";
 import { mountains } from "@/data/modules/mountains";
 import { useMountainReportCount } from "@/hooks/useMountainReportCount";
 
+/** 登山の進捗・直近の登頂・YAMAP レポート総件数（API）をまとめて表示するカード。 */
 export function LifeLogCard() {
   const [isMapOpen, setIsMapOpen] = useState(false);
   const handleCloseMap = useCallback(() => setIsMapOpen(false), []);

@@ -14,6 +14,13 @@ type CachePayload = {
   count: number;
 };
 
+/**
+ * YAMAP ページから抜き出した件数テキストを数値に変換する。
+ *
+ * @param raw 表示用文字列（数字以外を含んでも可）
+ * @returns パースした件数
+ * @throws 数字が抽出できない、または有限数でない場合
+ */
 function parseReportCount(raw: string): number {
   const digitsOnly = raw.replace(/[^\d]/g, "");
   if (!digitsOnly) {
