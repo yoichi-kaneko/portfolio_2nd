@@ -13,8 +13,7 @@ export default function Home() {
         {/* Header */}
         <header className="mb-12 text-center md:text-left">
           <h1 className="text-4xl font-bold mb-2">
-            Web Studio{" "}
-            <span className="text-blue-500">Wanderlust</span>
+            Web Studio <span className="text-blue-500">Wanderlust</span>
           </h1>
           <p className="text-gray-400">Freelance Engineer / Yoichi Kaneko</p>
         </header>
@@ -41,13 +40,22 @@ export default function Home() {
             <SocialCard />
           </BentoCard>
 
-          {/* Recent Projects — col-span-3 */}
-          <BentoCard className="md:col-span-3">
+          {/* Recent Projects — col-span-2 */}
+          <BentoCard className="md:col-span-2">
             <RecentProjectsCard />
           </BentoCard>
 
-          {/* Life Log — col-span-1 */}
-          <BentoCard className="bg-gradient-to-br from-blue-900/20 to-[#161616]">
+          {/* Life Log — col-span-2 */}
+          <BentoCard
+            className="md:col-span-2"
+            clipOverflow
+            style={{
+              backgroundImage: "url('/images/life-log-bg.jpg')",
+              backgroundSize: "120%",
+              backgroundPosition: "32% 30%",
+              backgroundRepeat: "no-repeat",
+            }}
+          >
             <LifeLogCard />
           </BentoCard>
         </div>

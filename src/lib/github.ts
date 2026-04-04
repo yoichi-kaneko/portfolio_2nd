@@ -35,9 +35,15 @@ export type WeeklyContribution = {
 };
 
 /**
- * 
- * @param pat GraphQLを実行する。REDISのキャッシュがない場合に実行する
- * @returns 
+ * GitHub GraphQL API から直近 `CONTRIBUTION_WEEKS` 週分のコントリビューションを取得し、
+ * 「昨日基準の7日区切り」で再集計して返す。
+ *
+ * GitHub の `contributionCalendar.weeks` は日曜始まり固定のため、
+ * 日単位に平坦化して `diffDays` から週インデックスを算出する。
+ *
+ * @param pat GitHub GraphQL API 呼び出しに使用する Personal Access Token
+ * @returns `W1`(直近) 〜 `Wn`(最古) の週次集計配列
+ * @throws GitHub API 応答が非 2xx の場合
  */
 async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
   // 今日を除いた昨日〜35日前を取得範囲とする
@@ -77,7 +83,7 @@ async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
     raw?.data?.user?.contributionsCollection?.contributionCalendar?.weeks ?? [];
   const allDays: { date: string; contributionCount: number }[] = weeks.flatMap(
     (w: { contributionDays: { date: string; contributionCount: number }[] }) =>
-      w.contributionDays
+      w.contributionDays,
   );
 
   // 日付でソート（古い順）
@@ -106,18 +112,36 @@ async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
   }));
 }
 
-export async function fetchWeeklyContributions(): Promise<WeeklyContribution[]> {
+/**
+ * 週次コントリビューションを取得する。
+ *
+ * まず Redis キャッシュを参照し、当日キャッシュがあればそれを返す。
+ * キャッシュミスまたは Redis エラー時は GraphQL から取得し、
+ * 取得成功時は TTL 付きで Redis に保存する。
+ *
+ * @returns `W1`(直近) 〜 `Wn`(最古) の週次集計配列
+ * @throws `GITHUB_PAT` 未設定時
+ */
+export async function fetchWeeklyContributions(): Promise<
+  WeeklyContribution[]
+> {
   const pat = process.env.GITHUB_PAT;
   if (!pat) {
     throw new Error("GITHUB_PAT is not set");
   }
 
   const todayUTC = new Date().toISOString().slice(0, 10);
+  const redisUrl = process.env.REDIS_URL;
+
+  // REDIS_URL が未設定/空の場合は Redis を使わず直接 GraphQL 取得する
+  if (!redisUrl) {
+    return fetchFromGraphQL(pat);
+  }
 
   // Redis キャッシュを試みる
   let redisClient;
   try {
-    redisClient = createClient({ url: process.env.REDIS_URL });
+    redisClient = createClient({ url: redisUrl });
     await redisClient.connect();
 
     const cached = await redisClient.get(REDIS_KEY);
@@ -143,7 +167,9 @@ export async function fetchWeeklyContributions(): Promise<WeeklyContribution[]> 
 
   try {
     const payload: CachePayload = { date: todayUTC, result };
-    await redisClient.set(REDIS_KEY, JSON.stringify(payload), { EX: REDIS_TTL });
+    await redisClient.set(REDIS_KEY, JSON.stringify(payload), {
+      EX: REDIS_TTL,
+    });
   } catch (err) {
     console.error("[github] Redis write error (result not cached):", err);
   } finally {

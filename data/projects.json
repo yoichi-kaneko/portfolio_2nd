@@ -1,12 +1,154 @@
 {
   "projects": [
     {
-      "name": "株式会社カオナビ",
-      "description": "人事開発システムの開発 (2020–2024)"
+      "id": "project-001",
+      "name": "LINE AI Bot「碧衣(Aoi)」",
+      "period": "2026-",
+      "type": "personal",
+      "recent": true,
+      "description": "キャラクター型LINE AIアシスタント開発",
+      "detail": "個人開発したLINE上で動作するAIアシスタント「碧衣」。Anthropic Claude APIをベースにキャラクタープロファイルとスキルシステムを設計し、GCP Cloud Functions上のWebhookで応答を処理。Google Calendar・Todoist・OpenWeatherMap・Google Maps等の複数外部APIと連携し、Firestoreで会話コンテキストを管理。プロンプトエンジニアリングとキャラクター設計を軸に、設計・実装・運用をひとりで担当。",
+      "tags": ["TypeScript", "Claude Code", "Gemini API(Nano Banana)", "LINE Messaging API", "GCP", "Cloud Functions", "Firebase", "Firestore"]
+    },  
+    {
+      "id": "project-002",
+      "name": "スリーエス株式会社",
+      "period": "2025-",
+      "type": "contract",
+      "recent": true,
+      "description": "定期巡回システムの開発",
+      "detail": "定期巡回システムの開発に業務委託として参画。TypeScriptをベースとし、バックエンドとフロントエンド両方を担当。要件定義・設計・実装・テストを担当。",
+      "tags": ["TypeScript", "Next.js", "React", "Postgres", "GCP"]
     },
     {
+      "id": "project-003",
+      "name": "Slack 2 CLI Relay",
+      "period": "2025-2026",
+      "type": "personal",
+      "recent": false,
+      "description": "SlackからLLMを呼び出すツール",
+      "detail": "個人開発した、SlackからLLMを呼び出すツール。Slack APIによりEC2に設定されているClaude Codeを呼び出し、Slackに回答を返すツール。",
+      "tags": ["PHP", "Laravel", "AWS", "Slack API", "Claude Code"]
+    },
+    {
+      "id": "project-004",
+      "name": "株式会社スマレジ",
+      "period": "2024–2025",
+      "type": "contract",
+      "recent": true,
+      "description": "勤怠管理システムの開発",
+      "detail": "勤怠管理システムの開発に業務委託として参画。Ruby on Railsをベースとしたバックエンド開発を担当。後半はLineBotとの連携について、要件定義・設計・実装を担当。",
+      "tags": ["PHP", "CakePHP", "MySQL", "AWS", "Docker", "LINE Bot"]
+    },
+    {
+      "id": "project-005",
+      "name": "株式会社カオナビ",
+      "period": "2020–2024",
+      "type": "contract",
+      "recent": false,
+      "description": "人事開発システムの開発",
+      "detail": "HR SaaS「カオナビ」の人事開発システムを業務委託として担当。PHPおよびLaravelを用いたバックエンド開発を主に行い、APIの設計・実装・保守を担当。4年間の長期契約。",
+      "tags": ["PHP", "Laravel", "MySQL", "AWS", "Docker"]
+    },
+    {
+      "id": "project-006",
       "name": "筑波大学 研究室",
-      "description": "シミュレーション受託開発"
+      "period": "2019–",
+      "type": "contract",
+      "recent": true,
+      "description": "シミュレーション受託開発",
+      "detail": "筑波大学の研究室より継続的に受託開発を担当。住宅市場シミュレーション（Excelからのウェブシステム移行）とSt. Petersburg Paradoxに関するコインフリップゲームシミュレーションをそれぞれ単独で設計・実装・運用。要件が不明確な中でアジャイル的に開発を進めた。",
+      "tags": ["PHP", "Laravel", "MySQL", "AWS", "Chart.js", "jQuery"]
+    },
+    {
+      "id": "project-007",
+      "name": "Classi株式会社",
+      "period": "2018–2020",
+      "type": "contract",
+      "recent": false,
+      "description": "教育クラウドサービスの開発",
+      "detail": "学校教育向けクラウドサービス「Classi」の開発に業務委託として参画。適応学習機能の開発・UIリデザイン・データ収集基盤の整備を担当。後半はパフォーマンス改善とプロダクト安定化にシフトし、コンテンツ・データ分析チームと連携しながら学習用リコメンドエンジンのチューニングを実施。",
+      "tags": ["PHP", "FuelPHP", "Ruby on Rails", "AngularJS", "MySQL", "AWS", "Docker"]
+    },
+    {
+      "id": "project-008",
+      "name": "プログラミングスクール サポート",
+      "period": "2021",
+      "type": "contract",
+      "recent": false,
+      "description": "オンラインスクールでの講師サポート",
+      "detail": "オンラインプログラミングスクールのスポットサポートとして参画。毎週の講義に参加し、受講生の課題に対する質問対応を担当。",
+      "tags": ["PHP", "Laravel", "JavaScript", "AWS", "Zoom"]
+    },
+    {
+      "id": "project-009",
+      "name": "IAM Available",
+      "period": "2020-2024",
+      "type": "personal",
+      "recent": false,
+      "description": "フリーランス向けスケジュール共有サービス",
+      "detail": "フリーランスとしてクライアントに稼働状況を伝えやすくするために個人開発したカレンダー型スケジュール共有サービス。要件定義・設計・実装・サーバー構築をすべて一人で担当。",
+      "tags": ["PHP", "Laravel", "MySQL", "jQuery", "FullCalendar", "AWS"]
+    },
+    {
+      "id": "project-010",
+      "name": "シェアリングエコノミーサイト開発",
+      "period": "2018",
+      "type": "employee",
+      "recent": false,
+      "description": "シェアリングエコノミープラットフォームの初期開発",
+      "detail": "シェアリングエコノミー型サービスの初期フェーズの開発を担当。要件定義・設計・実装を4ヶ月で完了しシステム基盤を構築。オーナーとユーザー間のトランザクションを処理するマルチドメイン構成を実現。",
+      "tags": ["PHP", "FuelPHP", "MySQL"]
+    },
+    {
+      "id": "project-011",
+      "name": "メディアプラットフォーム開発・運用",
+      "period": "2015–2018",
+      "type": "employee",
+      "recent": false,
+      "description": "自社メディアプラットフォームの開発・保守",
+      "detail": "自社メディアプラットフォームの全面リニューアル後半から参画し、その後の新機能開発・保守を担当。SEO改善・パフォーマンス調査、社内向け漫画ビューア開発、決済システム移行、競馬データのクローリング・同期システム構築など、幅広い業務を経験。",
+      "tags": ["PHP", "Zend Framework", "jQuery", "MySQL"]
+    },
+    {
+      "id": "project-012",
+      "name": "電子書籍配信サイト",
+      "period": "2013",
+      "type": "employee",
+      "recent": false,
+      "description": "社内向け電子書籍配信システムの緊急内製化",
+      "detail": "外部の電子書籍配信システムが使用不能になり、2ヶ月という短期間で内製システムを構築。要件定義・設計・実装・リリース・保守をすべて担当し、配信パートナーとのデータ連携も実装。",
+      "tags": ["PHP", "Zend Framework", "jQuery", "MySQL", "BS Reader"]
+    },
+    {
+      "id": "project-013",
+      "name": "サブスクリプション管理システム",
+      "period": "2010-2012",
+      "type": "employee",
+      "recent": false,
+      "description": "自社のサブスクリプション管理システムの開発",
+      "detail": "自社のサブスクリプション管理システムの開発を担当。設計・実装・リリース・保守を担当。",
+      "tags": ["PHP", "CakePHP", "MySQL"]
+    },
+    {
+      "id": "project-014",
+      "name": "ECサイト構築",
+      "period": "2009",
+      "type": "employee",
+      "recent": false,
+      "description": "EC-CUBEを用いた受託ECサイト開発",
+      "detail": "入社2年目の代表的な受託案件。小規模チームのリードとしてクライアント折衝・実装・テストとデザイン以外すべて担当。",
+      "tags": ["PHP", "EC-CUBE", "MySQL"]
+    },
+    {
+      "id": "project-015",
+      "name": "有名人ブログ開発・運営",
+      "period": "2008–2009",
+      "type": "employee",
+      "recent": false,
+      "description": "芸能人ブログポータルの開発・運営",
+      "detail": "会社の新規メディア事業立ち上げ当初から携わった自社サービス。PHPスクラッチ・WordPress・EC-CUBEを組み合わせたポータルシステムの開発・保守を担当。",
+      "tags": ["PHP", "WordPress", "EC-CUBE", "MySQL"]
     }
   ]
 }
