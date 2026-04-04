@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createProjectsFromJson, type Project } from "../projects";
+import { createProjectsFromJson, type Project } from "./projects";
 
 function createDummyProject(index: number): Project {
   return {

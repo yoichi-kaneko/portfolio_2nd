@@ -111,11 +111,11 @@ Vitest を使用したユニットテストを実装しています。
 
 ### テスト対象（概要）
 
-- `src/hooks/__tests__`
+- `src/hooks/*.test.ts`
   - カスタムフックの状態遷移、キーボード操作、APIレスポンスに応じた挙動を検証
 - `src/app/api/**/route.test.ts`
   - APIルートの正常系/異常系（キャッシュ、フォールバック、エラー処理）を検証
-- `src/data/modules/__tests__`
+- `src/data/modules/*.test.ts`
   - データモジュールの生成処理・バリデーション（正常系/異常系）を検証
 
 ### 実行方法
@@ -129,7 +129,7 @@ pnpm test
 特定ファイルのみ実行（例）:
 
 ```bash
-pnpm test src/hooks/__tests__/useProjectsModal.test.ts
+pnpm test src/hooks/useProjectsModal.test.ts
 ```
 
 ---
