@@ -83,7 +83,7 @@ async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
     raw?.data?.user?.contributionsCollection?.contributionCalendar?.weeks ?? [];
   const allDays: { date: string; contributionCount: number }[] = weeks.flatMap(
     (w: { contributionDays: { date: string; contributionCount: number }[] }) =>
-      w.contributionDays
+      w.contributionDays,
   );
 
   // 日付でソート（古い順）
@@ -122,18 +122,26 @@ async function fetchFromGraphQL(pat: string): Promise<WeeklyContribution[]> {
  * @returns `W1`(直近) 〜 `Wn`(最古) の週次集計配列
  * @throws `GITHUB_PAT` 未設定時
  */
-export async function fetchWeeklyContributions(): Promise<WeeklyContribution[]> {
+export async function fetchWeeklyContributions(): Promise<
+  WeeklyContribution[]
+> {
   const pat = process.env.GITHUB_PAT;
   if (!pat) {
     throw new Error("GITHUB_PAT is not set");
   }
 
   const todayUTC = new Date().toISOString().slice(0, 10);
+  const redisUrl = process.env.REDIS_URL;
+
+  // REDIS_URL が未設定/空の場合は Redis を使わず直接 GraphQL 取得する
+  if (!redisUrl) {
+    return fetchFromGraphQL(pat);
+  }
 
   // Redis キャッシュを試みる
   let redisClient;
   try {
-    redisClient = createClient({ url: process.env.REDIS_URL });
+    redisClient = createClient({ url: redisUrl });
     await redisClient.connect();
 
     const cached = await redisClient.get(REDIS_KEY);
@@ -159,7 +167,9 @@ export async function fetchWeeklyContributions(): Promise<WeeklyContribution[]> 
 
   try {
     const payload: CachePayload = { date: todayUTC, result };
-    await redisClient.set(REDIS_KEY, JSON.stringify(payload), { EX: REDIS_TTL });
+    await redisClient.set(REDIS_KEY, JSON.stringify(payload), {
+      EX: REDIS_TTL,
+    });
   } catch (err) {
     console.error("[github] Redis write error (result not cached):", err);
   } finally {

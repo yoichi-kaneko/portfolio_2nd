@@ -3,8 +3,6 @@ name: CI
 on:
   push:
     branches: [main, develop, "feature/**"]
-  pull_request:
-    branches: [main, develop]
 
 jobs:
   test:
@@ -46,9 +44,9 @@ jobs:
       - name: Run E2E Tests
         run: pnpm test:e2e
         env:
-          # CI では実値を使わずダミー値を固定で注入
-          GITHUB_PAT: "dummy"
-          REDIS_URL: "redis://dummy"
+          # E2E では外部依存を無効化するため、意図的に空文字を注入
+          GITHUB_PAT: ""
+          REDIS_URL: ""
           NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: "dummy"
 
       # テスト失敗時にレポートを保存（デバッグ用）
