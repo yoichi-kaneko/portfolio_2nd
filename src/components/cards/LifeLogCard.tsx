@@ -9,6 +9,8 @@ import {
 import { useCallback, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { MountainMapModal } from "./MountainMapModal";
+import { AUDIO_TOOLTIP_ID, AUDIO_TOOLTIP_TEXT } from "@/config/audio";
+import { LIFE_LOG_PROGRESS_GOAL } from "@/config/lifeLog";
 import { mountains } from "@/data/modules/mountains";
 import { useMountainReportCount } from "@/hooks/useMountainReportCount";
 
@@ -22,6 +24,10 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
   const [isMapOpen, setIsMapOpen] = useState(false);
   const handleCloseMap = useCallback(() => setIsMapOpen(false), []);
   const latestMountain = mountains.reduce((a, b) => (a.date > b.date ? a : b));
+  const progressPercentage = Math.min(
+    100,
+    (mountains.length / LIFE_LOG_PROGRESS_GOAL) * 100,
+  );
   const { count: reportCount, loading: reportCountLoading } =
     useMountainReportCount();
 
@@ -29,7 +35,7 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
     <>
       <MountainMapModal isOpen={isMapOpen} onClose={handleCloseMap} />
 
-      <Tooltip id="audio-tooltip" place="bottom" />
+      <Tooltip id={AUDIO_TOOLTIP_ID} place="bottom" />
       <div data-testid="life-log-card">
         <div className="relative z-10">
           {/* Header row */}
@@ -45,8 +51,10 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
             {/* 音声リンク: 目立たせず右上に小さく配置 */}
             <button
               className="text-gray-600 hover:text-gray-400 transition-colors mt-1"
-              data-tooltip-id="audio-tooltip"
-              data-tooltip-content="なぜポートフォリオに登山？（2:26 音声で聞く）"
+              data-testid="life-log-audio-toggle"
+              aria-label={isPlaying ? "音声を停止" : "音声を再生"}
+              data-tooltip-id={AUDIO_TOOLTIP_ID}
+              data-tooltip-content={AUDIO_TOOLTIP_TEXT}
               onClick={() => void onToggle()}
             >
               {isPlaying ? (
@@ -117,11 +125,11 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
             <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-blue-500"
-                style={{ width: `${mountains.length}%` }}
+                style={{ width: `${progressPercentage}%` }}
               />
             </div>
             <p className="mt-1 text-[10px] text-right text-gray-200">
-              {mountains.length} / 100
+              {mountains.length} / {LIFE_LOG_PROGRESS_GOAL}
             </p>
           </div>
         </div>

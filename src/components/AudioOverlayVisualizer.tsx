@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import {
+  AUDIO_VISUALIZER_BAR_COLOR_RGB,
+  AUDIO_VISUALIZER_BAR_WIDTH,
+} from "@/config/audio";
+import { buildVisualizerBars } from "@/lib/audioVisualizer";
 
 type AudioOverlayVisualizerProps = {
   analyserNode: AnalyserNode;
@@ -40,20 +45,21 @@ export function AudioOverlayVisualizer({
       analyserNode.getByteFrequencyData(dataArray);
       context.clearRect(0, 0, width, height);
 
-      const barWidth = 3;
-      const gap = 1;
-      const barCount = Math.max(1, Math.floor(width / (barWidth + gap)));
-      const step = Math.max(1, Math.floor(bufferLength / barCount));
-      let x = 0;
+      const bars = buildVisualizerBars({
+        width,
+        height,
+        bufferLength,
+        dataArray,
+      });
 
-      for (let i = 0; i < barCount; i += 1) {
-        const value = dataArray[i * step] ?? 0;
-        const normalized = value / 255;
-        const barHeight = Math.max(2, normalized * height);
-
-        context.fillStyle = `rgba(59, 130, 246, ${0.2 + normalized * 0.8})`;
-        context.fillRect(x, height - barHeight, barWidth, barHeight);
-        x += barWidth + gap;
+      for (const bar of bars) {
+        context.fillStyle = `rgba(${AUDIO_VISUALIZER_BAR_COLOR_RGB}, ${bar.alpha})`;
+        context.fillRect(
+          bar.x,
+          height - bar.barHeight,
+          AUDIO_VISUALIZER_BAR_WIDTH,
+          bar.barHeight,
+        );
       }
 
       frameId = window.requestAnimationFrame(draw);

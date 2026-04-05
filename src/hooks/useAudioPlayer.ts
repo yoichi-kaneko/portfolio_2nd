@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AUDIO_ANALYSER_FFT_SIZE } from "@/config/audio";
 
 type UseAudioPlayerOptions = {
   audioUrl: string;
@@ -43,7 +44,7 @@ export function useAudioPlayer({
       const context = new AudioContext();
       const source = context.createMediaElementSource(audioRef.current);
       const analyser = context.createAnalyser();
-      analyser.fftSize = 256;
+      analyser.fftSize = AUDIO_ANALYSER_FFT_SIZE;
 
       source.connect(analyser);
       analyser.connect(context.destination);
