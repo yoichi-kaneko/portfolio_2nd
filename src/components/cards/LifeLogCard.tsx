@@ -23,6 +23,14 @@ type LifeLogCardProps = {
 export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
   const [isMapOpen, setIsMapOpen] = useState(false);
   const handleCloseMap = useCallback(() => setIsMapOpen(false), []);
+  const handleAudioToggle = useCallback(() => {
+    void onToggle().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+      console.error("Failed to toggle audio playback", error);
+    });
+  }, [onToggle]);
   const latestMountain = mountains.reduce((a, b) => (a.date > b.date ? a : b));
   const progressPercentage = Math.min(
     100,
@@ -55,7 +63,7 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
               aria-label={isPlaying ? "音声を停止" : "音声を再生"}
               data-tooltip-id={AUDIO_TOOLTIP_ID}
               data-tooltip-content={AUDIO_TOOLTIP_TEXT}
-              onClick={() => void onToggle()}
+              onClick={handleAudioToggle}
             >
               {isPlaying ? (
                 <FontAwesomeIcon icon={faCircleStop} className="w-4 h-4" />
