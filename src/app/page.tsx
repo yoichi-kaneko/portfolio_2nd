@@ -1,10 +1,12 @@
 import { BentoCard } from "@/components/BentoCard";
+import { LifeLogClient } from "@/components/LifeLogClient";
 import { AboutCard } from "@/components/cards/AboutCard";
 import { GitHubCard } from "@/components/cards/GitHubCard";
 import { TechStackCard } from "@/components/cards/TechStackCard";
 import { SocialCard } from "@/components/cards/SocialCard";
 import { RecentProjectsCard } from "@/components/cards/RecentProjectsCard";
-import { LifeLogCard } from "@/components/cards/LifeLogCard";
+import { LIFE_LOG_AUDIO_URL } from "@/config/audio";
+import { LIFE_LOG_BACKGROUND_STYLE } from "@/config/lifeLog";
 
 export default function Home() {
   return (
@@ -46,18 +48,10 @@ export default function Home() {
           </BentoCard>
 
           {/* Life Log — col-span-2 */}
-          <BentoCard
-            className="md:col-span-2"
-            clipOverflow
-            style={{
-              backgroundImage: "url('/images/life-log-bg.jpg')",
-              backgroundSize: "120%",
-              backgroundPosition: "32% 30%",
-              backgroundRepeat: "no-repeat",
-            }}
-          >
-            <LifeLogCard />
-          </BentoCard>
+          <LifeLogClient
+            audioUrl={LIFE_LOG_AUDIO_URL}
+            backgroundStyle={LIFE_LOG_BACKGROUND_STYLE}
+          />
         </div>
       </div>
     </div>
