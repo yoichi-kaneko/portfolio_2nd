@@ -160,6 +160,7 @@ test.describe("Life Log 音声トグルの動作確認", () => {
       playCalls: 1,
       pauseCalls: 1,
       srcValues: [
+        // 外部サービスにアップロードした読み上げファイル。マジックナンバーとしての指定が必要
         "https://res.cloudinary.com/damehnlii/video/upload/v1775359579/readout_u5ksqf.mp3",
       ],
     });
