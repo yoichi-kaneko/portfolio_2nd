@@ -5,6 +5,7 @@ import {
   faCirclePause,
   faCirclePlay,
   faMapLocationDot,
+  faMountain,
 } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useState } from "react";
 import { Tooltip } from "react-tooltip";
@@ -53,6 +54,7 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
                 Life Log
               </h3>
               <p className="text-2xl font-bold text-gray-700 mt-1">
+                <FontAwesomeIcon icon={faMountain} className="w-4 h-4" />{" "}
                 Mountaineering
               </p>
             </div>
