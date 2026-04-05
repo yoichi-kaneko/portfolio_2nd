@@ -20,7 +20,7 @@ export function RecentProjectsCard() {
         </h3>
         <button
           onClick={() => setModalOpen(true)}
-          className="text-sm text-blue-400 hover:underline"
+          className="cursor-pointer text-sm text-blue-400 hover:underline"
         >
           View All
         </button>

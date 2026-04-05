@@ -60,7 +60,7 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
             </div>
             {/* 音声リンク: 目立たせず右上に小さく配置 */}
             <button
-              className="text-gray-600 hover:text-gray-400 transition-colors mt-1"
+              className="cursor-pointer text-gray-600 hover:text-gray-400 transition-colors mt-1"
               data-testid="life-log-audio-toggle"
               aria-label={isPlaying ? "音声を一時停止" : "音声を再生"}
               data-tooltip-id={AUDIO_TOOLTIP_ID}
@@ -121,7 +121,7 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
                 Goal to 100 Famous Mountains
               </p>
               <button
-                className="text-[12px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
+                className="cursor-pointer text-[12px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
                 onClick={() => setIsMapOpen(true)}
               >
                 Map

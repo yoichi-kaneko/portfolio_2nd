@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  useMap,
+} from "@vis.gl/react-google-maps";
 import { MOUNTAIN_MAP_OPTIONS, MOUNTAIN_MARKER_ZOOM } from "@/config/maps";
 import { useMountainMapModal } from "@/hooks/useMountainMapModal";
 import { mountains } from "@/data/modules/mountains";
@@ -27,20 +32,27 @@ interface MountainMapModalProps {
 
 /** 百名山の位置を Google マップ上で一覧・詳細表示するモーダル。E2E 時は外部マップを無効化できる。 */
 export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
-  const { selectedIndex, setSelectedIndex, listRef, handlePrev, handleNext, selected } =
-    useMountainMapModal({ isOpen, onClose });
+  const {
+    selectedIndex,
+    setSelectedIndex,
+    listRef,
+    handlePrev,
+    handleNext,
+    selected,
+  } = useMountainMapModal({ isOpen, onClose });
 
   if (!isOpen) return null;
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
-  const disableExternalMapsForE2E = process.env.NEXT_PUBLIC_DISABLE_EXTERNAL_MAPS === "1";
+  const disableExternalMapsForE2E =
+    process.env.NEXT_PUBLIC_DISABLE_EXTERNAL_MAPS === "1";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
         data-testid="mountain-map-backdrop"
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 cursor-pointer bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
 
@@ -58,11 +70,13 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
             <h2 id="mountain-map-title" className="text-xl font-bold">
               Mountain Map
             </h2>
-            <p className="text-xs text-gray-500 mt-0.5">登頂した百名山 — {mountains.length}座</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              登頂した百名山 — {mountains.length}座
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-8 h-8 flex cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Close"
           >
             ✕
@@ -97,7 +111,10 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
                   {mountains.map((mountain, index) => (
                     <AdvancedMarker
                       key={mountain.name}
-                      position={{ lat: mountain.latitude, lng: mountain.longitude }}
+                      position={{
+                        lat: mountain.latitude,
+                        lng: mountain.longitude,
+                      }}
                       onClick={() => setSelectedIndex(index)}
                       title={mountain.name}
                     >
@@ -124,7 +141,9 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
                   <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">
                     {selectedIndex! + 1} / {mountains.length}
                   </p>
-                  <h3 className="text-lg font-bold mb-1 leading-tight">{selected.name}</h3>
+                  <h3 className="text-lg font-bold mb-1 leading-tight">
+                    {selected.name}
+                  </h3>
                   <p className="text-sm text-gray-400 mb-4">{selected.date}</p>
                   <a
                     href={selected.url}
@@ -133,8 +152,18 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
                     className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 hover:underline transition-colors"
                   >
                     YAMAPで詳細を見る
-                    <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    <svg
+                      className="w-3 h-3 shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
                     </svg>
                   </a>
 
@@ -143,14 +172,14 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
                     <button
                       onClick={handlePrev}
                       disabled={selectedIndex === 0}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="flex cursor-pointer items-center gap-1 px-3 py-1.5 rounded-md text-xs text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       ← 前へ
                     </button>
                     <button
                       onClick={handleNext}
                       disabled={selectedIndex === mountains.length - 1}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="flex cursor-pointer items-center gap-1 px-3 py-1.5 rounded-md text-xs text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       次へ →
                     </button>
@@ -158,7 +187,9 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
                 </>
               ) : (
                 <p className="text-sm text-gray-500 text-center">
-                  ピンをクリックして<br />詳細を表示
+                  ピンをクリックして
+                  <br />
+                  詳細を表示
                 </p>
               )}
             </div>
@@ -169,7 +200,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
                 <button
                   key={mountain.name}
                   onClick={() => setSelectedIndex(index)}
-                  className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-colors hover:bg-white/5 border-b border-[#1e1e1e] ${
+                  className={`w-full cursor-pointer text-left px-4 py-3 flex items-center gap-3 transition-colors hover:bg-white/5 border-b border-[#1e1e1e] ${
                     selectedIndex === index ? "bg-white/10" : ""
                   }`}
                 >
@@ -179,7 +210,9 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
                     }`}
                   />
                   <div className="min-w-0">
-                    <p className={`text-sm font-medium truncate ${selectedIndex === index ? "text-white" : "text-gray-300"}`}>
+                    <p
+                      className={`text-sm font-medium truncate ${selectedIndex === index ? "text-white" : "text-gray-300"}`}
+                    >
                       {mountain.name}
                     </p>
                     <p className="text-xs text-gray-500">{mountain.date}</p>
