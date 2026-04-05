@@ -1,3 +1,5 @@
+"use client";
+
 import { BentoCard } from "@/components/BentoCard";
 import { AboutCard } from "@/components/cards/AboutCard";
 import { GitHubCard } from "@/components/cards/GitHubCard";
@@ -5,8 +7,14 @@ import { TechStackCard } from "@/components/cards/TechStackCard";
 import { SocialCard } from "@/components/cards/SocialCard";
 import { RecentProjectsCard } from "@/components/cards/RecentProjectsCard";
 import { LifeLogCard } from "@/components/cards/LifeLogCard";
+import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 
 export default function Home() {
+  const { isPlaying, onToggle } = useAudioPlayer({
+    audioUrl:
+      "https://res.cloudinary.com/damehnlii/video/upload/v1775359579/readout_u5ksqf.mp3",
+  });
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5] p-4 md:p-8 font-sans">
       <div className="max-w-6xl mx-auto">
@@ -56,7 +64,7 @@ export default function Home() {
               backgroundRepeat: "no-repeat",
             }}
           >
-            <LifeLogCard />
+            <LifeLogCard isPlaying={isPlaying} onToggle={onToggle} />
           </BentoCard>
         </div>
       </div>

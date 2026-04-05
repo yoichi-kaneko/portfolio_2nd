@@ -6,39 +6,24 @@ import {
   faCircleStop,
   faMapLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { MountainMapModal } from "./MountainMapModal";
 import { mountains } from "@/data/modules/mountains";
 import { useMountainReportCount } from "@/hooks/useMountainReportCount";
 
 /** 登山の進捗・直近の登頂・YAMAP レポート総件数（API）をまとめて表示するカード。 */
-export function LifeLogCard() {
+type LifeLogCardProps = {
+  isPlaying: boolean;
+  onToggle: () => Promise<void>;
+};
+
+export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
   const [isMapOpen, setIsMapOpen] = useState(false);
   const handleCloseMap = useCallback(() => setIsMapOpen(false), []);
   const latestMountain = mountains.reduce((a, b) => (a.date > b.date ? a : b));
   const { count: reportCount, loading: reportCountLoading } =
     useMountainReportCount();
-
-  const AUDIO_URL =
-    "https://res.cloudinary.com/damehnlii/video/upload/v1775359579/readout_u5ksqf.mp3";
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const handleAudioToggle = useCallback(() => {
-    if (!isPlaying) {
-      if (!audioRef.current) {
-        const audio = new Audio(AUDIO_URL);
-        audio.addEventListener("ended", () => setIsPlaying(false));
-        audioRef.current = audio;
-      }
-      audioRef.current.play();
-      setIsPlaying(true);
-    } else {
-      audioRef.current?.pause();
-      setIsPlaying(false);
-    }
-  }, [isPlaying]);
 
   return (
     <>
@@ -62,7 +47,7 @@ export function LifeLogCard() {
               className="text-gray-600 hover:text-gray-400 transition-colors mt-1"
               data-tooltip-id="audio-tooltip"
               data-tooltip-content="なぜポートフォリオに登山？（2:26 音声で聞く）"
-              onClick={handleAudioToggle}
+              onClick={() => void onToggle()}
             >
               {isPlaying ? (
                 <FontAwesomeIcon icon={faCircleStop} className="w-4 h-4" />
