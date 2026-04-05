@@ -47,7 +47,7 @@ describe("LifeLogCard", () => {
       <LifeLogCard isPlaying={false} onToggle={vi.fn(async () => undefined)} />,
     );
 
-    expect(screen.getByText("2 / 100")).toBeDefined();
-    expect(screen.getByTestId("tooltip-audio-tooltip")).toBeDefined();
+    expect(screen.getByText("2 / 100")).toBeInTheDocument();
+    expect(screen.getByTestId("tooltip-audio-tooltip")).toBeInTheDocument();
   });
 });

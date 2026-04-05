@@ -150,6 +150,19 @@ describe("useAudioPlayer", () => {
     expect(result.current.isPlaying).toBe(false);
   });
 
+  it("playがAbortError以外を投げた場合はPromiseをrejectし再生状態は変わらない", async () => {
+    audioElement.play = vi.fn(async () => {
+      throw new Error("play failed");
+    });
+
+    const { result } = renderHook(() =>
+      useAudioPlayer({ audioUrl: "https://example.com/sample.mp3" }),
+    );
+
+    await expect(result.current.onToggle()).rejects.toThrow("play failed");
+    expect(result.current.isPlaying).toBe(false);
+  });
+
   it("unmount時に音声ノードとAudioContextをクリーンアップする", async () => {
     const { result, unmount } = renderHook(() =>
       useAudioPlayer({ audioUrl: "https://example.com/sample.mp3" }),
