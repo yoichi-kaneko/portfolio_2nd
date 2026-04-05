@@ -2,8 +2,8 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCirclePause,
   faCirclePlay,
-  faCircleStop,
   faMapLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useState } from "react";
@@ -60,13 +60,13 @@ export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
             <button
               className="text-gray-600 hover:text-gray-400 transition-colors mt-1"
               data-testid="life-log-audio-toggle"
-              aria-label={isPlaying ? "音声を停止" : "音声を再生"}
+              aria-label={isPlaying ? "音声を一時停止" : "音声を再生"}
               data-tooltip-id={AUDIO_TOOLTIP_ID}
               data-tooltip-content={AUDIO_TOOLTIP_TEXT}
               onClick={handleAudioToggle}
             >
               {isPlaying ? (
-                <FontAwesomeIcon icon={faCircleStop} className="w-4 h-4" />
+                <FontAwesomeIcon icon={faCirclePause} className="w-4 h-4" />
               ) : (
                 <FontAwesomeIcon icon={faCirclePlay} className="w-4 h-4" />
               )}

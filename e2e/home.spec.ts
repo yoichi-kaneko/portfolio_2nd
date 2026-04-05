@@ -145,7 +145,7 @@ test.describe("Life Log 音声トグルの動作確認", () => {
     await expect(toggleButton).toHaveAttribute("aria-label", "音声を再生");
 
     await toggleButton.click();
-    await expect(toggleButton).toHaveAttribute("aria-label", "音声を停止");
+    await expect(toggleButton).toHaveAttribute("aria-label", "音声を一時停止");
     await expect(page.locator("canvas[aria-hidden='true']")).toBeVisible();
 
     await toggleButton.click();

@@ -39,7 +39,7 @@ describe("LifeLogCard", () => {
     render(<LifeLogCard isPlaying onToggle={vi.fn(async () => undefined)} />);
 
     const toggleButton = screen.getByTestId("life-log-audio-toggle");
-    expect(toggleButton.getAttribute("aria-label")).toBe("音声を停止");
+    expect(toggleButton.getAttribute("aria-label")).toBe("音声を一時停止");
   });
 
   it("進捗は設定されたゴール値で表示される", () => {
