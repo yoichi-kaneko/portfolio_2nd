@@ -33,7 +33,9 @@ export function useAudioPlayer({
       audio.preload = "auto";
       audio.onplay = () => setIsPlaying(true);
       audio.onpause = () => setIsPlaying(false);
-      audio.onended = () => setIsPlaying(false);
+      audio.onended = () => {
+        setIsPlaying(false);
+      };
       audioRef.current = audio;
     }
 
