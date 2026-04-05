@@ -1,8 +1,12 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { useCallback, useState } from "react";
+import {
+  faCirclePlay,
+  faCircleStop,
+  faMapLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
+import { useCallback, useRef, useState } from "react";
 import { MountainMapModal } from "./MountainMapModal";
 import { mountains } from "@/data/modules/mountains";
 import { useMountainReportCount } from "@/hooks/useMountainReportCount";
@@ -14,6 +18,26 @@ export function LifeLogCard() {
   const latestMountain = mountains.reduce((a, b) => (a.date > b.date ? a : b));
   const { count: reportCount, loading: reportCountLoading } =
     useMountainReportCount();
+
+  const AUDIO_URL =
+    "https://res.cloudinary.com/damehnlii/video/upload/v1775359579/readout_u5ksqf.mp3";
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handleAudioToggle = useCallback(() => {
+    if (!isPlaying) {
+      if (!audioRef.current) {
+        const audio = new Audio(AUDIO_URL);
+        audio.addEventListener("ended", () => setIsPlaying(false));
+        audioRef.current = audio;
+      }
+      audioRef.current.play();
+      setIsPlaying(true);
+    } else {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+    }
+  }, [isPlaying]);
 
   return (
     <>
@@ -34,19 +58,14 @@ export function LifeLogCard() {
             {/* 音声リンク: 目立たせず右上に小さく配置 */}
             <button
               className="text-gray-600 hover:text-gray-400 transition-colors mt-1"
-              title="なぜポートフォリオに登山？（音声で聞く）"
-              onClick={() => {
-                /* TODO: 音声再生 */
-              }}
+              title="なぜポートフォリオに登山？（2:26 音声で聞く）"
+              onClick={handleAudioToggle}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-              </svg>
+              {isPlaying ? (
+                <FontAwesomeIcon icon={faCircleStop} className="w-4 h-4" />
+              ) : (
+                <FontAwesomeIcon icon={faCirclePlay} className="w-4 h-4" />
+              )}
             </button>
           </div>
 
