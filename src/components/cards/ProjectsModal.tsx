@@ -20,7 +20,9 @@ export function ProjectsModal({ isOpen, onClose }: ProjectsModalProps) {
   return <ProjectsModalContent onClose={onClose} />;
 }
 
-function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) {
+function ProjectsModalContent({
+  onClose,
+}: Pick<ProjectsModalProps, "onClose">) {
   const {
     activeTab,
     selectedProject,
@@ -35,7 +37,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
       {/* Backdrop */}
       <div
         data-testid="projects-modal-backdrop"
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 cursor-pointer bg-black/70 backdrop-blur-sm"
         onClick={handleClose}
       />
 
@@ -46,7 +48,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
           <h2 className="text-xl font-bold">All Projects</h2>
           <button
             onClick={handleClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-8 h-8 flex cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Close"
           >
             ✕
@@ -59,7 +61,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
-              className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
+              className={`cursor-pointer px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
                 activeTab === tab
                   ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                   : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
@@ -85,7 +87,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
                   data-testid="project-card"
                   onClick={() =>
                     setSelectedProject(
-                      selectedProject?.id === project.id ? null : project
+                      selectedProject?.id === project.id ? null : project,
                     )
                   }
                   className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
@@ -144,7 +146,7 @@ function ProjectsModalContent({ onClose }: Pick<ProjectsModalProps, "onClose">) 
                   </div>
                   <button
                     onClick={() => setSelectedProject(null)}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors shrink-0 text-xs"
+                    className="w-7 h-7 flex cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors shrink-0 text-xs"
                     aria-label="Close detail"
                   >
                     ✕
