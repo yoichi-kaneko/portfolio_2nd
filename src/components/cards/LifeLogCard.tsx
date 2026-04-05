@@ -7,6 +7,7 @@ import {
   faMapLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useRef, useState } from "react";
+import { Tooltip } from "react-tooltip";
 import { MountainMapModal } from "./MountainMapModal";
 import { mountains } from "@/data/modules/mountains";
 import { useMountainReportCount } from "@/hooks/useMountainReportCount";
@@ -43,6 +44,7 @@ export function LifeLogCard() {
     <>
       <MountainMapModal isOpen={isMapOpen} onClose={handleCloseMap} />
 
+      <Tooltip id="audio-tooltip" place="bottom" />
       <div data-testid="life-log-card">
         <div className="relative z-10">
           {/* Header row */}
@@ -58,7 +60,8 @@ export function LifeLogCard() {
             {/* 音声リンク: 目立たせず右上に小さく配置 */}
             <button
               className="text-gray-600 hover:text-gray-400 transition-colors mt-1"
-              title="なぜポートフォリオに登山？（2:26 音声で聞く）"
+              data-tooltip-id="audio-tooltip"
+              data-tooltip-content="なぜポートフォリオに登山？（2:26 音声で聞く）"
               onClick={handleAudioToggle}
             >
               {isPlaying ? (
