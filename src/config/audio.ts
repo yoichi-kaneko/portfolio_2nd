@@ -2,8 +2,7 @@ export const LIFE_LOG_AUDIO_URL =
   "https://res.cloudinary.com/damehnlii/video/upload/v1775359579/readout_u5ksqf.mp3";
 
 export const AUDIO_TOOLTIP_ID = "audio-tooltip";
-export const AUDIO_TOOLTIP_TEXT =
-  "なぜポートフォリオに登山？（2:26 音声で聞く）";
+export const AUDIO_TOOLTIP_TEXT = "なぜポートフォリオに登山？（2:26）";
 
 export const AUDIO_ANALYSER_FFT_SIZE = 256;
 

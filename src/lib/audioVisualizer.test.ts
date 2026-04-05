@@ -52,4 +52,18 @@ describe("buildVisualizerBars", () => {
       ),
     ).toBe(true);
   });
+
+  it("barCountがbufferLengthを超えても右端バーが終端サンプルを参照する", () => {
+    const bars = buildVisualizerBars({
+      width: 64,
+      height: 100,
+      bufferLength: 4,
+      dataArray: new Uint8Array([255, 255, 255, 128]),
+    });
+
+    const rightmostBar = bars.at(-1);
+
+    expect(rightmostBar).toBeDefined();
+    expect(rightmostBar?.barHeight).toBeCloseTo((128 / 255) * 100, 5);
+  });
 });

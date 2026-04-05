@@ -29,11 +29,14 @@ export function buildVisualizerBars({
     1,
     Math.floor(width / (AUDIO_VISUALIZER_BAR_WIDTH + AUDIO_VISUALIZER_BAR_GAP)),
   );
-  const step = Math.max(1, Math.floor(bufferLength / barCount));
   const alphaRange = AUDIO_VISUALIZER_MAX_ALPHA - AUDIO_VISUALIZER_MIN_ALPHA;
 
   return Array.from({ length: barCount }, (_, index) => {
-    const value = dataArray[index * step] ?? 0;
+    const sampleIndex =
+      bufferLength > 1
+        ? Math.floor((index / Math.max(1, barCount - 1)) * (bufferLength - 1))
+        : 0;
+    const value = dataArray[sampleIndex] ?? 0;
     const normalized = value / 255;
     return {
       x: index * (AUDIO_VISUALIZER_BAR_WIDTH + AUDIO_VISUALIZER_BAR_GAP),
