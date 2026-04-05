@@ -1,25 +1,14 @@
-"use client";
-
 import { BentoCard } from "@/components/BentoCard";
-import { AudioOverlayVisualizer } from "@/components/AudioOverlayVisualizer";
+import { LifeLogClient } from "@/components/LifeLogClient";
 import { AboutCard } from "@/components/cards/AboutCard";
 import { GitHubCard } from "@/components/cards/GitHubCard";
 import { TechStackCard } from "@/components/cards/TechStackCard";
 import { SocialCard } from "@/components/cards/SocialCard";
 import { RecentProjectsCard } from "@/components/cards/RecentProjectsCard";
-import { LifeLogCard } from "@/components/cards/LifeLogCard";
 import { LIFE_LOG_AUDIO_URL } from "@/config/audio";
 import { LIFE_LOG_BACKGROUND_STYLE } from "@/config/lifeLog";
-import { useAudioPlayer } from "@/hooks/useAudioPlayer";
-import { useElementSize } from "@/hooks/useElementSize";
 
 export default function Home() {
-  const { isPlaying, analyserNode, onToggle } = useAudioPlayer({
-    audioUrl: LIFE_LOG_AUDIO_URL,
-  });
-  const { ref: lifeLogWrapperRef, size: cardSize } =
-    useElementSize<HTMLDivElement>();
-
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5] p-4 md:p-8 font-sans">
       <div className="max-w-6xl mx-auto">
@@ -59,20 +48,10 @@ export default function Home() {
           </BentoCard>
 
           {/* Life Log — col-span-2 */}
-          <div className="relative md:col-span-2" ref={lifeLogWrapperRef}>
-            <BentoCard clipOverflow style={LIFE_LOG_BACKGROUND_STYLE}>
-              {isPlaying && analyserNode && (
-                <div className="pointer-events-none absolute inset-0 opacity-50">
-                  <AudioOverlayVisualizer
-                    analyserNode={analyserNode}
-                    width={cardSize.width}
-                    height={cardSize.height}
-                  />
-                </div>
-              )}
-              <LifeLogCard isPlaying={isPlaying} onToggle={onToggle} />
-            </BentoCard>
-          </div>
+          <LifeLogClient
+            audioUrl={LIFE_LOG_AUDIO_URL}
+            backgroundStyle={LIFE_LOG_BACKGROUND_STYLE}
+          />
         </div>
       </div>
     </div>
