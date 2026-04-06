@@ -1,4 +1,58 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+type AudioMockState = {
+  playCalls: number;
+  pauseCalls: number;
+  srcValues: string[];
+};
+
+async function installAudioPlaybackStub(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const globalWindow = window as unknown as Window & {
+      __audioMockState?: AudioMockState;
+    };
+
+    globalWindow.__audioMockState = {
+      playCalls: 0,
+      pauseCalls: 0,
+      srcValues: [] as string[],
+    };
+
+    const AudioMock = function AudioMock(this: HTMLAudioElement) {
+      const element = document.createElement("audio");
+      const mockState = globalWindow.__audioMockState as AudioMockState;
+      let pausedState = true;
+      let srcValue = "";
+
+      Object.defineProperty(element, "paused", {
+        configurable: true,
+        get: () => pausedState,
+      });
+      Object.defineProperty(element, "src", {
+        configurable: true,
+        get: () => srcValue,
+        set: (value: string) => {
+          srcValue = value;
+          mockState.srcValues.push(value);
+        },
+      });
+
+      element.play = async () => {
+        pausedState = false;
+        mockState.playCalls += 1;
+        element.dispatchEvent(new Event("play"));
+      };
+      element.pause = () => {
+        pausedState = true;
+        mockState.pauseCalls += 1;
+        element.dispatchEvent(new Event("pause"));
+      };
+
+      return element as HTMLAudioElement;
+    };
+    window.Audio = AudioMock as unknown as typeof Audio;
+  });
+}
 
 test("トップページが表示される", async ({ page }) => {
   await page.goto("/");
@@ -70,6 +124,47 @@ test.describe("Bento Grid 各要素の存在確認", () => {
     const res = await request.get("/images/life-log-bg.jpg");
     expect(res.ok()).toBeTruthy();
     expect(res.headers()["content-type"]?.toLowerCase()).toMatch(/jpe?g|image/);
+  });
+});
+
+test.describe("Life Log 音声トグルの動作確認", () => {
+  test("実ファイルを取得せずに再生/停止の挙動を検証できる", async ({
+    page,
+  }) => {
+    const audioRequests: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().endsWith(".mp3")) {
+        audioRequests.push(request.url());
+      }
+    });
+
+    await installAudioPlaybackStub(page);
+    await page.goto("/");
+
+    const toggleButton = page.getByTestId("life-log-audio-toggle");
+    await expect(toggleButton).toHaveAttribute("aria-label", "音声を再生");
+
+    await toggleButton.click();
+    await expect(toggleButton).toHaveAttribute("aria-label", "音声を一時停止");
+    await expect(page.locator("canvas[aria-hidden='true']")).toBeVisible();
+
+    await toggleButton.click();
+    await expect(toggleButton).toHaveAttribute("aria-label", "音声を再生");
+    await expect(page.locator("canvas[aria-hidden='true']")).toHaveCount(0);
+
+    const audioMockState = await page.evaluate(() => {
+      return (window as unknown as { __audioMockState: AudioMockState })
+        .__audioMockState;
+    });
+    expect(audioMockState).toEqual({
+      playCalls: 1,
+      pauseCalls: 1,
+      srcValues: [
+        // 外部サービスにアップロードした読み上げファイル。マジックナンバーとしての指定が必要
+        "https://res.cloudinary.com/damehnlii/video/upload/v1775359579/readout_u5ksqf.mp3",
+      ],
+    });
+    expect(audioRequests).toHaveLength(0);
   });
 });
 

@@ -1,17 +1,42 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCirclePause,
+  faCirclePlay,
+  faMapLocationDot,
+  faMountain,
+} from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useState } from "react";
+import { Tooltip } from "react-tooltip";
 import { MountainMapModal } from "./MountainMapModal";
+import { AUDIO_TOOLTIP_ID, AUDIO_TOOLTIP_TEXT } from "@/config/audio";
+import { LIFE_LOG_PROGRESS_GOAL } from "@/config/lifeLog";
 import { mountains } from "@/data/modules/mountains";
 import { useMountainReportCount } from "@/hooks/useMountainReportCount";
 
 /** 登山の進捗・直近の登頂・YAMAP レポート総件数（API）をまとめて表示するカード。 */
-export function LifeLogCard() {
+type LifeLogCardProps = {
+  isPlaying: boolean;
+  onToggle: () => Promise<void>;
+};
+
+export function LifeLogCard({ isPlaying, onToggle }: LifeLogCardProps) {
   const [isMapOpen, setIsMapOpen] = useState(false);
   const handleCloseMap = useCallback(() => setIsMapOpen(false), []);
+  const handleAudioToggle = useCallback(() => {
+    void onToggle().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+      console.error("Failed to toggle audio playback", error);
+    });
+  }, [onToggle]);
   const latestMountain = mountains.reduce((a, b) => (a.date > b.date ? a : b));
+  const progressPercentage = Math.min(
+    100,
+    (mountains.length / LIFE_LOG_PROGRESS_GOAL) * 100,
+  );
   const { count: reportCount, loading: reportCountLoading } =
     useMountainReportCount();
 
@@ -19,6 +44,7 @@ export function LifeLogCard() {
     <>
       <MountainMapModal isOpen={isMapOpen} onClose={handleCloseMap} />
 
+      <Tooltip id={AUDIO_TOOLTIP_ID} place="bottom" />
       <div data-testid="life-log-card">
         <div className="relative z-10">
           {/* Header row */}
@@ -28,25 +54,24 @@ export function LifeLogCard() {
                 Life Log
               </h3>
               <p className="text-2xl font-bold text-gray-700 mt-1">
+                <FontAwesomeIcon icon={faMountain} className="w-4 h-4" />{" "}
                 Mountaineering
               </p>
             </div>
             {/* 音声リンク: 目立たせず右上に小さく配置 */}
             <button
-              className="text-gray-600 hover:text-gray-400 transition-colors mt-1"
-              title="なぜポートフォリオに登山？（音声で聞く）"
-              onClick={() => {
-                /* TODO: 音声再生 */
-              }}
+              className="cursor-pointer text-gray-600 hover:text-gray-400 transition-colors mt-1"
+              data-testid="life-log-audio-toggle"
+              aria-label={isPlaying ? "音声を一時停止" : "音声を再生"}
+              data-tooltip-id={AUDIO_TOOLTIP_ID}
+              data-tooltip-content={AUDIO_TOOLTIP_TEXT}
+              onClick={handleAudioToggle}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-              </svg>
+              {isPlaying ? (
+                <FontAwesomeIcon icon={faCirclePause} className="w-4 h-4" />
+              ) : (
+                <FontAwesomeIcon icon={faCirclePlay} className="w-4 h-4" />
+              )}
             </button>
           </div>
 
@@ -96,7 +121,7 @@ export function LifeLogCard() {
                 Goal to 100 Famous Mountains
               </p>
               <button
-                className="text-[12px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
+                className="cursor-pointer text-[12px] text-blue-500 hover:text-blue-400 hover:underline transition-colors"
                 onClick={() => setIsMapOpen(true)}
               >
                 Map
@@ -110,11 +135,11 @@ export function LifeLogCard() {
             <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-blue-500"
-                style={{ width: `${mountains.length}%` }}
+                style={{ width: `${progressPercentage}%` }}
               />
             </div>
             <p className="mt-1 text-[10px] text-right text-gray-200">
-              {mountains.length} / 100
+              {mountains.length} / {LIFE_LOG_PROGRESS_GOAL}
             </p>
           </div>
         </div>

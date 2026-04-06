@@ -14,9 +14,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Yoichi Kaneko | Web Studio Wanderlust",
   description: "Web Studio Wanderlust — Freelance Engineer Yoichi Kaneko",
+  icons: {
+    icon: [{ url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({

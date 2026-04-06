@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { projects } from "@/data/modules/projects";
 import { ProjectsModal } from "./ProjectsModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFolderTree } from "@fortawesome/free-solid-svg-icons";
 
 const recentProjects = projects.filter((p) => p.recent);
 
@@ -12,10 +14,13 @@ export function RecentProjectsCard() {
   return (
     <>
       <div className="flex justify-between items-start mb-4">
-        <h3 className="text-xl font-bold">Recent Projects</h3>
+        <h3 className="text-xl font-bold">
+          <FontAwesomeIcon icon={faFolderTree} className="w-4 h-4 mr-2" />
+          Recent Projects
+        </h3>
         <button
           onClick={() => setModalOpen(true)}
-          className="text-sm text-blue-400 hover:underline"
+          className="cursor-pointer text-sm text-blue-400 hover:underline"
         >
           View All
         </button>
