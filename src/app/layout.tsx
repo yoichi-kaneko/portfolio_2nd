@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Yoichi Kaneko | Web Studio Wanderlust",
   description: "Web Studio Wanderlust — Freelance Engineer Yoichi Kaneko",
+  icons: {
+    icon: [{ url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
