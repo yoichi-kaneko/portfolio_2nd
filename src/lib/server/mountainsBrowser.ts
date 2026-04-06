@@ -1,5 +1,6 @@
 import { access } from "node:fs/promises";
 import { constants } from "node:fs";
+import { join } from "node:path";
 import chromium from "@sparticuz/chromium";
 import { chromium as playwright } from "playwright-core";
 
@@ -116,6 +117,11 @@ async function resolveLocalExecutablePath(): Promise<string> {
   );
 }
 
+/** serverless 環境で使う @sparticuz/chromium の bin ディレクトリを解決する。 */
+function resolveServerlessBinPath(): string {
+  return join(process.cwd(), "node_modules", "@sparticuz", "chromium", "bin");
+}
+
 /**
  * 山レポート取得用に Playwright の Chromium を起動する。
  *
@@ -134,7 +140,7 @@ export async function launchMountainsBrowser() {
   if (mode === "serverless") {
     return playwright.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath(),
+      executablePath: await chromium.executablePath(resolveServerlessBinPath()),
       headless,
     });
   }
