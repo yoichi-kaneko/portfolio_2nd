@@ -233,7 +233,7 @@ test.describe("Modes セクションの要素確認", () => {
   });
 
   test("モードカードが6枚表示される", async ({ page }) => {
-    await expect(page.locator("#flow .grid-cols-3 > div")).toHaveCount(6);
+    await expect(page.locator("#flow .grid > div")).toHaveCount(6);
   });
 
   test("代表的なモード名が表示される", async ({ page }) => {
@@ -256,7 +256,7 @@ test.describe("Cast セクションの要素確認", () => {
   });
 
   test("登場人物カードが3枚表示される", async ({ page }) => {
-    await expect(page.locator("#cast .grid-cols-3 > div")).toHaveCount(3);
+    await expect(page.locator("#cast .grid > div")).toHaveCount(3);
   });
 
   test("各登場人物の設定資料画像と肩書が表示される", async ({ page }) => {
