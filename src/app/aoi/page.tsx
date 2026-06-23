@@ -9,6 +9,7 @@ import { ServicesSection } from "@/components/aoi/ServicesSection";
 import { MountainSection } from "@/components/aoi/MountainSection";
 import { ModesSection } from "@/components/aoi/ModesSection";
 import { CastSection } from "@/components/aoi/CastSection";
+import { GenerateImageSection } from "@/components/aoi/GenerateImageSection";
 import { AoiFooter } from "@/components/aoi/AoiFooter";
 import { NightOverlay } from "@/components/aoi/NightOverlay";
 
@@ -34,6 +35,7 @@ export default function AoiPage() {
         <MountainSection />
         <ModesSection />
         <CastSection />
+        <GenerateImageSection />
         <AoiFooter />
         <NightOverlay />
       </div>
