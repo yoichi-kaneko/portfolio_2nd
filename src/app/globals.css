@@ -13,6 +13,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* aoi ページ用フォント（next/font で注入される CSS 変数を参照） */
+  --font-zen: var(--font-zen-kaku);
+  --font-noto: var(--font-noto-sans);
+  --font-space: var(--font-space-mono);
 }
 
 body {
@@ -44,4 +48,55 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #444444;
+}
+
+/* ===== aoi ページ ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+.aoi-root ::selection {
+  background: rgba(127, 212, 255, 0.28);
+  color: #fff;
+}
+
+@keyframes aoi-twinkle {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes aoi-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(3deg);
+  }
+}
+
+@keyframes aoi-glow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes aoi-drift {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
 }
