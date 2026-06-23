@@ -12,7 +12,7 @@ export function AoiNav() {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between bg-[linear-gradient(180deg,rgba(8,12,22,0.92),rgba(8,12,22,0.0))] px-[40px] py-[14px] backdrop-blur-[10px]">
       <div className="flex items-center gap-[12px]">
-        <span className="animate-[aoiGlow_3s_ease-in-out_infinite] text-[18px] text-[#8fdcff] [text-shadow:0_0_14px_rgba(127,212,255,0.7)]">
+        <span className="animate-[aoi-glow_3s_ease-in-out_infinite] text-[18px] text-[#8fdcff] [text-shadow:0_0_14px_rgba(127,212,255,0.7)]">
           ✦
         </span>
         <span className="font-zen text-[19px] font-black tracking-[0.05em] text-[#eaf3fb]">

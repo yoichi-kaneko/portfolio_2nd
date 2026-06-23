@@ -17,6 +17,8 @@ export function NightToggleButton({ variant }: { variant: "nav" | "footer" }) {
 
   return (
     <button
+      type="button"
+      aria-pressed={night}
       onClick={toggleNight}
       className={`cursor-pointer rounded-full border bg-[rgba(127,212,255,0.08)] font-space text-[#bfe0ff] hover:bg-[rgba(127,212,255,0.18)] ${VARIANT_STYLES[variant]}`}
     >

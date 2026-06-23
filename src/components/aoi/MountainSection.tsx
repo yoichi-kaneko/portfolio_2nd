@@ -9,7 +9,7 @@ export function MountainSection() {
       className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 04 — MOUNTAIN & WEATHER"}</div>
-      <div className="grid grid-cols-[0.92fr_1.08fr] items-center gap-[40px]">
+      <div className="grid grid-cols-1 items-center gap-[40px] lg:grid-cols-[0.92fr_1.08fr]">
         <div className="relative h-[340px] overflow-hidden rounded-[18px] border border-[rgba(127,212,255,0.24)] shadow-[0_36px_80px_-42px_rgba(0,0,0,0.9)]">
           <Image
             src="/aoi/outfit_b.png"

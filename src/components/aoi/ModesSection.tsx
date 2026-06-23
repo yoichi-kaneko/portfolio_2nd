@@ -12,7 +12,7 @@ export function ModesSection() {
       <p className={`${LEAD_P} m-0 mb-[30px] max-w-[640px]`}>
         時間帯と状況に応じて、碧衣は表情を変えます。朝・昼・夜の定期モードに、登山と創作の特別モード。それぞれ和の名前を持っています。
       </p>
-      <div className="grid grid-cols-3 gap-[16px]">
+      <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3">
         {MODES.map((m) => (
           <div
             key={m.en}

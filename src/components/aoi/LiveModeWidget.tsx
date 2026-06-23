@@ -24,7 +24,7 @@ export function LiveModeWidget() {
         <span className="font-space text-[9.5px] tracking-[0.18em] text-[#6db4e6]">
           {"// ただいまの判定モード"}
         </span>
-        <span className="h-[6px] w-[6px] animate-[aoiGlow_1.8s_infinite] rounded-full bg-[#7fd4ff] shadow-[0_0_8px_#7fd4ff]" />
+        <span className="h-[6px] w-[6px] animate-[aoi-glow_1.8s_infinite] rounded-full bg-[#7fd4ff] shadow-[0_0_8px_#7fd4ff]" />
       </div>
       <div className="flex items-baseline gap-[10px]">
         <span className="font-zen text-[30px] font-black leading-none text-[#eaf5ff]">

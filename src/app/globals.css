@@ -60,7 +60,7 @@ html {
   color: #fff;
 }
 
-@keyframes aoiTwinkle {
+@keyframes aoi-twinkle {
   0%,
   100% {
     opacity: 0.18;
@@ -72,7 +72,7 @@ html {
   }
 }
 
-@keyframes aoiFloat {
+@keyframes aoi-float {
   0%,
   100% {
     transform: translateY(0) rotate(0deg);
@@ -82,7 +82,7 @@ html {
   }
 }
 
-@keyframes aoiGlow {
+@keyframes aoi-glow {
   0%,
   100% {
     opacity: 0.5;
@@ -92,7 +92,7 @@ html {
   }
 }
 
-@keyframes aoiDrift {
+@keyframes aoi-drift {
   0% {
     transform: translateY(0);
   }

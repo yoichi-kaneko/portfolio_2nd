@@ -33,7 +33,7 @@ export function FrameworkSection() {
         出力 までを、ひとつの「仕組み」として備えています。
       </p>
 
-      <div className="mt-[30px] grid grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-0">
+      <div className="mt-[30px] grid grid-cols-1 gap-[12px] md:grid-cols-3 md:gap-[14px]">
         {/* collect */}
         <div className="rounded-[16px] border border-[rgba(109,180,230,0.28)] bg-[linear-gradient(160deg,rgba(20,38,58,0.6),rgba(12,22,38,0.6))] px-[22px] py-[24px]">
           <div className="mb-[6px] font-space text-[10px] tracking-[0.16em] text-[#6db4e6]">
@@ -53,7 +53,7 @@ export function FrameworkSection() {
             ))}
           </div>
         </div>
-        <div className="flex items-center justify-center px-[14px] text-[26px] text-[#5fa8e0]">
+        <div className="hidden items-center justify-center px-[14px] text-[26px] text-[#5fa8e0] md:flex">
           →
         </div>
         {/* analyze */}
@@ -75,7 +75,7 @@ export function FrameworkSection() {
             でコンテキストを渡す。
           </div>
         </div>
-        <div className="flex items-center justify-center px-[14px] text-[26px] text-[#5fa8e0]">
+        <div className="hidden items-center justify-center px-[14px] text-[26px] text-[#5fa8e0] md:flex">
           →
         </div>
         {/* output */}

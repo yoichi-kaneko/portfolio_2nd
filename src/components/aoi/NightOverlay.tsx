@@ -10,6 +10,7 @@ export function NightOverlay() {
   // （まとめると単色が無効な background-image 値になり暗転しない）。
   return (
     <div
+      aria-hidden={!night}
       className={`pointer-events-none fixed inset-0 z-40 flex items-center justify-center bg-[radial-gradient(900px_600px_at_80%_12%,rgba(40,70,130,0.35),transparent_60%)] bg-[color:rgba(4,6,14,0.72)] transition-opacity duration-[1100ms] ${
         night ? "opacity-100" : "opacity-0"
       }`}
