@@ -14,7 +14,8 @@ jobs:
       # pnpm のセットアップとキャッシュ
       - uses: pnpm/action-setup@v5
         with:
-          version: 9 # package.json または pnpm-lock.yaml のバージョンに合わせる
+          # overrides / allowBuilds は pnpm-workspace.yaml にあり、pnpm 10+ が必要
+          version: 11
 
       - uses: actions/setup-node@v5
         with:
