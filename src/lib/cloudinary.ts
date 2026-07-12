@@ -130,19 +130,25 @@ export async function fetchLatestImages(): Promise<CloudinaryImage[]> {
     return fetchFromCloudinary();
   }
 
-  // Cloudinary 取得 → キャッシュ保存
-  const result = await fetchFromCloudinary();
-
+  // Cloudinary 取得 → キャッシュ保存（例外時も Redis 接続を必ず閉じる）
   try {
-    const payload: CachePayload = { cachedAt: Date.now(), result };
-    await redisClient.set(REDIS_KEY, JSON.stringify(payload), {
-      EX: REDIS_TTL,
-    });
-  } catch (err) {
-    console.error("[cloudinary] Redis write error (result not cached):", err);
-  } finally {
-    await redisClient.quit();
-  }
+    const result = await fetchFromCloudinary();
 
-  return result;
+    try {
+      const payload: CachePayload = { cachedAt: Date.now(), result };
+      await redisClient.set(REDIS_KEY, JSON.stringify(payload), {
+        EX: REDIS_TTL,
+      });
+    } catch (err) {
+      console.error("[cloudinary] Redis write error (result not cached):", err);
+    }
+
+    return result;
+  } finally {
+    try {
+      await redisClient.quit();
+    } catch {
+      // disconnect failure is ignorable
+    }
+  }
 }

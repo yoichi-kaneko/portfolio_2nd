@@ -176,6 +176,15 @@ describe("fetchLatestImages", () => {
     expect(mockSearch.execute).toHaveBeenCalledTimes(1);
   });
 
+  it("Cloudinary取得失敗時にRedis接続を閉じる", async () => {
+    vi.stubEnv("REDIS_URL", "redis://localhost:6379");
+    mockRedisClient.get.mockResolvedValue(null);
+    mockSearch.execute.mockRejectedValue(new Error("cloudinary down"));
+
+    await expect(fetchLatestImages()).rejects.toThrow("cloudinary down");
+    expect(mockRedisClient.quit).toHaveBeenCalled();
+  });
+
   it("フォルダ未設定時はエラーを投げる", async () => {
     vi.stubEnv("CLOUDINARY_IMAGE_ASSET_FOLDER", "");
 
