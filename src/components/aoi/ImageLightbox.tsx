@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 import Image from "next/image";
 
 interface ImageLightboxProps {
@@ -25,8 +25,9 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  const onEscape = useEffectEvent(() => {
+    onClose();
+  });
 
   useEffect(() => {
     previouslyFocusedRef.current =
@@ -40,7 +41,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onCloseRef.current();
+        onEscape();
         return;
       }
 
