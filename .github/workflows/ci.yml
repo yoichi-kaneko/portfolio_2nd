@@ -12,10 +12,8 @@ jobs:
       - uses: actions/checkout@v6
 
       # pnpm のセットアップとキャッシュ
+      # version は package.json の packageManager から読む（二重指定するとエラーになる）
       - uses: pnpm/action-setup@v5
-        with:
-          # overrides / allowBuilds は pnpm-workspace.yaml にあり、pnpm 10+ が必要
-          version: 11
 
       - uses: actions/setup-node@v5
         with:
