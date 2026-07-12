@@ -274,6 +274,121 @@ test.describe("Cast セクションの要素確認", () => {
   });
 });
 
+test.describe("GenerateImage セクションの要素確認", () => {
+  // Cloudinary API のモックレスポンス（実アクセスさせない）。
+  const MOCK_IMAGES = [
+    {
+      originalUrl: "https://res.cloudinary.com/demo/original/1.png",
+      previewUrl: "https://res.cloudinary.com/demo/preview/1.png",
+    },
+    {
+      originalUrl: "https://res.cloudinary.com/demo/original/2.png",
+      previewUrl: "https://res.cloudinary.com/demo/preview/2.png",
+    },
+    {
+      originalUrl: "https://res.cloudinary.com/demo/original/3.png",
+      previewUrl: "https://res.cloudinary.com/demo/preview/3.png",
+    },
+  ];
+
+  // 生成画像は unoptimized のため src はモック URL がそのまま入る。
+  // res.cloudinary.com への実ネットワークアクセスを避けるため、画像本体も差し替える。
+  async function stubCloudinaryAssets(page: Page): Promise<void> {
+    await page.route("https://res.cloudinary.com/**", async (route) => {
+      // 1x1 透過 PNG
+      await route.fulfill({
+        status: 200,
+        contentType: "image/png",
+        body: Buffer.from(
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8AAAMBAQDJ/pLvAAAAAElFTkSuQmCC",
+          "base64",
+        ),
+      });
+    });
+  }
+
+  test("API成功時にプレビュー画像3枚が表示される", async ({ page }) => {
+    await stubCloudinaryAssets(page);
+    await page.route("/api/cloudinary/images", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ images: MOCK_IMAGES }),
+      });
+    });
+    await gotoAoi(page);
+
+    const section = page.locator("#generate-image");
+    await expect(
+      section.getByRole("img", { name: "生成画像 1" }),
+    ).toBeVisible();
+    await expect(section.getByRole("button", { name: /拡大表示/ })).toHaveCount(
+      3,
+    );
+    // プレビュー URL に差し替わっている。
+    await expect(
+      section.getByRole("img", { name: "生成画像 1" }),
+    ).toHaveAttribute("src", MOCK_IMAGES[0].previewUrl);
+  });
+
+  test("プレビュークリックでオリジナル画像が Lightbox 表示され、閉じられる", async ({
+    page,
+  }) => {
+    await stubCloudinaryAssets(page);
+    await page.route("/api/cloudinary/images", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ images: MOCK_IMAGES }),
+      });
+    });
+    await gotoAoi(page);
+
+    const section = page.locator("#generate-image");
+    await section
+      .getByRole("button", { name: "生成画像 1 を拡大表示" })
+      .click();
+
+    // Lightbox が開き、オリジナル URL の画像が表示される。
+    const lightbox = page.getByTestId("aoi-lightbox");
+    await expect(lightbox).toBeVisible();
+    await expect(lightbox.getByRole("img")).toHaveAttribute(
+      "src",
+      MOCK_IMAGES[0].originalUrl,
+    );
+
+    // ✕ ボタンで閉じる。
+    await lightbox.getByRole("button", { name: "Close" }).click();
+    await expect(lightbox).toBeHidden();
+
+    // 再度開き、Escape キーでも閉じられる。
+    await section
+      .getByRole("button", { name: "生成画像 1 を拡大表示" })
+      .click();
+    await expect(lightbox).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(lightbox).toBeHidden();
+  });
+
+  test("API失敗時は仮画像（フォールバック）が表示される", async ({ page }) => {
+    await page.route("/api/cloudinary/images", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Internal Server Error" }),
+      });
+    });
+    await gotoAoi(page);
+
+    const section = page.locator("#generate-image");
+    await expect(section.getByTestId("aoi-generate-skeleton")).toHaveCount(3);
+    // 拡大表示ボタン（プレビュー）は生成されない。
+    await expect(section.getByRole("button", { name: /拡大表示/ })).toHaveCount(
+      0,
+    );
+  });
+});
+
 test.describe("フッター（AoiFooter）の要素確認", () => {
   test.beforeEach(async ({ page }) => {
     await gotoAoi(page);
