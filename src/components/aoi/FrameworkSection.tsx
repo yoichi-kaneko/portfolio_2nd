@@ -33,7 +33,7 @@ export function FrameworkSection() {
         出力 までを、ひとつの「仕組み」として備えています。
       </p>
 
-      <div className="mt-[30px] grid grid-cols-1 gap-[12px] md:grid-cols-3 md:gap-[14px]">
+      <div className="mt-[30px] grid grid-cols-1 gap-[12px] md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-stretch md:gap-0">
         {/* collect */}
         <div className="rounded-[16px] border border-[rgba(109,180,230,0.28)] bg-[linear-gradient(160deg,rgba(20,38,58,0.6),rgba(12,22,38,0.6))] px-[22px] py-[24px]">
           <div className="mb-[6px] font-space text-[10px] tracking-[0.16em] text-[#6db4e6]">
