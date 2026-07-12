@@ -53,10 +53,5 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
-  },
-  "pnpm": {
-    "overrides": {
-      "encoding-sniffer": "^1.0.0"
-    }
   }
 }
