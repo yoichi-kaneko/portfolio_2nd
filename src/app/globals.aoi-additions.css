@@ -1,0 +1,25 @@
+/* src/app/globals.css の末尾（@keyframes aoi-drift の後）に追記してください */
+
+@keyframes aoi-stamp-in {
+  0% {
+    transform: rotate(12deg) scale(1.7);
+    opacity: 0;
+  }
+  70% {
+    transform: rotate(12deg) scale(0.94);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(12deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes aoi-tag-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
