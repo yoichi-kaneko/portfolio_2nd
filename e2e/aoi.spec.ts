@@ -42,7 +42,7 @@ test.describe("ナビゲーション（AoiNav）の要素確認", () => {
     await expect(nav.getByText("AOI")).toBeVisible();
   });
 
-  test("セクションへのナビリンクが5つ表示される", async ({ page }) => {
+  test("セクションへのナビリンクが6つ表示される", async ({ page }) => {
     const nav = page.locator("header");
     await expect(nav.getByRole("link", { name: "これは何か" })).toBeVisible();
     await expect(
@@ -51,6 +51,7 @@ test.describe("ナビゲーション（AoiNav）の要素確認", () => {
     await expect(nav.getByRole("link", { name: "連携" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "登山×天気" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "登場人物" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "画像生成" })).toBeVisible();
   });
 
   test("夜モードトグルが表示される", async ({ page }) => {
@@ -459,6 +460,44 @@ test.describe("GenerateImage セクションの要素確認", () => {
     await expect(lightbox).toBeHidden();
   });
 
+  test("Lightbox は body 直下に Portal 描画され、ナビより前面に重なる", async ({
+    page,
+  }) => {
+    await stubCloudinaryAssets(page);
+    await page.route("/api/cloudinary/images", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ images: MOCK_IMAGES }),
+      });
+    });
+    await gotoAoi(page);
+
+    await page
+      .locator("#generate-image")
+      .getByRole("button", { name: "生成画像 1 を拡大表示" })
+      .click();
+
+    // 親セクションのスタッキングコンテキスト（relative z-[2]）に閉じ込められず、
+    // body 直下に描画される（レイヤー表示順序の回帰ガード）。
+    const backdrop = page.getByTestId("aoi-lightbox-backdrop");
+    await expect(backdrop).toBeVisible();
+    expect(
+      await backdrop.evaluate((el) => el.parentElement === document.body),
+    ).toBe(true);
+
+    // sticky ナビ（header）より大きい z-index を持ち、常に前面に出る。
+    const backdropZ = await backdrop.evaluate((el) =>
+      Number.parseInt(window.getComputedStyle(el).zIndex, 10),
+    );
+    const headerZ = await page
+      .locator("header")
+      .evaluate((el) =>
+        Number.parseInt(window.getComputedStyle(el).zIndex, 10),
+      );
+    expect(backdropZ).toBeGreaterThan(headerZ);
+  });
+
   test("API失敗時は仮画像（フォールバック）が表示される", async ({ page }) => {
     await page.route("/api/cloudinary/images", async (route) => {
       await route.fulfill({
@@ -544,5 +583,22 @@ test.describe("夜モード（NightMode）の動作確認", () => {
     });
     await expect(backLink).toBeVisible();
     await expect(backLink).toHaveAttribute("href", "/");
+  });
+
+  test("消灯中に「ポートフォリオに戻る」リンクでトップページへ遷移できる", async ({
+    page,
+  }) => {
+    await gotoAoi(page);
+    await expect(page.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible({
+      timeout: 15000,
+    });
+
+    await page.getByRole("button", { name: /灯りを落とす/ }).click();
+    await expect(page.getByText("— 灯りを落としました")).toBeVisible();
+
+    // 親要素は pointer-events-none だが、点灯中のリンクだけはクリックできる。
+    await page.getByRole("link", { name: ">> ポートフォリオに戻る" }).click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveTitle(/Wanderlust/);
   });
 });
