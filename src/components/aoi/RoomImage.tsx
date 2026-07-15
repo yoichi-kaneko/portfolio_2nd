@@ -34,6 +34,8 @@ export function RoomImage() {
           width={1536}
           height={1024}
           sizes="(min-width: 768px) 50vw, 100vw"
+          // ファーストビューの LCP 候補。3 枚ともクロスフェードで使うため即時読み込みする
+          loading="eager"
           className={`block h-auto w-full transition-opacity duration-700 ${
             // 先頭の 1 枚がフレームの高さを決め、残りはその上に重ねる
             i === 0 ? "" : "absolute inset-0"
