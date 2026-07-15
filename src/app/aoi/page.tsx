@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PAGE_BG } from "@/config/aoi";
 import { NightModeProvider } from "@/components/aoi/NightModeProvider";
 import { Starfield } from "@/components/aoi/Starfield";
@@ -12,6 +13,20 @@ import { CastSection } from "@/components/aoi/CastSection";
 import { GenerateImageSection } from "@/components/aoi/GenerateImageSection";
 import { AoiFooter } from "@/components/aoi/AoiFooter";
 import { NightOverlay } from "@/components/aoi/NightOverlay";
+
+export const metadata: Metadata = {
+  title: "碧衣（あおい） | 登山アシスタント AI - Web Studio Wanderlust",
+  description:
+    "登山アシスタント AI「碧衣（あおい）」の紹介ページ。アクティビティ駆動フレームワークを軸に、予定・行動の記録・天候を読み解き、一日の始まりと終わりに LINE でそっと言葉を届ける個人プロジェクトです。",
+  openGraph: {
+    title: "碧衣（あおい） | 登山アシスタント AI - Web Studio Wanderlust",
+    description:
+      "登山アシスタント AI「碧衣（あおい）」の紹介ページ。アクティビティ駆動フレームワークを軸に、予定・行動の記録・天候を読み解き、一日の始まりと終わりに LINE でそっと言葉を届ける個人プロジェクトです。",
+    type: "website",
+    locale: "ja_JP",
+    images: [{ url: "/images/aoi-og-img.png" }],
+  },
+};
 
 /**
  * `item/碧衣の説明ページ/碧衣の説明ページ.dc.html` からの移植ページ。
