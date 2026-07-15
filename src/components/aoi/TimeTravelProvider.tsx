@@ -68,6 +68,8 @@ export function TimeTravelProvider({
       setScrambleUntil(0);
       return;
     }
+    // すでに乗車中の切符を再度クリックしても仮時刻はリセットしない
+    if (key === override) return;
     setOverride(key);
     setOverrideStart(Date.now());
     setScrambleUntil(Date.now() + SCRAMBLE_MS);
