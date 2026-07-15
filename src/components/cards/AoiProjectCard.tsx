@@ -167,7 +167,7 @@ export function AoiProjectCard() {
         alt="碧衣"
         width={76}
         height={107}
-        className={`pointer-events-none absolute bottom-[-4px] right-6 w-[76px] translate-y-[115%] transition-transform duration-[380ms] ease-[cubic-bezier(0.34,1.4,0.64,1)] [filter:drop-shadow(0_0_14px_rgba(127,212,255,0.35))] group-hover:translate-y-[6%] group-hover:-rotate-3 md:right-14${
+        className={`pointer-events-none absolute bottom-[-4px] right-6 h-auto w-[76px] translate-y-[115%] transition-transform duration-[380ms] ease-[cubic-bezier(0.34,1.4,0.64,1)] [filter:drop-shadow(0_0_14px_rgba(127,212,255,0.35))] group-hover:translate-y-[6%] group-hover:-rotate-3 md:right-14${
           atBottom ? " max-md:translate-y-[6%] max-md:-rotate-3" : ""
         }`}
       />
