@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BentoCard } from "@/components/BentoCard";
+import { AoiProjectCard } from "@/components/cards/AoiProjectCard";
 import { LifeLogClient } from "@/components/LifeLogClient";
 import { AboutCard } from "@/components/cards/AboutCard";
 import { GitHubCard } from "@/components/cards/GitHubCard";
@@ -64,6 +66,11 @@ export default function Home() {
             audioUrl={LIFE_LOG_AUDIO_URL}
             backgroundStyle={LIFE_LOG_BACKGROUND_STYLE}
           />
+
+          {/* Project Aoi — col-span-4 */}
+          <Link href="/aoi" className="group md:col-span-4">
+            <AoiProjectCard />
+          </Link>
         </div>
       </div>
     </div>
