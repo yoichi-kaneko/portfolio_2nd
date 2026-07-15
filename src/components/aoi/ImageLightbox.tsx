@@ -78,6 +78,11 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
     };
   }, []);
 
+  // SSR 環境でレンダリングされた場合に document 参照でクラッシュしないよう保護する
+  if (typeof document === "undefined") {
+    return null;
+  }
+
   return createPortal(
     <div
       data-testid="aoi-lightbox-backdrop"
