@@ -109,6 +109,95 @@ test.describe("ヒーロー（AoiHero）の要素確認", () => {
   });
 });
 
+test.describe("時間旅行きっぷ（TimeTravelTickets）の要素・動作確認", () => {
+  // ブラウザ内時刻を JST 10:00（暁の時間帯）に固定してから遷移する。
+  // 「いま」札がどの切符に付くかがテスト実行時刻に依存しなくなり、
+  // 深夜の CI でも同じ結果になる。install 後も時間は普通に流れるため、
+  // 切替時のスクランブル演出（700ms）は自然に終了する。
+  test.beforeEach(async ({ page }) => {
+    // dev サーバーへの並列アクセス時はハイドレーションが遅く、
+    // 15 秒では足りないことがあるためテスト全体の制限時間ごと延ばす。
+    test.setTimeout(60000);
+    await page.clock.install({ time: new Date("2026-07-15T10:00:00+09:00") });
+    await gotoAoi(page);
+    // ウィジェットの時計が固定時刻を表示する＝ハイドレーション完了。
+    // これを待たずにクリックすると、ハンドラー未接続で空振りする。
+    await expect(page.getByText(/^10:00:\d{2}$/)).toBeVisible({
+      timeout: 30000,
+    });
+  });
+
+  test("行き先別の切符が3枚、出発時刻つきで表示される", async ({ page }) => {
+    await expect(page.getByRole("button", { name: /暁ゆき/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /望ゆき/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /小夜ゆき/ })).toBeVisible();
+    await expect(page.getByText("07:00 発")).toBeVisible();
+    await expect(page.getByText("13:30 発")).toBeVisible();
+    await expect(page.getByText("21:00 発")).toBeVisible();
+  });
+
+  test("現在時刻に対応する切符に「いま」札が付き、選択状態になる", async ({
+    page,
+  }) => {
+    const akatsuki = page.getByRole("button", { name: /暁ゆき/ });
+    await expect(akatsuki).toHaveAttribute("aria-pressed", "true");
+    await expect(akatsuki.getByText("いま")).toBeVisible();
+    await expect(page.getByRole("button", { name: /望ゆき/ })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    await expect(
+      page.getByRole("button", { name: /小夜ゆき/ }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("現在でない切符に乗るとトラベルモードになり、仮時刻とほんとうの今が表示される", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: /小夜ゆき/ }).click();
+    await expect(
+      page.getByRole("button", { name: /小夜ゆき/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByText("臨時ダイヤ")).toBeVisible();
+    // スクランブル演出の終了後、小夜の代表時刻 21:00 から進む仮時刻になる
+    await expect(page.getByText(/^21:00:\d{2}$/)).toBeVisible();
+    await expect(
+      page.getByText(/ほんとうの今 — 暁・10:00:\d{2}/),
+    ).toBeVisible();
+  });
+
+  test("表示中のモードに合わせて部屋の画像が切り替わる", async ({ page }) => {
+    // 3 枚の部屋画像のうち、表示中のモードの 1 枚だけが aria-hidden なし
+    // （= img ロールで見える）になる。JST 10:00 固定 → 暁 → 朝の部屋。
+    const room = page.getByRole("img", { name: "碧衣のプライベートルーム" });
+    await expect(room).toHaveAttribute("src", /room_morning/);
+    await expect(page.getByText(/ROOM_MORNING\.PNG/)).toBeVisible();
+
+    await page.getByRole("button", { name: /小夜ゆき/ }).click();
+    await expect(room).toHaveAttribute("src", /room_night/);
+    await expect(page.getByText(/ROOM_NIGHT\.PNG/)).toBeVisible();
+
+    await page.getByRole("button", { name: /望ゆき/ }).click();
+    await expect(room).toHaveAttribute("src", /room_noon/);
+
+    // 「いま」札（暁）に乗り直すと朝の部屋に帰還する
+    await page.getByRole("button", { name: /暁ゆき/ }).click();
+    await expect(room).toHaveAttribute("src", /room_morning/);
+  });
+
+  test("「いま」札の切符に乗り直すと現実の時刻に帰還する", async ({ page }) => {
+    await page.getByRole("button", { name: /小夜ゆき/ }).click();
+    await expect(page.getByText("臨時ダイヤ")).toBeVisible();
+
+    await page.getByRole("button", { name: /暁ゆき/ }).click();
+    await expect(page.getByText("臨時ダイヤ")).not.toBeVisible();
+    await expect(page.getByText(/^10:00:\d{2}$/)).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /小夜ゆき/ }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+});
+
 test.describe("About セクションの要素確認", () => {
   test.beforeEach(async ({ page }) => {
     await gotoAoi(page);
