@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useEffectEvent, useRef } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 
 interface ImageLightboxProps {
@@ -20,6 +21,8 @@ interface ImageLightboxProps {
  * 画像自身の縦横比を保ったままビューポートに収まるよう表示する。
  *
  * WAI-ARIA ダイアログとして、開閉時のフォーカス移動・Tab トラップ・背景スクロールロックを行う。
+ * 親セクションのスタッキングコンテキスト（`relative z-[2]`）に閉じ込められないよう、
+ * Portal で `document.body` 直下に描画して常に最前面に表示する。
  */
 export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -75,7 +78,12 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
     };
   }, []);
 
-  return (
+  // SSR 環境でレンダリングされた場合に document 参照でクラッシュしないよう保護する
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(
     <div
       data-testid="aoi-lightbox-backdrop"
       onClick={onClose}
@@ -109,6 +117,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
           ✕
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

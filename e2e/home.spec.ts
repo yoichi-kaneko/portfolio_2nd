@@ -96,6 +96,33 @@ test.describe("Bento Grid 各要素の存在確認", () => {
     ).toBeVisible();
   });
 
+  test("Project Aoi カードが表示され /aoi へのリンクになっている", async ({
+    page,
+  }) => {
+    const aoiLink = page.getByRole("link", { name: /Project Aoi/ });
+    await expect(aoiLink).toBeVisible();
+    await expect(aoiLink).toHaveAttribute("href", "/aoi");
+  });
+
+  test("Project Aoi カードに発車時刻（現在時刻）が表示される", async ({
+    page,
+  }) => {
+    const aoiLink = page.getByRole("link", { name: /Project Aoi/ });
+    // マウント後にクライアント時刻へ更新される（初期値 --:-- から実時刻へ）。
+    // dev のハイドレーション完了までを許容するため待ち時間を長めに取る。
+    await expect(aoiLink.getByText(/本日 \d{2}:\d{2} 発/)).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test("Project Aoi カードをクリックすると /aoi ページへ遷移する", async ({
+    page,
+  }) => {
+    await page.getByRole("link", { name: /Project Aoi/ }).click();
+    await expect(page).toHaveURL(/\/aoi$/);
+    await expect(page).toHaveTitle(/碧衣（あおい）/);
+  });
+
   test("Life Log カードが表示される", async ({ page }) => {
     await expect(page.getByText(/Life Log/i)).toBeVisible();
     await expect(page.getByText(/Mountaineering/i)).toBeVisible();

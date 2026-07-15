@@ -6,7 +6,7 @@ import { TimeTravelTickets } from "@/components/aoi/TimeTravelTickets";
 
 export function AoiHero() {
   return (
-    <section className="relative z-[2] mx-auto grid max-w-[1180px] grid-cols-[1.04fr_0.96fr] items-center gap-[46px] px-[40px] pt-[64px] pb-[36px]">
+    <section className="relative z-[2] mx-auto grid max-w-[1180px] grid-cols-1 items-center gap-[46px] px-[24px] pt-[64px] pb-[36px] lg:grid-cols-[1.04fr_0.96fr] lg:px-[40px]">
       <div>
         <div className="mb-[24px] inline-flex items-center gap-[9px] rounded-full border border-[rgba(179,160,255,0.34)] bg-[rgba(70,60,120,0.18)] px-[13px] py-[6px]">
           <span className="font-space text-[10.5px] tracking-[0.2em] text-[#c6b8ff]">
