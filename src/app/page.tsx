@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudMoon } from "@fortawesome/free-solid-svg-icons";
 import { BentoCard } from "@/components/BentoCard";
+import { AoiProjectCard } from "@/components/cards/AoiProjectCard";
 import { LifeLogClient } from "@/components/LifeLogClient";
 import { AboutCard } from "@/components/cards/AboutCard";
 import { GitHubCard } from "@/components/cards/GitHubCard";
@@ -69,13 +68,8 @@ export default function Home() {
           />
 
           {/* Project Aoi — col-span-4 */}
-          <Link href="/aoi" className="md:col-span-4">
-            <BentoCard className="h-full">
-              <h3 className="text-xl font-bold">
-                <FontAwesomeIcon icon={faCloudMoon} className="w-4 h-4 mr-2" />
-                Project Aoi
-              </h3>
-            </BentoCard>
+          <Link href="/aoi" className="group md:col-span-4">
+            <AoiProjectCard />
           </Link>
         </div>
       </div>

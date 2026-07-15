@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Zen_Kaku_Gothic_New,
+  Space_Mono,
+} from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -12,6 +17,22 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// ホームの AoiProjectCard（font-zen / font-space）用。
+// /aoi 配下は src/app/aoi/layout.tsx が同じ変数を注入する。
+const zenKaku = Zen_Kaku_Gothic_New({
+  subsets: ["latin"],
+  weight: ["700", "900"],
+  display: "swap",
+  variable: "--font-zen-kaku",
+});
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-space-mono",
 });
 
 const siteUrl =
@@ -37,7 +58,7 @@ export default function RootLayout({
   return (
     <html
       lang="ja"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${zenKaku.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}
