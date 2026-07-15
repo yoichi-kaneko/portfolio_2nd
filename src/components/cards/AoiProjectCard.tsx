@@ -165,8 +165,9 @@ export function AoiProjectCard() {
       <Image
         src="/aoi/face_peek.png"
         alt="碧衣"
-        width={76}
-        height={107}
+        // 実ファイルの寸法（縦横比が違うと Next.js が警告を出す）。表示幅は className の w-[76px] で決まる
+        width={140}
+        height={270}
         className={`pointer-events-none absolute bottom-[-4px] right-6 h-auto w-[76px] translate-y-[115%] transition-transform duration-[380ms] ease-[cubic-bezier(0.34,1.4,0.64,1)] [filter:drop-shadow(0_0_14px_rgba(127,212,255,0.35))] group-hover:translate-y-[6%] group-hover:-rotate-3 md:right-14${
           atBottom ? " max-md:translate-y-[6%] max-md:-rotate-3" : ""
         }`}
