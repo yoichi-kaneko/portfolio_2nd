@@ -25,6 +25,7 @@ describe("resolveMode（通常運行）", () => {
     expect(r.clock).toBe("--:--:--");
     expect(r.realClock).toBe("--:--:--");
     expect(r.realModeKey).toBeNull();
+    expect(r.modeKey).toBe("akatsuki");
     expect(r.modeJp).toBe("暁");
     expect(r.dateStr).toBe("");
     expect(r.isOverride).toBe(false);
@@ -35,6 +36,7 @@ describe("resolveMode（通常運行）", () => {
     expect(r.clock).toBe("10:15:30");
     expect(r.realClock).toBe("10:15:30");
     expect(r.realModeKey).toBe("akatsuki");
+    expect(r.modeKey).toBe("akatsuki");
     expect(r.modeJp).toBe("暁");
     expect(r.isOverride).toBe(false);
   });
@@ -53,6 +55,7 @@ describe("resolveMode（時間旅行 override）", () => {
   it("切替直後は代表時刻（startSec）から始まる", () => {
     const r = resolveMode(start, "sayo", start.getTime());
     expect(r.clock).toBe("21:00:00");
+    expect(r.modeKey).toBe("sayo");
     expect(r.modeJp).toBe("小夜");
     expect(r.isOverride).toBe(true);
   });

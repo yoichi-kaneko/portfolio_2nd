@@ -50,6 +50,8 @@ export function getModeKeyForHour(hour: number): AoiModeKey {
 
 export interface ResolvedMode {
   clock: string;
+  /** 表示中のモード（時間旅行中は行き先モード）。now が null の間はデフォルトの暁 */
+  modeKey: AoiModeKey;
   modeJp: string;
   modeYomi: string;
   modeLine: string;
@@ -115,6 +117,7 @@ export function resolveMode(
 
   return {
     clock,
+    modeKey: mode.key,
     modeJp: mode.jp,
     modeYomi: mode.yomi,
     modeLine: mode.line,

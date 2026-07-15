@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { TimeTravelProvider } from "@/components/aoi/TimeTravelProvider";
+import { RoomImage } from "@/components/aoi/RoomImage";
 import { SkyTintOverlay } from "@/components/aoi/SkyTintOverlay";
 import { LiveModeWidget } from "@/components/aoi/LiveModeWidget";
 import { TimeTravelTickets } from "@/components/aoi/TimeTravelTickets";
@@ -86,20 +86,9 @@ export function AoiHero() {
               切符を外に置くことで、ウィジェットが画像の左下に張り付いたままになる */}
           <div className="relative">
             <div className="relative overflow-hidden rounded-[18px] border border-[rgba(127,212,255,0.28)] shadow-[0_40px_90px_-40px_rgba(0,0,0,0.9),0_0_0_1px_rgba(127,212,255,0.06),inset_0_1px_0_rgba(255,255,255,0.05)] [transform:perspective(1400px)_rotateY(-5deg)_rotateX(2deg)]">
-              <Image
-                src="/aoi/room.png"
-                alt="碧衣のプライベートルーム"
-                width={1536}
-                height={1024}
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="block h-auto w-full"
-              />
+              <RoomImage />
               <SkyTintOverlay />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,14,28,0.0)_55%,rgba(8,12,22,0.55)_100%)]" />
-              <div className="absolute top-[12px] left-[14px] flex items-center gap-[7px] rounded-[7px] border border-[rgba(127,212,255,0.3)] bg-[rgba(8,14,28,0.55)] px-[9px] py-[5px] font-space text-[10px] tracking-[0.16em] text-[#9fd9ff] backdrop-blur-[4px]">
-                <span className="h-[6px] w-[6px] animate-[aoi-glow_1.6s_infinite] rounded-full bg-[#65e6a8] shadow-[0_0_8px_#65e6a8]" />
-                ROOM.PNG — 碧衣の部屋
-              </div>
             </div>
 
             {/* live mode widget */}

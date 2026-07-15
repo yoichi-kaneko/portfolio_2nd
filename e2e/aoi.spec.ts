@@ -166,6 +166,25 @@ test.describe("時間旅行きっぷ（TimeTravelTickets）の要素・動作確
     ).toBeVisible();
   });
 
+  test("表示中のモードに合わせて部屋の画像が切り替わる", async ({ page }) => {
+    // 3 枚の部屋画像のうち、表示中のモードの 1 枚だけが aria-hidden なし
+    // （= img ロールで見える）になる。JST 10:00 固定 → 暁 → 朝の部屋。
+    const room = page.getByRole("img", { name: "碧衣のプライベートルーム" });
+    await expect(room).toHaveAttribute("src", /room_morning/);
+    await expect(page.getByText(/ROOM_MORNING\.PNG/)).toBeVisible();
+
+    await page.getByRole("button", { name: /小夜ゆき/ }).click();
+    await expect(room).toHaveAttribute("src", /room_night/);
+    await expect(page.getByText(/ROOM_NIGHT\.PNG/)).toBeVisible();
+
+    await page.getByRole("button", { name: /望ゆき/ }).click();
+    await expect(room).toHaveAttribute("src", /room_noon/);
+
+    // 「いま」札（暁）に乗り直すと朝の部屋に帰還する
+    await page.getByRole("button", { name: /暁ゆき/ }).click();
+    await expect(room).toHaveAttribute("src", /room_morning/);
+  });
+
   test("「いま」札の切符に乗り直すと現実の時刻に帰還する", async ({ page }) => {
     await page.getByRole("button", { name: /小夜ゆき/ }).click();
     await expect(page.getByText("臨時ダイヤ")).toBeVisible();
