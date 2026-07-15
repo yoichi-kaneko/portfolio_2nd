@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useNightMode } from "@/components/aoi/NightModeProvider";
 
 export function NightOverlay() {
@@ -22,8 +24,19 @@ export function NightOverlay() {
         <div className="font-zen text-[22px] font-bold tracking-[0.04em] text-[#dceafb]">
           おやすみなさい。良い夢を。
         </div>
-        <div className="mt-[8px] font-space text-[11px] tracking-[0.14em] text-[#7f9ac0]">
+        <div className="mt-[8px] font-space text-[13px] tracking-[0.14em] text-[#7f9ac0]">
           — 灯りを落としました
+        </div>
+        <div className="mt-[6px] text-right">
+          {/* 親が pointer-events-none のため、点灯中のみリンクをクリック可能にする */}
+          <Link
+            href="/"
+            className={`font-space text-[13px] tracking-[0.14em] text-[#7f9ac0] transition-colors hover:text-[#cfe6ff] ${
+              night ? "pointer-events-auto" : ""
+            }`}
+          >
+            &gt;&gt; ポートフォリオに戻る
+          </Link>
         </div>
       </div>
     </div>

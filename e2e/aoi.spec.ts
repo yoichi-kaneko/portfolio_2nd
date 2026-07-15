@@ -526,4 +526,23 @@ test.describe("夜モード（NightMode）の動作確認", () => {
     ).toBeVisible();
     await expect.poll(() => readNightOverlayOpacity(page)).toBeLessThan(0.1);
   });
+
+  test("消灯中にポートフォリオトップへ戻るリンクが表示される", async ({
+    page,
+  }) => {
+    await gotoAoi(page);
+    await expect(page.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible({
+      timeout: 15000,
+    });
+
+    await page.getByRole("button", { name: /灯りを落とす/ }).click();
+    await expect(page.getByText("— 灯りを落としました")).toBeVisible();
+
+    // 「>> ポートフォリオに戻る」がトップページへのリンクとして表示される。
+    const backLink = page.getByRole("link", {
+      name: ">> ポートフォリオに戻る",
+    });
+    await expect(backLink).toBeVisible();
+    await expect(backLink).toHaveAttribute("href", "/");
+  });
 });
