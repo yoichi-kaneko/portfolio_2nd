@@ -5,13 +5,40 @@ Next.js 16 (App Router) + Tailwind CSS v4 で構築された、Bento Grid レイ
 
 ## 技術スタック
 
-| 要素                 | 採用技術                   |
-| -------------------- | -------------------------- |
-| フレームワーク       | Next.js 16 (Static Export) |
-| 言語                 | TypeScript                 |
-| スタイリング         | Tailwind CSS v4            |
-| E2E テスト           | Playwright                 |
-| パッケージマネージャ | pnpm                       |
+| 要素                 | 採用技術                 |
+| -------------------- | ------------------------ |
+| フレームワーク       | Next.js 16 (App Router)  |
+| 言語                 | TypeScript               |
+| スタイリング         | Tailwind CSS v4          |
+| ユニットテスト       | Vitest / Testing Library |
+| E2E テスト           | Playwright               |
+| 画像配信             | Cloudinary               |
+| キャッシュ           | Redis                    |
+| パッケージマネージャ | pnpm 11.9.0              |
+
+## 主なページ
+
+- `/`: Bento Grid 形式のポートフォリオトップ
+- `/aoi`: 個人プロジェクト「碧衣（AOI）」の紹介ページ
+
+トップページの「Project Aoi」カードから `/aoi` へ移動できます。
+
+## 碧衣（AOI）ページ
+
+登山アシスタント AI「碧衣」と、そのアクティビティ駆動フレームワークを紹介するページです。
+
+### 主な機能
+
+- プロジェクトの目的、処理フレームワーク、連携サービス、登山・天気機能の紹介
+- 6つの実行モードと登場人物の紹介
+- 現在の日本時間に応じたモード・部屋画像・時計表示
+- 「時間旅行きっぷ」による暁・望・小夜モードのプレビュー
+- ナビゲーションとフッターから切り替えられる夜モード
+- Cloudinary から取得した最新生成画像3件の表示
+- 生成画像の Lightbox 表示（フォーカス管理、Esc・背景クリック・閉じるボタンに対応）
+
+ページ固有のクライアント状態は `NightModeProvider` と `TimeTravelProvider` で管理し、
+各紹介セクションはサーバーコンポーネントを基本として構成しています。
 
 ## 開発サーバーの起動
 
@@ -91,6 +118,25 @@ type WeeklyContribution = {
 - `src/components/cards/LifeLogCard.tsx` で件数を表示
 - 取得中は Skeleton、取得失敗時は `???` を表示
 
+## Cloudinary 最新画像 API
+
+`src/app/api/cloudinary/images/route.ts` の `GET()` が、碧衣ページに表示する最新生成画像を返します。
+
+### エンドポイント
+
+- `GET /api/cloudinary/images`
+- 成功時: `{ "images": [{ "originalUrl": string, "previewUrl": string }] }`
+- 失敗時: `{ "error": string }`（HTTP 500）
+
+### 取得フロー
+
+1. `REDIS_URL` が設定されている場合、`cloudinary:latest_images` のキャッシュを参照
+2. 12時間以内のキャッシュがあれば、その内容を返却
+3. キャッシュがない場合は Cloudinary Search API で指定フォルダの最新画像3件を取得
+4. オリジナル画像 URL と、高さ384pxのプレビュー URL を生成
+5. 取得結果を Redis に12時間保存して返却
+6. Redis が未設定または接続に失敗した場合は、Cloudinary から直接取得
+
 ### 環境変数
 
 | キー                                | 説明                                                                                                                   |
@@ -103,6 +149,10 @@ type WeeklyContribution = {
 | `MOUNTAIN_SCRAPER_HEADLESS`         | スクレイピング時のヘッドレス実行有無。`true` / `false`（未指定時は `true`）                                            |
 | `LOCAL_CHROMIUM_EXECUTABLE_PATH`    | `local` モード時に利用する Chrome / Chromium 実行ファイルのパス（任意）                                                |
 | `NEXT_PUBLIC_DISABLE_EXTERNAL_MAPS` | `1` の場合、Mountain Map で外部地図読込を無効化（主にE2E向け）                                                         |
+| `CLOUDINARY_CLOUD_NAME`             | Cloudinary の Cloud name。碧衣ページの生成画像取得に使用                                                               |
+| `CLOUDINARY_API_KEY`                | Cloudinary API key                                                                                                     |
+| `CLOUDINARY_API_SECRET`             | Cloudinary API secret                                                                                                  |
+| `CLOUDINARY_IMAGE_ASSET_FOLDER`     | 最新画像を検索する Cloudinary の Asset folder                                                                          |
 
 ## 開発専用 Agent/CLI
 
@@ -127,8 +177,12 @@ Vitest を使用したユニットテストを実装しています。
 
 - `src/hooks/*.test.ts`
   - カスタムフックの状態遷移、キーボード操作、APIレスポンスに応じた挙動を検証
+- `src/components/**/*.test.tsx`
+  - Context Provider、Lightbox、碧衣プロジェクトカードなどの状態・操作・アクセシビリティを検証
 - `src/app/api/**/route.test.ts`
   - APIルートの正常系/異常系（キャッシュ、フォールバック、エラー処理）を検証
+- `src/lib/**/*.test.ts`
+  - 時刻に応じた碧衣モード判定、Cloudinary URL生成、Redisキャッシュ処理を検証
 - `src/data/modules/*.test.ts`
   - データモジュールの生成処理・バリデーション（正常系/異常系）を検証
 
@@ -188,7 +242,20 @@ pnpm test:e2e:ui
 | Tech Stack カードが表示される           | ラベルが存在すること                             |
 | Social カードが表示される               | ラベルが存在すること                             |
 | Recent Projects カードが表示される      | 見出しが存在すること                             |
+| Project Aoi カードが表示される          | `/aoi` へのリンクと現在時刻の発車案内があること  |
+| Project Aoi カードから遷移できる        | カードクリックで `/aoi` が表示されること         |
 | Life Log カードが表示される             | ラベルと "Mountaineering" テキストが存在すること |
+
+#### 碧衣（AOI）ページ
+
+`e2e/aoi.spec.ts` では、以下を中心に検証しています。
+
+- ナビゲーション、ヒーロー、各紹介セクション、フッターの表示
+- 現在時刻に対応するモードと部屋画像の表示
+- 時間旅行きっぷの選択、仮想時刻への切り替え、現在時刻への帰還
+- Cloudinary API の成功・失敗時表示（外部通信はモック）
+- 生成画像 Lightbox の表示、Portal のレイヤー順、Esc・閉じるボタンの操作
+- 夜モードの切り替えと、ポートフォリオトップへの復帰
 
 #### ProjectsModal の動作確認
 
