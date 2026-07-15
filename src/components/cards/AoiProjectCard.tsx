@@ -24,8 +24,33 @@ function useDepartureTime(): string | null {
   return time;
 }
 
+/**
+ * 縦スクロールがページ末尾に到達しているか。
+ * ホバー不可なモバイルでの演出トリガーに使う（上に戻ると false に戻る）。
+ */
+function useAtPageBottom(threshold = 24): boolean {
+  const [atBottom, setAtBottom] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const doc = document.documentElement;
+      setAtBottom(
+        window.innerHeight + window.scrollY >= doc.scrollHeight - threshold,
+      );
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+  }, [threshold]);
+  return atBottom;
+}
+
 export function AoiProjectCard() {
   const depTime = useDepartureTime();
+  const atBottom = useAtPageBottom();
 
   return (
     <div
@@ -87,20 +112,24 @@ export function AoiProjectCard() {
           </span>
         </div>
 
-        {/* 改札スタンプ（ホバーで押される） */}
-        <div className="pointer-events-none absolute left-[44%] top-[18px] rotate-12 scale-[1.6] rounded-[10px] border-[2.5px] border-[rgba(143,210,255,0.75)] px-3.5 py-1.5 font-zen text-base font-black tracking-[0.1em] text-[rgba(143,210,255,0.85)] opacity-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.5,0.64,1)] group-hover:scale-100 group-hover:opacity-100">
+        {/* 改札スタンプ（ホバー、または半券非表示幅ではスクロール末尾到達で押される） */}
+        <div
+          className={`pointer-events-none absolute left-[44%] top-[18px] rotate-12 scale-[1.6] rounded-[10px] border-[2.5px] border-[rgba(143,210,255,0.75)] px-3.5 py-1.5 font-zen text-base font-black tracking-[0.1em] text-[rgba(143,210,255,0.85)] opacity-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.5,0.64,1)] group-hover:scale-100 group-hover:opacity-100${
+            atBottom ? " max-md:scale-100 max-md:opacity-100" : ""
+          }`}
+        >
           いってらっしゃい
         </div>
       </div>
 
-      {/* ===== ミシン目 ===== */}
-      <div className="relative w-px flex-shrink-0 bg-[repeating-linear-gradient(180deg,#31415c_0_7px,transparent_7px_14px)]">
+      {/* ===== ミシン目（モバイルでは半券ごと非表示） ===== */}
+      <div className="relative hidden w-px flex-shrink-0 bg-[repeating-linear-gradient(180deg,#31415c_0_7px,transparent_7px_14px)] md:block">
         <span className="absolute left-[-7px] top-[-7px] h-3.5 w-3.5 rounded-full border border-[#262626] bg-[#0a0a0a]" />
         <span className="absolute bottom-[-7px] left-[-7px] h-3.5 w-3.5 rounded-full border border-[#262626] bg-[#0a0a0a]" />
       </div>
 
       {/* ===== 半券 ===== */}
-      <div className="relative w-[250px] flex-shrink-0 bg-[rgba(127,212,255,0.03)] p-6">
+      <div className="relative hidden w-[250px] flex-shrink-0 bg-[rgba(127,212,255,0.03)] p-6 md:block">
         <span className="absolute right-3.5 top-2.5 animate-[aoi-float_5s_ease-in-out_infinite] text-[20px] text-[#8fdcff] [text-shadow:0_0_18px_rgba(127,212,255,0.8)]">
           ✧
         </span>
@@ -129,16 +158,19 @@ export function AoiProjectCard() {
             <div className="text-[10px] text-[#7e90ad]">人で制作中</div>
           </div>
         </div>
-
-        {/* 碧衣のひょっこり（ホバーで半券の下から現れる） */}
-        <Image
-          src="/aoi/face_peek.png"
-          alt="碧衣"
-          width={76}
-          height={107}
-          className="pointer-events-none absolute bottom-[-4px] right-14 w-[76px] translate-y-[115%] transition-transform duration-[380ms] ease-[cubic-bezier(0.34,1.4,0.64,1)] [filter:drop-shadow(0_0_14px_rgba(127,212,255,0.35))] group-hover:translate-y-[6%] group-hover:-rotate-3"
-        />
       </div>
+
+      {/* 碧衣のひょっこり（ホバー、または半券非表示幅ではスクロール末尾到達で下から現れる）。
+          半券が hidden になる幅でも表示できるよう、カード直下に配置している。 */}
+      <Image
+        src="/aoi/face_peek.png"
+        alt="碧衣"
+        width={76}
+        height={107}
+        className={`pointer-events-none absolute bottom-[-4px] right-6 w-[76px] translate-y-[115%] transition-transform duration-[380ms] ease-[cubic-bezier(0.34,1.4,0.64,1)] [filter:drop-shadow(0_0_14px_rgba(127,212,255,0.35))] group-hover:translate-y-[6%] group-hover:-rotate-3 md:right-14${
+          atBottom ? " max-md:translate-y-[6%] max-md:-rotate-3" : ""
+        }`}
+      />
     </div>
   );
 }
