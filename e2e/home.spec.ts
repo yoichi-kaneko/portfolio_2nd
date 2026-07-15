@@ -120,7 +120,7 @@ test.describe("Bento Grid 各要素の存在確認", () => {
   }) => {
     await page.getByRole("link", { name: /Project Aoi/ }).click();
     await expect(page).toHaveURL(/\/aoi$/);
-    await expect(page).toHaveTitle(/AOI/);
+    await expect(page).toHaveTitle(/碧衣（あおい）/);
   });
 
   test("Life Log カードが表示される", async ({ page }) => {

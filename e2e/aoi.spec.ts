@@ -28,7 +28,7 @@ async function readNightOverlayOpacity(page: Page): Promise<number> {
 
 test("碧衣ページが表示される", async ({ page }) => {
   await gotoAoi(page);
-  await expect(page).toHaveTitle(/AOI/);
+  await expect(page).toHaveTitle(/碧衣（あおい）/);
 });
 
 test.describe("ナビゲーション（AoiNav）の要素確認", () => {
@@ -409,9 +409,11 @@ test.describe("GenerateImage セクションの要素確認", () => {
     await gotoAoi(page);
 
     const section = page.locator("#generate-image");
-    await expect(
-      section.getByRole("img", { name: "生成画像 1" }),
-    ).toBeVisible();
+    // 並列実行時は dev サーバーのハイドレーション完了（useEffect での取得開始）が
+    // 遅れることがあるため、最初の描画確認だけ待ち時間を長めに取る。
+    await expect(section.getByRole("img", { name: "生成画像 1" })).toBeVisible({
+      timeout: 15000,
+    });
     await expect(section.getByRole("button", { name: /拡大表示/ })).toHaveCount(
       3,
     );
