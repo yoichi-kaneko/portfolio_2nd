@@ -58,6 +58,9 @@ export default function RootLayout({
   return (
     <html
       lang="ja"
+      // globals.css の scroll-behavior: smooth を Next.js に明示し、
+      // ルート遷移中だけスムーズスクロールを無効化できるようにする
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} ${zenKaku.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
