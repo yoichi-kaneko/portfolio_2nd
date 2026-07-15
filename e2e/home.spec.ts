@@ -96,6 +96,14 @@ test.describe("Bento Grid 各要素の存在確認", () => {
     ).toBeVisible();
   });
 
+  test("Project Aoi カードが表示され /aoi へのリンクになっている", async ({
+    page,
+  }) => {
+    const aoiLink = page.getByRole("link", { name: /Project Aoi/ });
+    await expect(aoiLink).toBeVisible();
+    await expect(aoiLink).toHaveAttribute("href", "/aoi");
+  });
+
   test("Life Log カードが表示される", async ({ page }) => {
     await expect(page.getByText(/Life Log/i)).toBeVisible();
     await expect(page.getByText(/Mountaineering/i)).toBeVisible();
