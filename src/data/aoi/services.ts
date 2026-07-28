@@ -51,6 +51,11 @@ export const SERVICES: Service[] = [
   { name: "OpenAI", desc: "碧衣のキャラクターに沿った画像生成", color: "teal" },
   { name: "Mureka", desc: "歌詞の生成と作曲。週に一度の一曲", color: "teal" },
   {
+    name: "Twitter (X) API",
+    desc: "代筆した登山レポートを画像付きで投稿",
+    color: "teal",
+  },
+  {
     name: "Cloudinary",
     desc: "画像・音声を公開 URL としてホスティング",
     color: "teal",

@@ -301,7 +301,9 @@ test.describe("Mountain セクションの要素確認", () => {
 
   test("登山×天気の特徴3項目が表示される", async ({ page }) => {
     await expect(page.getByText("ルリが、数日先の空を偵察")).toBeVisible();
-    await expect(page.getByText("門灯・帰灯 — 入山と下山の灯り")).toBeVisible();
+    await expect(
+      page.getByText("門灯・継灯・帰灯 — 山を見守る三つの灯り"),
+    ).toBeVisible();
     await expect(
       page.getByText("空模様から、コンディションを推察"),
     ).toBeVisible();
@@ -317,20 +319,24 @@ test.describe("Modes セクションの要素確認", () => {
     await expect(
       page.getByRole("heading", {
         level: 2,
-        name: "一日を、6つのモードで歩く",
+        name: "一日を、8つのモードで歩く",
       }),
     ).toBeVisible();
   });
 
-  test("モードカードが6枚表示される", async ({ page }) => {
-    await expect(page.locator("#flow .grid > div")).toHaveCount(6);
+  test("モードカードが8枚表示される", async ({ page }) => {
+    await expect(page.locator("#flow .grid > div")).toHaveCount(8);
   });
 
   test("代表的なモード名が表示される", async ({ page }) => {
     const modes = page.locator("#flow");
-    await expect(modes.getByText("望")).toBeVisible();
-    await expect(modes.getByText("小夜")).toBeVisible();
-    await expect(modes.getByText("調べ")).toBeVisible();
+    // 他モードの説明文にもモード名が現れる（綴葉の説明にある「小夜」など）ため、
+    // 「漢字＋よみ」を持つ見出しの span に限定して確認する。
+    await expect(modes.getByText("望のぞみ")).toBeVisible();
+    await expect(modes.getByText("小夜さよ")).toBeVisible();
+    await expect(modes.getByText("継灯けいとう")).toBeVisible();
+    await expect(modes.getByText("綴葉つづりは")).toBeVisible();
+    await expect(modes.getByText("調べしらべ")).toBeVisible();
   });
 });
 
