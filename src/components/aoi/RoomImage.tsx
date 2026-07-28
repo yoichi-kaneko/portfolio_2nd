@@ -24,18 +24,28 @@ const ROOM_LABEL: Record<AoiModeKey, string> = {
   sayo: "ROOM_NIGHT.PNG",
 };
 
+const PLACEHOLDER_SHELL =
+  "absolute inset-0 overflow-hidden bg-[linear-gradient(140deg,#0a1224_0%,#101f38_50%,#0a1224_100%)]";
+
 export function RoomImage() {
   const { resolved } = useTimeTravel();
   const current = resolved.modeKey;
 
   const [loaded, setLoaded] = useState<Partial<Record<AoiModeKey, true>>>({});
-  // 読み込み失敗も「待ち終わり」として扱う。1 枚でも落ちたまま待つと永久にローディングになる
-  const markSettled = (key: AoiModeKey) =>
-    setLoaded((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
+  const [failed, setFailed] = useState<Partial<Record<AoiModeKey, true>>>({});
 
-  // realModeKey は now が確定するまで null。時刻が入るまで待って初めて実モードが分かる
-  const ready =
-    resolved.realModeKey !== null && AOI_MODE_ORDER.every((key) => loaded[key]);
+  const markLoaded = (key: AoiModeKey) =>
+    setLoaded((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
+  const markFailed = (key: AoiModeKey) =>
+    setFailed((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
+
+  // 成功・失敗のどちらでも「待ち終わり」。1 枚でも未確定のまま待つと永久にローディングになる
+  const settled =
+    resolved.realModeKey !== null &&
+    AOI_MODE_ORDER.every((key) => loaded[key] || failed[key]);
+  // 表示対象が成功したときだけ画像を出す。失敗時はエラー用プレースホルダへ
+  const ready = settled && Boolean(loaded[current]);
+  const showError = settled && Boolean(failed[current]);
 
   return (
     <>
@@ -51,8 +61,8 @@ export function RoomImage() {
           sizes="(min-width: 768px) 50vw, 100vw"
           // ファーストビューの LCP 候補。3 枚ともクロスフェードで使うため即時読み込みする
           loading="eager"
-          onLoad={() => markSettled(key)}
-          onError={() => markSettled(key)}
+          onLoad={() => markLoaded(key)}
+          onError={() => markFailed(key)}
           className={`block h-auto w-full ${
             // 準備完了の瞬間だけは即時に出したいので、それまで transition を持たせない。
             // 変化前のスタイルに transition-property が無ければフェードは走らない
@@ -63,11 +73,8 @@ export function RoomImage() {
           } ${ready && key === current ? "opacity-100" : "opacity-0"}`}
         />
       ))}
-      {!ready && (
-        <div
-          aria-hidden
-          className="absolute inset-0 overflow-hidden bg-[linear-gradient(140deg,#0a1224_0%,#101f38_50%,#0a1224_100%)]"
-        >
+      {!settled && (
+        <div aria-hidden className={PLACEHOLDER_SHELL}>
           <div className="absolute inset-0 animate-[aoi-room-sweep_1.8s_ease-in-out_infinite] bg-[linear-gradient(100deg,transparent_35%,rgba(127,212,255,0.16)_50%,transparent_65%)]" />
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-[10px]">
             <span className="h-[10px] w-[10px] animate-[aoi-glow_1.2s_infinite] rounded-full bg-[#65e6a8] shadow-[0_0_10px_#65e6a8]" />
@@ -77,10 +84,24 @@ export function RoomImage() {
           </div>
         </div>
       )}
+      {showError && (
+        <div
+          role="img"
+          aria-label="碧衣のプライベートルーム（読み込みに失敗しました）"
+          className={PLACEHOLDER_SHELL}
+        >
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-[10px]">
+            <span className="h-[10px] w-[10px] rounded-full bg-[#e88a8a] shadow-[0_0_10px_#e88a8a]" />
+            <span className="font-space text-[10px] tracking-[0.22em] text-[#e8a0a0]">
+              ROOM UNAVAILABLE
+            </span>
+          </div>
+        </div>
+      )}
       {/* ファイル名バッジ。後続のオーバーレイより上に描画する */}
       <div className="absolute top-[12px] left-[14px] z-[1] flex items-center gap-[7px] rounded-[7px] border border-[rgba(127,212,255,0.3)] bg-[rgba(8,14,28,0.55)] px-[9px] py-[5px] font-space text-[10px] tracking-[0.16em] text-[#9fd9ff] backdrop-blur-[4px]">
         <span className="h-[6px] w-[6px] animate-[aoi-glow_1.6s_infinite] rounded-full bg-[#65e6a8] shadow-[0_0_8px_#65e6a8]" />
-        {ready ? ROOM_LABEL[current] : "SYNCING…"} — 碧衣の部屋
+        {`${ready ? ROOM_LABEL[current] : showError ? "UNAVAILABLE…" : "SYNCING…"} — 碧衣の部屋`}
       </div>
     </>
   );

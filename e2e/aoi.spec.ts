@@ -105,11 +105,15 @@ test.describe("ヒーロー（AoiHero）の要素確認", () => {
   test("ライブモードウィジェットに判定モードと時計が表示される", async ({
     page,
   }) => {
-    await expect(page.getByText("// ただいまの判定モード")).toBeVisible();
+    const heading = page.getByText("// ただいまの判定モード");
+    await expect(heading).toBeVisible();
+    // 見出し → 親 → ウィジェット本体。ページ全体の時刻文字列と誤マッチしないよう
+    // ライブモードウィジェット内に限定して検証する。
+    const liveMode = heading.locator("..").locator("..");
     // マウント後にクライアント時刻へ更新される（初期値 --:--:-- から実時刻へ）。
     // dev サーバーへの並列アクセス時は 15 秒でもハイドレーションが終わらないことが
     // あるため、切符の beforeEach と同じ 30 秒まで許容する。
-    await expect(page.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible({
+    await expect(liveMode.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible({
       timeout: 30000,
     });
   });
