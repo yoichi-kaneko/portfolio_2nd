@@ -179,7 +179,10 @@ test.describe("時間旅行きっぷ（TimeTravelTickets）の要素・動作確
   test("表示中のモードに合わせて部屋の画像が切り替わる", async ({ page }) => {
     // 3 枚の部屋画像のうち、表示中のモードの 1 枚だけが aria-hidden なし
     // （= img ロールで見える）になる。JST 10:00 固定 → 暁 → 朝の部屋。
+    // RoomImage は 3 枚の読み込み完了まで aria-hidden のため、ヒーロー画像テストと
+    // 同じく 30 秒まで待つ（時計の確定だけでは画像 load は担保されない）。
     const room = page.getByRole("img", { name: "碧衣のプライベートルーム" });
+    await expect(room).toBeVisible({ timeout: 30000 });
     await expect(room).toHaveAttribute("src", /room_morning/);
     await expect(page.getByText(/ROOM_MORNING\.PNG/)).toBeVisible();
 
