@@ -93,9 +93,13 @@ test.describe("ヒーロー（AoiHero）の要素確認", () => {
   });
 
   test("ヒーロー画像が表示される", async ({ page }) => {
+    // 部屋の画像は 3 枚の読み込みとクライアント時刻の確定が揃うまでプレースホルダで、
+    // その間は 3 枚とも aria-hidden（= img ロールに出ない）。
+    // dev サーバーへの並列アクセス時は 2.5MB の PNG 3 枚の都度最適化で待たされるため、
+    // 切符の beforeEach と同じく待ち時間を長めに取る。
     await expect(
       page.getByRole("img", { name: "碧衣のプライベートルーム" }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 30000 });
   });
 
   test("ライブモードウィジェットに判定モードと時計が表示される", async ({
@@ -103,9 +107,10 @@ test.describe("ヒーロー（AoiHero）の要素確認", () => {
   }) => {
     await expect(page.getByText("// ただいまの判定モード")).toBeVisible();
     // マウント後にクライアント時刻へ更新される（初期値 --:--:-- から実時刻へ）。
-    // dev のハイドレーション完了までを許容するため待ち時間を長めに取る。
+    // dev サーバーへの並列アクセス時は 15 秒でもハイドレーションが終わらないことが
+    // あるため、切符の beforeEach と同じ 30 秒まで許容する。
     await expect(page.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible({
-      timeout: 15000,
+      timeout: 30000,
     });
   });
 });
@@ -418,7 +423,7 @@ test.describe("GenerateImage セクションの要素確認", () => {
     // 並列実行時は dev サーバーのハイドレーション完了（useEffect での取得開始）が
     // 遅れることがあるため、最初の描画確認だけ待ち時間を長めに取る。
     await expect(section.getByRole("img", { name: "生成画像 1" })).toBeVisible({
-      timeout: 15000,
+      timeout: 30000,
     });
     await expect(section.getByRole("button", { name: /拡大表示/ })).toHaveCount(
       3,

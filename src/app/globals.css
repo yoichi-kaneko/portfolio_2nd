@@ -124,3 +124,13 @@ html {
     opacity: 1;
   }
 }
+
+/* 部屋の写真を読み込み中に流す走査線 */
+@keyframes aoi-room-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
