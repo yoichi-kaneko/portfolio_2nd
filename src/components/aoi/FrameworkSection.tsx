@@ -13,6 +13,7 @@ const OUTPUT_ITEMS = [
   "💬 テキストメッセージ",
   "🖼 その日の情景を描いた画像",
   "🎵 一週間から綴る楽曲",
+  "✍ 登山レポートの代筆投稿",
 ];
 
 export function FrameworkSection() {
@@ -97,7 +98,7 @@ export function FrameworkSection() {
             ))}
           </div>
           <div className="mt-[12px] text-right font-space text-[10px] tracking-[0.1em] text-[#6fb8a8]">
-            → LINE へ届く
+            → LINE と SNS へ届く
           </div>
         </div>
       </div>
