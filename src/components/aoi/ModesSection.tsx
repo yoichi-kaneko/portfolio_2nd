@@ -8,9 +8,9 @@ export function ModesSection() {
       className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 05 — A DAY IN MODES"}</div>
-      <h2 className={H2}>一日を、6つのモードで歩く</h2>
+      <h2 className={H2}>一日を、8つのモードで歩く</h2>
       <p className={`${LEAD_P} m-0 mb-[30px] max-w-[640px]`}>
-        時間帯と状況に応じて、碧衣は表情を変えます。朝・昼・夜の定期モードに、登山と創作の特別モード。それぞれ和の名前を持っています。
+        時間帯と状況に応じて、碧衣は表情を変えます。朝・昼・夜の定期モードに、山行を見守る三つの灯り、そして代筆と創作の特別モード。それぞれ和の名前を持っています。
       </p>
       <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3">
         {MODES.map((m) => (

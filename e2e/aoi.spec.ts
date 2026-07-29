@@ -93,19 +93,28 @@ test.describe("ヒーロー（AoiHero）の要素確認", () => {
   });
 
   test("ヒーロー画像が表示される", async ({ page }) => {
+    // 部屋の画像は 3 枚の読み込みとクライアント時刻の確定が揃うまでプレースホルダで、
+    // その間は 3 枚とも aria-hidden（= img ロールに出ない）。
+    // dev サーバーへの並列アクセス時は 2.5MB の PNG 3 枚の都度最適化で待たされるため、
+    // 切符の beforeEach と同じく待ち時間を長めに取る。
     await expect(
       page.getByRole("img", { name: "碧衣のプライベートルーム" }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 30000 });
   });
 
   test("ライブモードウィジェットに判定モードと時計が表示される", async ({
     page,
   }) => {
-    await expect(page.getByText("// ただいまの判定モード")).toBeVisible();
+    const heading = page.getByText("// ただいまの判定モード");
+    await expect(heading).toBeVisible();
+    // 見出し → 親 → ウィジェット本体。ページ全体の時刻文字列と誤マッチしないよう
+    // ライブモードウィジェット内に限定して検証する。
+    const liveMode = heading.locator("..").locator("..");
     // マウント後にクライアント時刻へ更新される（初期値 --:--:-- から実時刻へ）。
-    // dev のハイドレーション完了までを許容するため待ち時間を長めに取る。
-    await expect(page.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible({
-      timeout: 15000,
+    // dev サーバーへの並列アクセス時は 15 秒でもハイドレーションが終わらないことが
+    // あるため、切符の beforeEach と同じ 30 秒まで許容する。
+    await expect(liveMode.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible({
+      timeout: 30000,
     });
   });
 });
@@ -170,7 +179,10 @@ test.describe("時間旅行きっぷ（TimeTravelTickets）の要素・動作確
   test("表示中のモードに合わせて部屋の画像が切り替わる", async ({ page }) => {
     // 3 枚の部屋画像のうち、表示中のモードの 1 枚だけが aria-hidden なし
     // （= img ロールで見える）になる。JST 10:00 固定 → 暁 → 朝の部屋。
+    // RoomImage は 3 枚の読み込み完了まで aria-hidden のため、ヒーロー画像テストと
+    // 同じく 30 秒まで待つ（時計の確定だけでは画像 load は担保されない）。
     const room = page.getByRole("img", { name: "碧衣のプライベートルーム" });
+    await expect(room).toBeVisible({ timeout: 30000 });
     await expect(room).toHaveAttribute("src", /room_morning/);
     await expect(page.getByText(/ROOM_MORNING\.PNG/)).toBeVisible();
 
@@ -301,7 +313,9 @@ test.describe("Mountain セクションの要素確認", () => {
 
   test("登山×天気の特徴3項目が表示される", async ({ page }) => {
     await expect(page.getByText("ルリが、数日先の空を偵察")).toBeVisible();
-    await expect(page.getByText("門灯・帰灯 — 入山と下山の灯り")).toBeVisible();
+    await expect(
+      page.getByText("門灯・継灯・帰灯 — 山を見守る三つの灯り"),
+    ).toBeVisible();
     await expect(
       page.getByText("空模様から、コンディションを推察"),
     ).toBeVisible();
@@ -317,20 +331,24 @@ test.describe("Modes セクションの要素確認", () => {
     await expect(
       page.getByRole("heading", {
         level: 2,
-        name: "一日を、6つのモードで歩く",
+        name: "一日を、8つのモードで歩く",
       }),
     ).toBeVisible();
   });
 
-  test("モードカードが6枚表示される", async ({ page }) => {
-    await expect(page.locator("#flow .grid > div")).toHaveCount(6);
+  test("モードカードが8枚表示される", async ({ page }) => {
+    await expect(page.locator("#flow .grid > div")).toHaveCount(8);
   });
 
   test("代表的なモード名が表示される", async ({ page }) => {
     const modes = page.locator("#flow");
-    await expect(modes.getByText("望")).toBeVisible();
-    await expect(modes.getByText("小夜")).toBeVisible();
-    await expect(modes.getByText("調べ")).toBeVisible();
+    // 他モードの説明文にもモード名が現れる（綴葉の説明にある「小夜」など）ため、
+    // 「漢字＋よみ」を持つ見出しの span に限定して確認する。
+    await expect(modes.getByText("望のぞみ")).toBeVisible();
+    await expect(modes.getByText("小夜さよ")).toBeVisible();
+    await expect(modes.getByText("継灯けいとう")).toBeVisible();
+    await expect(modes.getByText("綴葉つづりは")).toBeVisible();
+    await expect(modes.getByText("調べしらべ")).toBeVisible();
   });
 });
 
@@ -412,7 +430,7 @@ test.describe("GenerateImage セクションの要素確認", () => {
     // 並列実行時は dev サーバーのハイドレーション完了（useEffect での取得開始）が
     // 遅れることがあるため、最初の描画確認だけ待ち時間を長めに取る。
     await expect(section.getByRole("img", { name: "生成画像 1" })).toBeVisible({
-      timeout: 15000,
+      timeout: 30000,
     });
     await expect(section.getByRole("button", { name: /拡大表示/ })).toHaveCount(
       3,
