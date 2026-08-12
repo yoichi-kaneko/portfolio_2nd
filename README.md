@@ -106,11 +106,12 @@ type WeeklyContribution = {
 
 ### 取得フロー
 
-1. `REDIS_URL` に接続し、`mountains:report_count` のキャッシュを参照
-2. キャッシュがあればその値を返却
-3. キャッシュがない場合は YAMAP の公開 API（`https://api.yamap.com/v3/users/1027860/activities`）を `fetch` し、`meta.total_count` を件数として取得
-4. 取得した件数を Redis に 24 時間（`EX: 86400`）保存して返却
-5. Redis の読み書きに失敗した場合でも、API の取得結果は返却する（フォールバック）
+1. `REDIS_URL` が未設定の場合は Redis を使わず、YAMAP の公開 API から件数を取得して返却する
+2. `REDIS_URL` が設定されている場合は Redis に接続し、`mountains:report_count` のキャッシュを参照
+3. キャッシュがあればその値を返却
+4. キャッシュがない場合は YAMAP の公開 API（`https://api.yamap.com/v3/users/1027860/activities`）を `fetch` し、`meta.total_count` を件数として取得
+5. 取得した件数を Redis に 24 時間（`EX: 86400`）保存して返却（`REDIS_URL` 設定時のみ）
+6. Redis の読み書きに失敗した場合でも、API の取得結果は返却する（フォールバック）
 
 YAMAP のプロフィールページは件数をクライアント側で描画するため HTML には含まれません。
 そのためページのスクレイピングではなく、ページが内部で参照している公開 API を直接取得しています。
