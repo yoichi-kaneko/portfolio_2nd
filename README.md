@@ -108,9 +108,12 @@ type WeeklyContribution = {
 
 1. `REDIS_URL` に接続し、`mountains:report_count` のキャッシュを参照
 2. キャッシュがあればその値を返却
-3. キャッシュがない場合は YAMAP のユーザーページをスクレイピング
+3. キャッシュがない場合は YAMAP の公開 API（`https://api.yamap.com/v3/users/1027860/activities`）を `fetch` し、`meta.total_count` を件数として取得
 4. 取得した件数を Redis に 24 時間（`EX: 86400`）保存して返却
-5. Redis の読み書きに失敗した場合でも、スクレイピング結果は返却する（フォールバック）
+5. Redis の読み書きに失敗した場合でも、API の取得結果は返却する（フォールバック）
+
+YAMAP のプロフィールページは件数をクライアント側で描画するため HTML には含まれません。
+そのためページのスクレイピングではなく、ページが内部で参照している公開 API を直接取得しています。
 
 ### 件数表示（UI）
 
@@ -145,9 +148,6 @@ type WeeklyContribution = {
 | `REDIS_URL`                         | アクセスするRedisのURL。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録                         |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`   | Google MapsのAPIキー。ローカルは `.env.local`、本番は Vercel の Environment Variables に登録                           |
 | `GOOGLE_MAPS_API_KEY`               | 開発専用CLI (`.agents/scripts/google_map/geocode.ts`) 用のキー。ローカル `.env.local` のみで使用し、本番には登録しない |
-| `MOUNTAIN_SCRAPER_BROWSER_MODE`     | スクレイピング時のブラウザ起動モード。`auto` / `local` / `serverless`（未指定時は `auto`）                             |
-| `MOUNTAIN_SCRAPER_HEADLESS`         | スクレイピング時のヘッドレス実行有無。`true` / `false`（未指定時は `true`）                                            |
-| `LOCAL_CHROMIUM_EXECUTABLE_PATH`    | `local` モード時に利用する Chrome / Chromium 実行ファイルのパス（任意）                                                |
 | `NEXT_PUBLIC_DISABLE_EXTERNAL_MAPS` | `1` の場合、Mountain Map で外部地図読込を無効化（主にE2E向け）                                                         |
 | `CLOUDINARY_CLOUD_NAME`             | Cloudinary の Cloud name。碧衣ページの生成画像取得に使用                                                               |
 | `CLOUDINARY_API_KEY`                | Cloudinary API key                                                                                                     |
