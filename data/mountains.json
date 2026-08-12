@@ -1,6 +1,20 @@
 {
   "mountains": [
     {
+      "name": "立山",
+      "date": "2026-07-20",
+      "url": "https://yamap.com/activities/49863091",
+      "latitude": 36.5725646,
+      "longitude": 137.6175013
+    },
+    {
+      "name": "雲取山",
+      "date": "2026-07-11",
+      "url": "https://yamap.com/activities/49604731",
+      "latitude": 35.8554954,
+      "longitude": 138.943958
+    },
+    {
       "name": "恵那山",
       "date": "2025-11-16",
       "url": "https://yamap.com/activities/44384404",
@@ -398,13 +412,6 @@
       "url": "https://yamap.com/activities/9384242",
       "latitude": 35.474534,
       "longitude": 139.1628398
-    },
-    {
-      "name": "雲取山",
-      "date": "2020-11-22",
-      "url": "https://yamap.com/activities/8768739",
-      "latitude": 35.8554954,
-      "longitude": 138.943958
     },
     {
       "name": "大台ヶ原",
