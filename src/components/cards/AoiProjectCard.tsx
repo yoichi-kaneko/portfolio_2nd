@@ -146,7 +146,7 @@ export function AoiProjectCard() {
           <div className="w-px bg-[rgba(127,212,255,0.14)]" />
           <div>
             <div className="font-space text-[19px] font-bold text-[#9fd9ff]">
-              6
+              8
             </div>
             <div className="text-[10px] text-[#7e90ad]">実行モード</div>
           </div>
