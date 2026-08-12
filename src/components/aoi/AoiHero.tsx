@@ -61,7 +61,7 @@ export function AoiHero() {
           <div className="w-px bg-[rgba(127,212,255,0.14)]" />
           <div>
             <div className="font-space text-[26px] font-bold text-[#9fd9ff]">
-              6
+              8
             </div>
             <div className="text-[11.5px] tracking-[0.04em] text-[#7e90ad]">
               実行モード
