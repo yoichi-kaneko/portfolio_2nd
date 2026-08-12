@@ -56,7 +56,7 @@ describe("AoiProjectCard", () => {
     // 半券の統計
     expect(screen.getByText("15+")).toBeInTheDocument();
     expect(screen.getByText("連携サービス")).toBeInTheDocument();
-    expect(screen.getByText("6")).toBeInTheDocument();
+    expect(screen.getByText("8")).toBeInTheDocument();
     expect(screen.getByText("実行モード")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("人で制作中")).toBeInTheDocument();

@@ -1,20 +1,18 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { createClientMock, launchMountainsBrowserMock } = vi.hoisted(() => ({
+const { createClientMock } = vi.hoisted(() => ({
   createClientMock: vi.fn(),
-  launchMountainsBrowserMock: vi.fn(),
 }));
 
 vi.mock("redis", () => ({
   createClient: createClientMock,
 }));
 
-vi.mock("@/lib/server/mountainsBrowser", () => ({
-  launchMountainsBrowser: launchMountainsBrowserMock,
-}));
-
 import { GET } from "./route";
+
+const YAMAP_ACTIVITIES_API =
+  "https://api.yamap.com/v3/users/1027860/activities";
 
 function createRedisClientMock() {
   return {
@@ -26,19 +24,13 @@ function createRedisClientMock() {
   };
 }
 
-function createBrowserMock(html: string) {
-  const page = {
-    goto: vi.fn().mockResolvedValue(undefined),
-    waitForSelector: vi.fn().mockResolvedValue(undefined),
-    content: vi.fn().mockResolvedValue(html),
-  };
-
-  const browser = {
-    newPage: vi.fn().mockResolvedValue(page),
-    close: vi.fn().mockResolvedValue(undefined),
-  };
-
-  return { browser, page };
+/** YAMAP API の成功レスポンスを模したモックを登録する */
+function mockYamapResponse(totalCount: unknown) {
+  return vi.spyOn(global, "fetch").mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: async () => ({ meta: { total_count: totalCount } }),
+  } as Response);
 }
 
 describe("/api/mountains/report-count GET", () => {
@@ -50,6 +42,7 @@ describe("/api/mountains/report-count GET", () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     if (originalRedisUrl === undefined) {
       delete process.env.REDIS_URL;
     } else {
@@ -57,13 +50,10 @@ describe("/api/mountains/report-count GET", () => {
     }
   });
 
-  it("REDIS_URL 未設定時は Redis を使わずスクレイピングのみ行う", async () => {
+  it("REDIS_URL 未設定時は Redis を使わず YAMAP API から取得する", async () => {
     delete process.env.REDIS_URL;
 
-    const { browser } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">42 件</li></ul>',
-    );
-    launchMountainsBrowserMock.mockResolvedValue(browser);
+    const fetchMock = mockYamapResponse(42);
 
     const response = await GET();
     const json = await response.json();
@@ -71,22 +61,10 @@ describe("/api/mountains/report-count GET", () => {
     expect(response.status).toBe(200);
     expect(json).toEqual({ count: 42 });
     expect(createClientMock).not.toHaveBeenCalled();
-    expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
-    expect(browser.close).toHaveBeenCalledTimes(1);
-  });
-
-  it("REDIS_URL 未設定かつ同時リクエストでもブラウザは1回だけ起動する", async () => {
-    delete process.env.REDIS_URL;
-
-    const { browser } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">42 件</li></ul>',
+    expect(fetchMock).toHaveBeenCalledWith(
+      YAMAP_ACTIVITIES_API,
+      expect.objectContaining({ cache: "no-store" }),
     );
-    launchMountainsBrowserMock.mockImplementation(async () => browser);
-
-    const [a, b] = await Promise.all([GET(), GET()]);
-    expect(await a.json()).toEqual({ count: 42 });
-    expect(await b.json()).toEqual({ count: 42 });
-    expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
   });
 
   it("Redis キャッシュがあればキャッシュ値を返す", async () => {
@@ -94,191 +72,143 @@ describe("/api/mountains/report-count GET", () => {
     redisClient.get.mockResolvedValue(JSON.stringify({ count: 321 }));
     createClientMock.mockReturnValue(redisClient);
 
+    const fetchMock = mockYamapResponse(42);
+
     const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(200);
     expect(json).toEqual({ count: 321 });
-    expect(launchMountainsBrowserMock).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
     expect(redisClient.set).not.toHaveBeenCalled();
     expect(redisClient.quit).toHaveBeenCalledTimes(1);
   });
 
-  it("キャッシュミス時はスクレイピングして number で返し、キャッシュに保存する", async () => {
-    const readClient = createRedisClientMock();
-    const lockClient = createRedisClientMock();
-    createClientMock
-      .mockReturnValueOnce(readClient)
-      .mockReturnValueOnce(lockClient);
+  it("キャッシュミス時は YAMAP API から取得して number で返し、キャッシュに保存する", async () => {
+    const redisClient = createRedisClientMock();
+    createClientMock.mockReturnValue(redisClient);
 
-    const { browser, page } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">1,234 件</li></ul>',
-    );
-    launchMountainsBrowserMock.mockResolvedValue(browser);
+    const fetchMock = mockYamapResponse(1234);
 
     const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(200);
     expect(json).toEqual({ count: 1234 });
-    expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
-    expect(page.goto).toHaveBeenCalledWith(
-      "https://yamap.com/users/1027860",
-      expect.objectContaining({
-        waitUntil: "domcontentloaded",
-        timeout: 10_000,
-      }),
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      YAMAP_ACTIVITIES_API,
+      expect.objectContaining({ cache: "no-store" }),
     );
-    expect(page.waitForSelector).toHaveBeenCalledWith(
-      "ul.markuplint-ignore-permitted-contents [role='status']",
-      { timeout: 5_000 },
-    );
-    expect(lockClient.set).toHaveBeenCalledWith(
-      "mountains:report_count:lock",
-      "1",
-      { NX: true, EX: 45 },
-    );
-    expect(lockClient.set).toHaveBeenCalledWith(
+    expect(redisClient.set).toHaveBeenCalledWith(
       "mountains:report_count",
       JSON.stringify({ count: 1234 }),
       { EX: 24 * 60 * 60 },
     );
-    expect(lockClient.del).toHaveBeenCalledWith("mountains:report_count:lock");
-    expect(browser.close).toHaveBeenCalledTimes(1);
+    expect(redisClient.quit).toHaveBeenCalledTimes(1);
   });
 
-  it("数値化できない文字列を取得した場合は 500 を返す", async () => {
-    const readClient = createRedisClientMock();
-    const lockClient = createRedisClientMock();
-    createClientMock
-      .mockReturnValueOnce(readClient)
-      .mockReturnValueOnce(lockClient);
+  it("YAMAP API がエラーを返した場合は 500 を返す", async () => {
+    const redisClient = createRedisClientMock();
+    createClientMock.mockReturnValue(redisClient);
 
-    const { browser } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">N/A</li></ul>',
-    );
-    launchMountainsBrowserMock.mockResolvedValue(browser);
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: async () => ({}),
+    } as Response);
+
+    const response = await GET();
+    const json = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(json).toEqual({ error: "YAMAP API error: 503" });
+    expect(redisClient.set).not.toHaveBeenCalled();
+    expect(redisClient.quit).toHaveBeenCalledTimes(1);
+  });
+
+  it("件数が数値として取り出せない場合は 500 を返す", async () => {
+    const redisClient = createRedisClientMock();
+    createClientMock.mockReturnValue(redisClient);
+
+    mockYamapResponse("N/A");
 
     const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(500);
     expect(json).toEqual({ error: "Failed to parse report count as number" });
-    expect(lockClient.set).toHaveBeenCalledTimes(1);
-    expect(lockClient.set).toHaveBeenCalledWith(
-      "mountains:report_count:lock",
-      "1",
-      { NX: true, EX: 45 },
-    );
-    expect(lockClient.del).toHaveBeenCalledWith("mountains:report_count:lock");
+    expect(redisClient.set).not.toHaveBeenCalled();
   });
 
-  it("Redis 読み取り失敗時はスクレイピングにフォールバックする", async () => {
+  it("Redis 読み取り失敗時は YAMAP API にフォールバックする", async () => {
     const brokenRedisClient = createRedisClientMock();
     brokenRedisClient.connect.mockRejectedValue(new Error("redis down"));
+    createClientMock.mockReturnValue(brokenRedisClient);
 
-    const lockClient = createRedisClientMock();
-    createClientMock
-      .mockReturnValueOnce(brokenRedisClient)
-      .mockReturnValueOnce(lockClient);
-
-    const { browser } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">555</li></ul>',
-    );
-    launchMountainsBrowserMock.mockResolvedValue(browser);
+    const fetchMock = mockYamapResponse(555);
 
     const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(200);
     expect(json).toEqual({ count: 555 });
-    expect(createClientMock).toHaveBeenCalledTimes(2);
-    expect(lockClient.set).toHaveBeenCalledWith(
-      "mountains:report_count",
-      JSON.stringify({ count: 555 }),
-      { EX: 24 * 60 * 60 },
-    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    // 接続に失敗しているためキャッシュ保存は行われない
+    expect(brokenRedisClient.set).not.toHaveBeenCalled();
+    expect(brokenRedisClient.quit).toHaveBeenCalledTimes(1);
   });
 
-  it("キャッシュが不正な JSON のときはスクレイピングにフォールバックする", async () => {
-    const readClient = createRedisClientMock();
-    readClient.get.mockResolvedValue("not-json{");
+  it("キャッシュが不正な JSON のときは YAMAP API にフォールバックする", async () => {
+    const redisClient = createRedisClientMock();
+    redisClient.get.mockResolvedValue("not-json{");
+    createClientMock.mockReturnValue(redisClient);
 
-    const lockClient = createRedisClientMock();
-    createClientMock
-      .mockReturnValueOnce(readClient)
-      .mockReturnValueOnce(lockClient);
-
-    const { browser } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">777</li></ul>',
-    );
-    launchMountainsBrowserMock.mockResolvedValue(browser);
+    mockYamapResponse(777);
 
     const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(200);
     expect(json).toEqual({ count: 777 });
-    expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
-    expect(lockClient.set).toHaveBeenCalledWith(
+    expect(redisClient.set).toHaveBeenCalledWith(
       "mountains:report_count",
       JSON.stringify({ count: 777 }),
       { EX: 24 * 60 * 60 },
     );
   });
 
-  it("キャッシュの count が有限数でないときはスクレイピングにフォールバックする", async () => {
-    const readClient = createRedisClientMock();
-    readClient.get.mockResolvedValue(JSON.stringify({ count: "x" }));
+  it("キャッシュの count が有限数でないときは YAMAP API にフォールバックする", async () => {
+    const redisClient = createRedisClientMock();
+    redisClient.get.mockResolvedValue(JSON.stringify({ count: "x" }));
+    createClientMock.mockReturnValue(redisClient);
 
-    const lockClient = createRedisClientMock();
-    createClientMock
-      .mockReturnValueOnce(readClient)
-      .mockReturnValueOnce(lockClient);
-
-    const { browser } = createBrowserMock(
-      '<ul class="markuplint-ignore-permitted-contents"><li role="status">888</li></ul>',
-    );
-    launchMountainsBrowserMock.mockResolvedValue(browser);
+    mockYamapResponse(888);
 
     const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(200);
     expect(json).toEqual({ count: 888 });
-    expect(launchMountainsBrowserMock).toHaveBeenCalledTimes(1);
-    expect(lockClient.set).toHaveBeenCalledWith(
+    expect(redisClient.set).toHaveBeenCalledWith(
       "mountains:report_count",
       JSON.stringify({ count: 888 }),
       { EX: 24 * 60 * 60 },
     );
   });
 
-  it("分散ロック未取得時はポーリングでキャッシュが埋まるのを待つ", async () => {
-    const readClient = createRedisClientMock();
-    const lockClient = createRedisClientMock();
-    lockClient.set.mockImplementation(async (key, _val, opts) => {
-      if (opts && "NX" in opts && opts.NX) {
-        return null;
-      }
-      return "OK";
-    });
+  it("Redis 書き込み失敗時でも取得した件数を返す", async () => {
+    const redisClient = createRedisClientMock();
+    redisClient.set.mockRejectedValue(new Error("redis write failed"));
+    createClientMock.mockReturnValue(redisClient);
 
-    const pollClient = createRedisClientMock();
-    pollClient.get
-      .mockResolvedValueOnce(null)
-      .mockResolvedValue(JSON.stringify({ count: 42 }));
-
-    createClientMock
-      .mockReturnValueOnce(readClient)
-      .mockReturnValueOnce(lockClient)
-      .mockReturnValueOnce(pollClient);
+    mockYamapResponse(101);
 
     const response = await GET();
     const json = await response.json();
 
     expect(response.status).toBe(200);
-    expect(json).toEqual({ count: 42 });
-    expect(launchMountainsBrowserMock).not.toHaveBeenCalled();
+    expect(json).toEqual({ count: 101 });
+    expect(redisClient.quit).toHaveBeenCalledTimes(1);
   });
 });

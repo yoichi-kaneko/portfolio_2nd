@@ -1,52 +1,67 @@
-import * as cheerio from "cheerio";
 import { createClient } from "redis";
-import { launchMountainsBrowser } from "@/lib/server/mountainsBrowser";
 
-// Vercelのタイムアウト制限を回避するため（Hobbyプランは最大10秒、Proは最大30秒）
-export const maxDuration = 30;
+// redis クライアントは Node.js API に依存するため Node ランタイムで実行する
 export const runtime = "nodejs";
 
-const TARGET_URL = "https://yamap.com/users/1027860";
-/** YAMAP プロフィール上のレポート件数が載る要素（Playwright / Cheerio 双方で使用） */
-const REPORT_COUNT_SELECTOR =
-  "ul.markuplint-ignore-permitted-contents [role='status']";
+/**
+ * YAMAP の公開 API。`meta.total_count` に公開済み活動日記の総数が入る。
+ *
+ * プロフィールページの件数はクライアント側描画のため HTML には含まれない。
+ * この API を直接叩くことでブラウザを介さずに件数を取得できる。
+ */
+const YAMAP_ACTIVITIES_API =
+  "https://api.yamap.com/v3/users/1027860/activities";
 const REDIS_KEY = "mountains:report_count";
-const REDIS_LOCK_KEY = `${REDIS_KEY}:lock`;
 const REDIS_TTL = 24 * 60 * 60; // 24時間
-/** スクレイプ中の多重起動・他インスタンスとの競合を抑える短期ロック（秒） */
-const REDIS_LOCK_TTL_SEC = 45;
-/** ロック未取得時にキャッシュ書き込みを待つ上限（ミリ秒） */
-const CACHE_POLL_MAX_MS = 28_000;
-const CACHE_POLL_INTERVAL_MS = 250;
+/** YAMAP API の応答待ち上限（ミリ秒） */
+const FETCH_TIMEOUT_MS = 10_000;
 
 type CachePayload = {
   count: number;
 };
 
+/** YAMAP API レスポンスのうち利用するフィールド */
+type YamapActivitiesResponse = {
+  meta?: {
+    total_count?: unknown;
+  };
+};
+
 type RedisClient = ReturnType<typeof createClient>;
 
-/** 同一 Node インスタンス上の同時キャッシュミスでブラウザを複数起動しない */
-let inFlightScrape: Promise<number> | null = null;
+/** Redis 接続を閉じる。切断の失敗は無視してよい。 */
+async function quitQuietly(client: RedisClient): Promise<void> {
+  try {
+    await client.quit();
+  } catch {
+    // disconnect failure is ignorable
+  }
+}
 
 /**
- * YAMAP ページから抜き出した件数テキストを数値に変換する。
+ * YAMAP の公開 API から活動日記の件数を取得する。
  *
- * @param raw 表示用文字列（数字以外を含んでも可）
- * @returns パースした件数
- * @throws 数字が抽出できない、または有限数でない場合
+ * @returns 公開済み活動日記の件数
+ * @throws レスポンスが異常、または件数が数値として取り出せない場合
  */
-function parseReportCount(raw: string): number {
-  const digitsOnly = raw.replace(/[^\d]/g, "");
-  if (!digitsOnly) {
+async function fetchReportCount(): Promise<number> {
+  const response = await fetch(YAMAP_ACTIVITIES_API, {
+    // 件数のキャッシュは Redis 側で持つため、fetch 自体はキャッシュしない
+    cache: "no-store",
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
+
+  if (!response.ok) {
+    throw new Error(`YAMAP API error: ${response.status}`);
+  }
+
+  const { meta }: YamapActivitiesResponse = await response.json();
+  const count = meta?.total_count;
+  if (typeof count !== "number" || !Number.isFinite(count)) {
     throw new Error("Failed to parse report count as number");
   }
 
-  const parsed = Number(digitsOnly);
-  if (!Number.isFinite(parsed)) {
-    throw new Error("Failed to parse report count as number");
-  }
-
-  return parsed;
+  return count;
 }
 
 function parseCachedPayload(cached: string): number | null {
@@ -69,164 +84,55 @@ async function readCountFromCache(client: RedisClient): Promise<number | null> {
   return parseCachedPayload(cached);
 }
 
-async function tryAcquireScrapeLock(client: RedisClient): Promise<boolean> {
-  const reply = await client.set(REDIS_LOCK_KEY, "1", {
-    NX: true,
-    EX: REDIS_LOCK_TTL_SEC,
-  });
-  return reply === "OK";
-}
-
-async function pollCachedCount(redisUrl: string): Promise<number> {
-  const pollClient = createClient({ url: redisUrl });
-  await pollClient.connect();
-  try {
-    const deadline = Date.now() + CACHE_POLL_MAX_MS;
-    while (Date.now() < deadline) {
-      const count = await readCountFromCache(pollClient);
-      if (count !== null) {
-        return count;
-      }
-      await new Promise((r) => setTimeout(r, CACHE_POLL_INTERVAL_MS));
-    }
-    throw new Error("Timed out waiting for mountains report count cache");
-  } finally {
-    try {
-      await pollClient.quit();
-    } catch {
-      // disconnect failure is ignorable
-    }
-  }
-}
-
 /**
- * Playwright でページを取得し件数をパースする（Redis には書かない）。
+ * 登山レポート件数を取得する。
+ *
+ * まず Redis キャッシュを参照し、有効な値があればそれを返す。
+ * キャッシュミスまたは Redis エラー時は YAMAP API から取得し、
+ * 取得成功時は TTL 付きで Redis に保存する。
  */
-async function scrapeReportCountFromPage(): Promise<number> {
-  const browser = await launchMountainsBrowser();
-  try {
-    const page = await browser.newPage();
+async function resolveReportCount(): Promise<number> {
+  const redisUrl = process.env.REDIS_URL;
 
-    await page.goto(TARGET_URL, {
-      waitUntil: "domcontentloaded",
-      timeout: 10_000,
-    });
-    await page.waitForSelector(REPORT_COUNT_SELECTOR, { timeout: 5_000 });
-
-    const html = await page.content();
-    const $ = cheerio.load(html);
-    const countText = $(REPORT_COUNT_SELECTOR).first().text();
-    return parseReportCount(countText);
-  } finally {
-    await browser.close();
-  }
-}
-
-/**
- * Redis 利用時: ロック取得済みクライアントでキャッシュ書込・ロック解放まで行う。
- */
-async function persistCountAndReleaseLock(
-  lockClient: RedisClient,
-  count: number,
-): Promise<void> {
-  try {
-    const payload: CachePayload = { count };
-    await lockClient.set(REDIS_KEY, JSON.stringify(payload), {
-      EX: REDIS_TTL,
-    });
-  } catch (e) {
-    console.error("[mountains] Redis write error (result not cached):", e);
-  }
-  try {
-    await lockClient.del(REDIS_LOCK_KEY);
-  } catch {
-    // lock release failure is ignorable (TTL で失効する)
-  }
-  try {
-    await lockClient.quit();
-  } catch {
-    // disconnect failure is ignorable
-  }
-}
-
-/**
- * キャッシュミス時に件数を解決する（インスタンス内 single-flight、Redis 時は分散ロック）。
- */
-async function resolveCountAfterCacheMiss(
-  redisUrl: string | undefined,
-): Promise<number> {
+  // REDIS_URL が未設定/空の場合は Redis を使わず直接 YAMAP API から取得する
   if (!redisUrl) {
-    if (inFlightScrape) {
-      return inFlightScrape;
-    }
-    inFlightScrape = (async () => {
-      try {
-        return await scrapeReportCountFromPage();
-      } finally {
-        inFlightScrape = null;
-      }
-    })();
-    return inFlightScrape;
+    return fetchReportCount();
   }
 
-  const lockClient = createClient({ url: redisUrl });
-  await lockClient.connect();
-
+  let redisClient: RedisClient | undefined;
   try {
-    const locked = await tryAcquireScrapeLock(lockClient);
-    if (!locked) {
-      try {
-        await lockClient.quit();
-      } catch {
-        // disconnect failure is ignorable
-      }
-      return pollCachedCount(redisUrl);
+    redisClient = createClient({ url: redisUrl });
+    await redisClient.connect();
+
+    const cachedCount = await readCountFromCache(redisClient);
+    if (cachedCount !== null) {
+      await quitQuietly(redisClient);
+      return cachedCount;
     }
-
-    if (inFlightScrape) {
-      try {
-        await lockClient.del(REDIS_LOCK_KEY);
-      } catch {
-        // ignore
-      }
-      try {
-        await lockClient.quit();
-      } catch {
-        // ignore
-      }
-      return inFlightScrape;
-    }
-
-    inFlightScrape = (async () => {
-      try {
-        const count = await scrapeReportCountFromPage();
-        await persistCountAndReleaseLock(lockClient, count);
-        return count;
-      } catch (e) {
-        try {
-          await lockClient.del(REDIS_LOCK_KEY);
-        } catch {
-          // ignore
-        }
-        try {
-          await lockClient.quit();
-        } catch {
-          // ignore
-        }
-        throw e;
-      } finally {
-        inFlightScrape = null;
-      }
-    })();
-
-    return inFlightScrape;
   } catch (e) {
-    try {
-      await lockClient.quit();
-    } catch {
-      // ignore
+    console.error("[mountains] Redis read error, falling back to API:", e);
+    if (redisClient) {
+      await quitQuietly(redisClient);
     }
-    throw e;
+    return fetchReportCount();
+  }
+
+  // YAMAP API 取得 → キャッシュ保存（例外時も Redis 接続を必ず閉じる）
+  try {
+    const count = await fetchReportCount();
+
+    try {
+      const payload: CachePayload = { count };
+      await redisClient.set(REDIS_KEY, JSON.stringify(payload), {
+        EX: REDIS_TTL,
+      });
+    } catch (e) {
+      console.error("[mountains] Redis write error (result not cached):", e);
+    }
+
+    return count;
+  } finally {
+    await quitQuietly(redisClient);
   }
 }
 
@@ -236,43 +142,8 @@ async function resolveCountAfterCacheMiss(
  * 成功時は `{ count }`、失敗時は `{ error }` を返す。
  */
 export async function GET() {
-  const redisUrl = process.env.REDIS_URL;
-
   try {
-    if (redisUrl) {
-      let redisClient: RedisClient | undefined;
-      try {
-        redisClient = createClient({ url: redisUrl });
-        await redisClient.connect();
-
-        const cachedCount = await readCountFromCache(redisClient);
-        if (cachedCount !== null) {
-          try {
-            await redisClient.quit();
-          } catch {
-            // disconnect failure is ignorable
-          }
-          return Response.json({ count: cachedCount });
-        }
-        try {
-          await redisClient.quit();
-        } catch {
-          // disconnect failure is ignorable
-        }
-      } catch (e) {
-        console.error(
-          "[mountains] Redis read error, falling back to scrape:",
-          e,
-        );
-        try {
-          await redisClient?.quit();
-        } catch {
-          // disconnect failure is ignorable
-        }
-      }
-    }
-
-    const count = await resolveCountAfterCacheMiss(redisUrl);
+    const count = await resolveReportCount();
     return Response.json({ count });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
