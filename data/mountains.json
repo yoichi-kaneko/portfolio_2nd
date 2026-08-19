@@ -1,6 +1,13 @@
 {
   "mountains": [
     {
+      "name": "蔵王山",
+      "date": "2026-07-26",
+      "url": "https://yamap.com/activities/50011444",
+      "latitude": 38.144204494217384,
+      "longitude": 140.43957229533092
+    },
+    {
       "name": "立山",
       "date": "2026-07-20",
       "url": "https://yamap.com/activities/49863091",
