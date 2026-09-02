@@ -1,6 +1,20 @@
 {
   "mountains": [
     {
+      "name": "聖岳",
+      "date": "2025-08-10",
+      "url": "https://yamap.com/activities/50380509",
+      "latitude": 35.4225493,
+      "longitude": 138.129427
+    },
+    {
+      "name": "赤石岳",
+      "date": "2025-08-09",
+      "url": "https://yamap.com/activities/50380509",
+      "latitude": 35.4612412,
+      "longitude": 138.1573537
+    },
+    {
       "name": "蔵王山",
       "date": "2026-07-26",
       "url": "https://yamap.com/activities/50011444",
@@ -55,13 +69,6 @@
       "url": "https://yamap.com/activities/42440377",
       "latitude": 36.6246883,
       "longitude": 137.7470709
-    },
-    {
-      "name": "赤石岳",
-      "date": "2025-08-16",
-      "url": "https://yamap.com/activities/42223530",
-      "latitude": 35.4612412,
-      "longitude": 138.1573537
     },
     {
       "name": "悪沢岳",
