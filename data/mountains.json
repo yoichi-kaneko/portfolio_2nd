@@ -1,6 +1,13 @@
 {
   "mountains": [
     {
+      "name": "笠ヶ岳",
+      "date": "2025-08-15",
+      "url": "https://yamap.com/activities/50521499",
+      "latitude": 36.3154609,
+      "longitude": 137.550413
+    },
+    {
       "name": "聖岳",
       "date": "2025-08-10",
       "url": "https://yamap.com/activities/50380509",
