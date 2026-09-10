@@ -9,17 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       # pnpm のセットアップとキャッシュ
       # version は package.json の packageManager から読む（二重指定するとエラーになる）
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v5
+      # Node.js のバージョンは .nvmrc を正本とし、
+      # クラウドセッションの .claude/hooks/session-start.sh も同じファイルを読む
+      - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           cache: "pnpm"
 
       - name: Install dependencies
@@ -51,7 +53,7 @@ jobs:
           NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: "dummy"
 
       # テスト失敗時にレポートを保存（デバッグ用）
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report
