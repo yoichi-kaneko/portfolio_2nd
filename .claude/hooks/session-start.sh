@@ -4,6 +4,10 @@
 # ブラウザ（Claude Code on the web）のセッションは node_modules が無い状態で始まるため、
 # `pnpm lint` / `pnpm build` / `pnpm test` がそのままでは動かない。
 # ローカルのターミナルセッションでは既存の node_modules に触れないよう何もしない。
+#
+# Playwright のブラウザはここでは導入しない。ダウンロードのコストが大きく、E2E に触れない
+# セッションでは完全に無駄になるため、E2E が必要になった時点で導入する。手順は AGENTS.md の
+# 「E2E のブラウザは必要になった時点で導入する」を参照。
 set -euo pipefail
 
 if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
