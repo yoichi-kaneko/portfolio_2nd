@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { H2, LEAD_P, SECTION, SECTION_LABEL } from "@/config/aoi";
+import { H2, LEAD_P, SECTION, SCROLL_MT, SECTION_LABEL } from "@/config/aoi";
 import { useAoiGeneratedImages } from "@/hooks/useAoiGeneratedImages";
 import { ImageLightbox } from "./ImageLightbox";
 
@@ -29,7 +29,8 @@ export function GenerateImageSection() {
   return (
     <section
       id="generate-image"
-      className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
+      aria-busy={loading}
+      className={`${SECTION} ${SCROLL_MT} px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 07 — GENERATE IMAGE"}</div>
       <h2 className={H2}>画像生成</h2>

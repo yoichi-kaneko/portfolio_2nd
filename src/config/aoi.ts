@@ -3,6 +3,9 @@
 
 export const SECTION = "relative z-[2] mx-auto max-w-[1180px]";
 
+// lg未満はナビが2段になるため、stickyヘッダー高さに合わせて余裕を取る。
+export const SCROLL_MT = "scroll-mt-[120px] lg:scroll-mt-[84px]";
+
 export const SECTION_LABEL =
   "mb-[12px] font-space text-[11px] tracking-[0.22em] text-[#6db4e6]";
 

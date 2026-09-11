@@ -39,7 +39,7 @@ export default function AoiPage() {
   return (
     <NightModeProvider>
       <div
-        className={`aoi-root relative min-h-screen w-full overflow-hidden font-noto text-[#dce7f5] ${PAGE_BG}`}
+        className={`aoi-root relative min-h-screen w-full overflow-x-clip font-noto text-[#dce7f5] ${PAGE_BG}`}
       >
         <Starfield />
         <AoiNav />

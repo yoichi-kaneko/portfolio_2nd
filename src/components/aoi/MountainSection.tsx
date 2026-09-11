@@ -1,12 +1,12 @@
 import Image from "next/image";
-import { SECTION, SECTION_LABEL, H2 } from "@/config/aoi";
+import { SECTION, SCROLL_MT, SECTION_LABEL, H2 } from "@/config/aoi";
 import { MOUNTAIN_FEATURES } from "@/data/aoi/mountainFeatures";
 
 export function MountainSection() {
   return (
     <section
       id="mountain"
-      className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
+      className={`${SECTION} ${SCROLL_MT} px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 04 — MOUNTAIN & WEATHER"}</div>
       <div className="grid grid-cols-1 items-center gap-[40px] lg:grid-cols-[0.92fr_1.08fr]">
