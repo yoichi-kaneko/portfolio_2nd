@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { useModalFocus } from "@/hooks/useModalFocus";
 import {
   APIProvider,
   Map,
@@ -41,13 +43,17 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
     selected,
   } = useMountainMapModal({ isOpen, onClose });
 
-  if (!isOpen) return null;
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useModalFocus(isOpen, dialogRef, closeRef);
+
+  if (!isOpen || typeof document === "undefined") return null;
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
   const disableExternalMapsForE2E =
     process.env.NEXT_PUBLIC_DISABLE_EXTERNAL_MAPS === "1";
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
@@ -58,6 +64,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
 
       {/* Modal */}
       <div
+        ref={dialogRef}
         data-testid="mountain-map-modal"
         role="dialog"
         aria-modal="true"
@@ -75,6 +82,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
             </p>
           </div>
           <button
+            ref={closeRef}
             onClick={onClose}
             className="w-8 h-8 flex cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Close"
@@ -84,9 +92,9 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
         </div>
 
         {/* Body */}
-        <div className="flex flex-1 min-h-0">
+        <div className="flex flex-col sm:flex-row flex-1 min-h-0">
           {/* Map */}
-          <div className="flex-1 min-w-0">
+          <div className="h-1/3 sm:h-auto sm:flex-1 min-w-0">
             {disableExternalMapsForE2E ? (
               <div className="h-full w-full grid place-items-center bg-[#111] text-sm text-gray-500">
                 Map is disabled in E2E environment
@@ -133,7 +141,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
           </div>
 
           {/* Right panel */}
-          <div className="w-36 sm:w-56 md:w-72 border-l border-[#262626] flex flex-col shrink-0 bg-[#161616]">
+          <div className="h-2/3 sm:h-auto min-h-0 w-full sm:w-56 md:w-72 border-t sm:border-t-0 sm:border-l border-[#262626] flex flex-col shrink-0 bg-[#161616]">
             {/* Detail */}
             <div className="p-5 border-b border-[#262626] shrink-0 min-h-[160px] flex flex-col justify-center">
               {selected ? (
@@ -195,10 +203,15 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
             </div>
 
             {/* Mountain list */}
-            <div ref={listRef} className="flex-1 overflow-y-auto">
+            <div
+              ref={listRef}
+              data-testid="mountain-list"
+              className="flex-1 overflow-y-auto"
+            >
               {mountains.map((mountain, index) => (
                 <button
                   key={mountain.name}
+                  aria-pressed={selectedIndex === index}
                   onClick={() => setSelectedIndex(index)}
                   className={`w-full cursor-pointer text-left px-4 py-3 flex items-center gap-3 transition-colors hover:bg-white/5 border-b border-[#1e1e1e] ${
                     selectedIndex === index ? "bg-white/10" : ""
@@ -223,6 +236,7 @@ export function MountainMapModal({ isOpen, onClose }: MountainMapModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

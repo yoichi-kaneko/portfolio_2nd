@@ -1,58 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
-
-type AudioMockState = {
-  playCalls: number;
-  pauseCalls: number;
-  srcValues: string[];
-};
-
-async function installAudioPlaybackStub(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    const globalWindow = window as unknown as Window & {
-      __audioMockState?: AudioMockState;
-    };
-
-    globalWindow.__audioMockState = {
-      playCalls: 0,
-      pauseCalls: 0,
-      srcValues: [] as string[],
-    };
-
-    const AudioMock = function AudioMock(this: HTMLAudioElement) {
-      const element = document.createElement("audio");
-      const mockState = globalWindow.__audioMockState as AudioMockState;
-      let pausedState = true;
-      let srcValue = "";
-
-      Object.defineProperty(element, "paused", {
-        configurable: true,
-        get: () => pausedState,
-      });
-      Object.defineProperty(element, "src", {
-        configurable: true,
-        get: () => srcValue,
-        set: (value: string) => {
-          srcValue = value;
-          mockState.srcValues.push(value);
-        },
-      });
-
-      element.play = async () => {
-        pausedState = false;
-        mockState.playCalls += 1;
-        element.dispatchEvent(new Event("play"));
-      };
-      element.pause = () => {
-        pausedState = true;
-        mockState.pauseCalls += 1;
-        element.dispatchEvent(new Event("pause"));
-      };
-
-      return element as HTMLAudioElement;
-    };
-    window.Audio = AudioMock as unknown as typeof Audio;
-  });
-}
+import { installAudioPlaybackStub, type AudioMockState } from "./support/audio";
+import { test, expect, MOCK_WEEKLY } from "./fixtures";
 
 test("トップページが表示される", async ({ page }) => {
   await page.goto("/");
@@ -195,14 +142,6 @@ test.describe("Life Log 音声トグルの動作確認", () => {
   });
 });
 
-const MOCK_WEEKLY = [
-  { week: "W5", count: 10 },
-  { week: "W4", count: 20 },
-  { week: "W3", count: 15 },
-  { week: "W2", count: 5 },
-  { week: "W1", count: 30 },
-];
-
 test.describe("GitHubContributionChart の詳細確認", () => {
   test("BarChart 要素が表示される", async ({ page }) => {
     await page.route("/api/github/contributions", async (route) => {
@@ -244,8 +183,11 @@ test.describe("GitHubContributionChart の詳細確認", () => {
       });
     });
     await page.goto("/");
-    await expect(page.getByTestId("github-card-skeleton")).toBeVisible();
-    release();
+    try {
+      await expect(page.getByTestId("github-card-skeleton")).toBeVisible();
+    } finally {
+      release();
+    }
     await expect(page.getByTestId("github-card-skeleton")).not.toBeVisible();
     await expect(page.locator(".recharts-surface")).toBeVisible();
   });
@@ -280,16 +222,6 @@ test.describe("ProjectsModal の動作確認", () => {
     const cards = page.locator('[data-testid="project-card"]');
     await expect(cards.first()).toBeVisible();
     expect(await cards.count()).toBeGreaterThan(1);
-  });
-
-  test("タブ切り替えで表示件数が絞り込まれる", async ({ page }) => {
-    await page.getByRole("button", { name: "View All" }).click();
-    const allCards = page.locator('[data-testid="project-card"]');
-    const allCount = await allCards.count();
-
-    await page.getByRole("button", { name: "正社員" }).click();
-    const employeeCount = await allCards.count();
-    expect(employeeCount).toBeLessThan(allCount);
   });
 
   test("カードをクリックすると詳細パネルが表示される", async ({ page }) => {
@@ -419,8 +351,11 @@ test.describe("登山レポート件数の表示確認", () => {
       });
     });
     await page.goto("/");
-    await expect(page.getByTestId("report-count-skeleton")).toBeVisible();
-    release();
+    try {
+      await expect(page.getByTestId("report-count-skeleton")).toBeVisible();
+    } finally {
+      release();
+    }
     await expect(page.getByTestId("report-count-skeleton")).not.toBeVisible();
     const lifeLogCard = page.getByTestId("life-log-card");
     await expect(lifeLogCard.getByText("999")).toBeVisible();

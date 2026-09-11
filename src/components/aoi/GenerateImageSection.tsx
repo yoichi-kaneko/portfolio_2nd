@@ -29,6 +29,7 @@ export function GenerateImageSection() {
   return (
     <section
       id="generate-image"
+      aria-busy={loading}
       className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 07 — GENERATE IMAGE"}</div>
