@@ -11,7 +11,7 @@ const NAV_LINKS: Array<{ href: string; label: string }> = [
 
 export function AoiNav() {
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between bg-[linear-gradient(180deg,rgba(8,12,22,0.92),rgba(8,12,22,0.0))] px-[40px] py-[14px] backdrop-blur-[10px]">
+    <header className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-3 bg-[linear-gradient(180deg,rgba(8,12,22,0.92),rgba(8,12,22,0.0))] px-4 sm:px-[40px] py-[14px] backdrop-blur-[10px]">
       <div className="flex items-center gap-[12px]">
         <span className="animate-[aoi-glow_3s_ease-in-out_infinite] text-[18px] text-[#8fdcff] [text-shadow:0_0_14px_rgba(127,212,255,0.7)]">
           ✦
@@ -23,18 +23,21 @@ export function AoiNav() {
           AOI
         </span>
       </div>
-      <nav className="flex items-center gap-[24px]">
+      <nav
+        aria-label="セクション"
+        className="order-3 flex w-full gap-4 overflow-x-auto pb-1 lg:order-none lg:w-auto lg:pb-0 lg:gap-[24px]"
+      >
         {NAV_LINKS.map((link) => (
           <a
             key={link.href}
             href={link.href}
-            className="text-[13px] text-[#9fb2cc] transition-colors hover:text-[#cfe6ff]"
+            className="shrink-0 text-[13px] text-[#9fb2cc] transition-colors hover:text-[#cfe6ff]"
           >
             {link.label}
           </a>
         ))}
-        <NightToggleButton variant="nav" />
       </nav>
+      <NightToggleButton variant="nav" />
     </header>
   );
 }

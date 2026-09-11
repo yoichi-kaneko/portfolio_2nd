@@ -1,5 +1,8 @@
 "use client";
 
+import { useRef } from "react";
+import { createPortal } from "react-dom";
+import { useModalFocus } from "@/hooks/useModalFocus";
 import { useProjectsModal, type ProjectsTab } from "@/hooks/useProjectsModal";
 
 const TAB_LABELS: Record<ProjectsTab, string> = {
@@ -15,7 +18,7 @@ interface ProjectsModalProps {
 }
 
 export function ProjectsModal({ isOpen, onClose }: ProjectsModalProps) {
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
   return <ProjectsModalContent onClose={onClose} />;
 }
@@ -32,7 +35,11 @@ function ProjectsModalContent({
     handleTabChange,
   } = useProjectsModal({ onClose });
 
-  return (
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useModalFocus(true, dialogRef, closeRef);
+
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
@@ -42,11 +49,20 @@ function ProjectsModalContent({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-5xl h-[85vh] bg-[#161616] border border-[#262626] rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="projects-title"
+        className="relative w-full max-w-5xl h-[85vh] bg-[#161616] border border-[#262626] rounded-2xl flex flex-col overflow-hidden shadow-2xl"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#262626] shrink-0">
-          <h2 className="text-xl font-bold">All Projects</h2>
+          <h2 id="projects-title" className="text-xl font-bold">
+            All Projects
+          </h2>
           <button
+            ref={closeRef}
             onClick={handleClose}
             className="w-8 h-8 flex cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Close"
@@ -60,6 +76,7 @@ function ProjectsModalContent({
           {(Object.keys(TAB_LABELS) as ProjectsTab[]).map((tab) => (
             <button
               key={tab}
+              aria-pressed={activeTab === tab}
               onClick={() => handleTabChange(tab)}
               className={`cursor-pointer px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
                 activeTab === tab
@@ -73,16 +90,18 @@ function ProjectsModalContent({
         </div>
 
         {/* Content */}
-        <div className="flex flex-1 overflow-hidden min-h-0">
+        <div className="flex flex-col sm:flex-row flex-1 overflow-hidden min-h-0">
           {/* Card Grid */}
           <div
             className={`overflow-y-auto p-6 transition-all duration-300 ease-in-out ${
-              selectedProject ? "w-1/2" : "w-full"
+              selectedProject ? "w-full h-1/2 sm:h-auto sm:w-1/2" : "w-full"
             }`}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {filteredProjects.map((project) => (
-                <div
+                <button
+                  type="button"
+                  aria-pressed={selectedProject?.id === project.id}
                   key={project.id}
                   data-testid="project-card"
                   onClick={() =>
@@ -90,24 +109,24 @@ function ProjectsModalContent({
                       selectedProject?.id === project.id ? null : project,
                     )
                   }
-                  className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                  className={`text-left w-full p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
                     selectedProject?.id === project.id
                       ? "bg-blue-500/10 border-blue-500/40"
                       : "bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/8"
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <p className="font-bold text-sm leading-snug">
+                  <span className="flex items-start justify-between gap-2 mb-1">
+                    <span className="font-bold text-sm leading-snug">
                       {project.name}
-                    </p>
+                    </span>
                     <span className="text-xs text-gray-500 shrink-0">
                       {project.period}
                     </span>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                  </span>
+                  <span className="block text-xs text-gray-400 mt-1 line-clamp-2">
                     {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-1 mt-2">
+                  </span>
+                  <span className="flex flex-wrap gap-1 mt-2">
                     {project.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
@@ -121,16 +140,21 @@ function ProjectsModalContent({
                         +{project.tags.length - 3}
                       </span>
                     )}
-                  </div>
-                </div>
+                  </span>
+                </button>
               ))}
             </div>
           </div>
 
           {/* Detail Panel */}
           <div
-            className={`border-l border-[#262626] overflow-y-auto transition-all duration-300 ease-in-out shrink-0 ${
-              selectedProject ? "w-1/2 opacity-100" : "w-0 opacity-0"
+            role="region"
+            aria-hidden={!selectedProject}
+            aria-label="プロジェクト詳細"
+            className={`border-t sm:border-t-0 sm:border-l border-[#262626] overflow-y-auto transition-all duration-300 ease-in-out shrink-0 ${
+              selectedProject
+                ? "w-full h-1/2 sm:h-auto sm:w-1/2 opacity-100"
+                : "w-0 h-0 sm:h-auto opacity-0"
             }`}
           >
             {selectedProject && (
@@ -177,6 +201,7 @@ function ProjectsModalContent({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

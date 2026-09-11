@@ -1,10 +1,10 @@
-import { SECTION, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
+import { SECTION, SCROLL_MT, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
 
 export function AboutSection() {
   return (
     <section
       id="about"
-      className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[64px] pb-[30px]`}
+      className={`${SECTION} ${SCROLL_MT} px-[40px] pt-[64px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 01 — WHAT IS THIS"}</div>
       <h2 className={H2}>これは、何なのか</h2>

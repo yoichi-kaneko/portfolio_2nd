@@ -1,4 +1,6 @@
-import { test, expect, type Page } from "@playwright/test";
+import { type Page } from "@playwright/test";
+import { test, expect, MOCK_IMAGES } from "./fixtures";
+import { expectImageLoaded } from "./support/assertions";
 
 // 要素の存在確認が目的のため、全画像の load 完了は待たず DOM 構築完了で遷移する。
 // （aoi ページは next/image が多く、dev の都度最適化で load イベントの待機が遅い。）
@@ -100,6 +102,9 @@ test.describe("ヒーロー（AoiHero）の要素確認", () => {
     await expect(
       page.getByRole("img", { name: "碧衣のプライベートルーム" }),
     ).toBeVisible({ timeout: 30000 });
+    await expectImageLoaded(
+      page.getByRole("img", { name: "碧衣のプライベートルーム" }),
+    );
   });
 
   test("ライブモードウィジェットに判定モードと時計が表示される", async ({
@@ -309,6 +314,9 @@ test.describe("Mountain セクションの要素確認", () => {
     await expect(
       page.getByRole("img", { name: "碧衣 登山装備の設定資料" }),
     ).toBeVisible();
+    await expectImageLoaded(
+      page.getByRole("img", { name: "碧衣 登山装備の設定資料" }),
+    );
   });
 
   test("登山×天気の特徴3項目が表示される", async ({ page }) => {
@@ -376,6 +384,9 @@ test.describe("Cast セクションの要素確認", () => {
     ).toBeVisible();
     await expect(page.getByRole("img", { name: "蛍 設定資料" })).toBeVisible();
 
+    for (const name of ["碧衣 設定資料", "ルリ 設定資料", "蛍 設定資料"]) {
+      await expectImageLoaded(page.getByRole("img", { name }));
+    }
     await expect(page.getByText("あおい ／ 主")).toBeVisible();
     await expect(page.getByText("先遣観測員 ／ 相棒")).toBeVisible();
     await expect(page.getByText("ほたる ／ デジタルの友人")).toBeVisible();
@@ -383,40 +394,7 @@ test.describe("Cast セクションの要素確認", () => {
 });
 
 test.describe("GenerateImage セクションの要素確認", () => {
-  // Cloudinary API のモックレスポンス（実アクセスさせない）。
-  const MOCK_IMAGES = [
-    {
-      originalUrl: "https://res.cloudinary.com/demo/original/1.png",
-      previewUrl: "https://res.cloudinary.com/demo/preview/1.png",
-    },
-    {
-      originalUrl: "https://res.cloudinary.com/demo/original/2.png",
-      previewUrl: "https://res.cloudinary.com/demo/preview/2.png",
-    },
-    {
-      originalUrl: "https://res.cloudinary.com/demo/original/3.png",
-      previewUrl: "https://res.cloudinary.com/demo/preview/3.png",
-    },
-  ];
-
-  // 生成画像は unoptimized のため src はモック URL がそのまま入る。
-  // res.cloudinary.com への実ネットワークアクセスを避けるため、画像本体も差し替える。
-  async function stubCloudinaryAssets(page: Page): Promise<void> {
-    await page.route("https://res.cloudinary.com/**", async (route) => {
-      // 1x1 透過 PNG
-      await route.fulfill({
-        status: 200,
-        contentType: "image/png",
-        body: Buffer.from(
-          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8AAAMBAQDJ/pLvAAAAAElFTkSuQmCC",
-          "base64",
-        ),
-      });
-    });
-  }
-
   test("API成功時にプレビュー画像3枚が表示される", async ({ page }) => {
-    await stubCloudinaryAssets(page);
     await page.route("/api/cloudinary/images", async (route) => {
       await route.fulfill({
         status: 200,
@@ -444,7 +422,6 @@ test.describe("GenerateImage セクションの要素確認", () => {
   test("プレビュークリックでオリジナル画像が Lightbox 表示され、閉じられる", async ({
     page,
   }) => {
-    await stubCloudinaryAssets(page);
     await page.route("/api/cloudinary/images", async (route) => {
       await route.fulfill({
         status: 200,
@@ -483,7 +460,6 @@ test.describe("GenerateImage セクションの要素確認", () => {
   test("Lightbox は body 直下に Portal 描画され、ナビより前面に重なる", async ({
     page,
   }) => {
-    await stubCloudinaryAssets(page);
     await page.route("/api/cloudinary/images", async (route) => {
       await route.fulfill({
         status: 200,
@@ -526,9 +502,12 @@ test.describe("GenerateImage セクションの要素確認", () => {
         body: JSON.stringify({ error: "Internal Server Error" }),
       });
     });
+    const response = page.waitForResponse("**/api/cloudinary/images");
     await gotoAoi(page);
+    expect((await response).status()).toBe(500);
 
     const section = page.locator("#generate-image");
+    await expect(section).toHaveAttribute("aria-busy", "false");
     await expect(section.getByTestId("aoi-generate-skeleton")).toHaveCount(3);
     // 拡大表示ボタン（プレビュー）は生成されない。
     await expect(section.getByRole("button", { name: /拡大表示/ })).toHaveCount(
@@ -550,7 +529,9 @@ test.describe("フッター（AoiFooter）の要素確認", () => {
       page.getByText("プロダクトとして売る予定は、ありません。"),
     ).toBeVisible();
     await expect(page.getByText("MIT License")).toBeVisible();
-    await expect(page.getByText("© 2026 kaneko")).toBeVisible();
+    await expect(
+      page.getByText(`© ${new Date().getUTCFullYear()} kaneko`),
+    ).toBeVisible();
   });
 
   test("フッターの夜モードトグルが表示される", async ({ page }) => {

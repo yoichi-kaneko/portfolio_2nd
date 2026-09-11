@@ -1,11 +1,11 @@
-import { SECTION, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
+import { SECTION, SCROLL_MT, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
 import { MODES } from "@/data/aoi/modes";
 
 export function ModesSection() {
   return (
     <section
       id="flow"
-      className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
+      className={`${SECTION} ${SCROLL_MT} px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 05 — A DAY IN MODES"}</div>
       <h2 className={H2}>一日を、8つのモードで歩く</h2>
