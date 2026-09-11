@@ -17,9 +17,9 @@ test("生成画像は取得中の仮画像から読み込み済みプレビュ�
     await route.fulfill({ json: { images: MOCK_IMAGES } });
   });
   const response = page.waitForResponse("**/api/cloudinary/images");
-  await page.goto("/aoi", { waitUntil: "domcontentloaded" });
   const section = page.locator("#generate-image");
   try {
+    await page.goto("/aoi", { waitUntil: "domcontentloaded" });
     await expect(section).toHaveAttribute("aria-busy", "true");
     await expect(section.getByTestId("aoi-generate-skeleton")).toHaveCount(3);
     await expect(section.getByRole("button", { name: /拡大表示/ })).toHaveCount(
@@ -192,8 +192,8 @@ test("部屋画像が未完了の間はプレースホルダを保ち、全画�
     if (source === "/aoi/room_morning.png") await gate;
     await route.fallback();
   });
-  await page.goto("/aoi", { waitUntil: "domcontentloaded" });
   try {
+    await page.goto("/aoi", { waitUntil: "domcontentloaded" });
     await expect(page.getByText(/^21:00:00$/)).toBeVisible();
     await expect(page.getByText("LOADING ROOM…")).toBeVisible();
     await expect(

@@ -1,4 +1,4 @@
-import { test as base, expect } from "@playwright/test";
+import { test as base, expect, type Page } from "@playwright/test";
 
 // API の契約順序は新しい週から。描画側で古い週からに変換する。
 export const MOCK_WEEKLY = [
@@ -18,9 +18,10 @@ export const test = base.extend<{ networkIsolation: void }>({
     async ({ context, baseURL }, use) => {
       const unexpected: string[] = [];
       const errors: string[] = [];
-      context.on("page", (page) =>
-        page.on("pageerror", (error) => errors.push(error.message)),
-      );
+      const trackPageErrors = (page: Page) =>
+        page.on("pageerror", (error) => errors.push(error.message));
+      for (const page of context.pages()) trackPageErrors(page);
+      context.on("page", trackPageErrors);
       await context.route("**/*", async (route) => {
         const url = new URL(route.request().url());
         if (url.origin !== new URL(baseURL!).origin) {
@@ -34,7 +35,7 @@ export const test = base.extend<{ networkIsolation: void }>({
           "/api/mountains/report-count": { count: 42 },
           "/api/cloudinary/images": { images: MOCK_IMAGES },
         };
-        if (url.pathname in responses) {
+        if (route.request().method() === "GET" && url.pathname in responses) {
           await route.fulfill({ json: responses[url.pathname] });
         } else if (url.pathname.startsWith("/api/")) {
           unexpected.push(url.pathname);

@@ -1,4 +1,4 @@
-import { SECTION, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
+import { SECTION, SCROLL_MT, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
 
 // 収集 / 出力ステップで列挙するチップ（このセクション専用なのでローカルに保持）。
 const COLLECT_ITEMS = [
@@ -20,7 +20,7 @@ export function FrameworkSection() {
   return (
     <section
       id="framework"
-      className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
+      className={`${SECTION} ${SCROLL_MT} px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 02 — ACTIVITY-DRIVEN FRAMEWORK"}</div>
       <h2 className={H2}>

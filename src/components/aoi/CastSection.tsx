@@ -1,4 +1,4 @@
-import { SECTION, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
+import { SECTION, SCROLL_MT, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
 import { CAST } from "@/data/aoi/cast";
 import { CastCard } from "@/components/aoi/CastCard";
 
@@ -6,7 +6,7 @@ export function CastSection() {
   return (
     <section
       id="cast"
-      className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
+      className={`${SECTION} ${SCROLL_MT} px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 06 — CAST"}</div>
       <h2 className={H2}>登場人物</h2>

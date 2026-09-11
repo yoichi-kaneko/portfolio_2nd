@@ -1,11 +1,11 @@
-import { SECTION, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
+import { SECTION, SCROLL_MT, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
 import { SERVICES, SVC_STYLES } from "@/data/aoi/services";
 
 export function ServicesSection() {
   return (
     <section
       id="services"
-      className={`${SECTION} scroll-mt-[84px] px-[40px] pt-[60px] pb-[30px]`}
+      className={`${SECTION} ${SCROLL_MT} px-[40px] pt-[60px] pb-[30px]`}
     >
       <div className={SECTION_LABEL}>{"// 03 — INTEGRATIONS"}</div>
       <h2 className={H2}>多様なサービスと、横断的に連携</h2>
