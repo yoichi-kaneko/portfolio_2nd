@@ -32,10 +32,13 @@ pnpm test:e2e
 - `playwright.config.ts` の project は `chromium` と `mobile-chromium` の2つだが、どちらも
   Chromium（Desktop Chrome / Pixel 7 エミュレーション）なので、導入対象は `chromium` だけでよい。
 - 導入済みなら再ダウンロードされないため、入っているか分からないときはそのまま実行してよい。
-  置き場所は `PLAYWRIGHT_BROWSERS_PATH` が設定されていればそのディレクトリ、無ければ
-  `~/.cache/ms-playwright` で、どちらも `pnpm install` では消えない。導入済みかどうかと
-  置き場所は `pnpm exec playwright install --dry-run chromium` で確認できる。同梱のブラウザが
-  あっても `@playwright/test` が要求するリビジョンと違えばダウンロードは走る。
+  導入済みのブラウザと置き場所は `pnpm exec playwright install --list` で確認できる。出力は
+  Playwright のバージョンごとに分かれるので、`@playwright/test` のバージョンの側を見る。
+  別バージョンの Playwright がブラウザを持っていても、要求リビジョンが違えばダウンロードは走る。
+- ブラウザは `pnpm install` では消えない。置き場所は `PLAYWRIGHT_BROWSERS_PATH` が設定されて
+  いればそのディレクトリ、無ければ OS ごとの既定のキャッシュで、Linux は
+  `~/.cache/ms-playwright`、macOS は `~/Library/Caches/ms-playwright`、Windows は
+  `%LOCALAPPDATA%\ms-playwright`。
 - `pnpm test:e2e` はポート3001に E2E 専用の開発サーバーを自前で起動する。事前に `pnpm dev` を
   起動する必要はなく、環境変数の指定も不要（`e2e/support/start-server.mjs` が組み立てる）。
 - 実行方法の詳細と、テストを追加・変更するときの規約は `e2e/README.md` に従う。
