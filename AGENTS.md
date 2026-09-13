@@ -56,9 +56,44 @@ pnpm exec playwright install-deps chromium
 権限が無く導入できない場合は、E2E を通すこと自体を目的にして設定を歪めない。実行できなかった
 事実と失敗内容を PR に記載し、E2E の検証は CI に委ねる。
 
-## ダウンロード自体が拒否される場合
+## ネットワークポリシーで拒否される場合
 
-クラウドセッションの外向き通信はネットワークポリシーを通るため、環境によっては Playwright の
-配布元（`cdn.playwright.dev`）への接続が 403 で拒否され、`playwright install` がダウンロードに
-到達できないことがある。再試行しても結果は変わらず、プロキシを迂回してもいけない。この場合も
-共有ライブラリのときと同様に、失敗した事実とエラー内容を PR に記載し、E2E の検証は CI に委ねる。
+クラウドセッションの外向き通信はネットワークポリシーを通る。ネットワークアクセスが「カスタム」の
+環境では、許可ドメインに `*.playwright.dev` が必要になる。これが無いと `playwright install` は
+`403 request blocked: no rule or allowlist entry allows host "cdn.playwright.dev"` となり、
+ダウンロードそのものに到達できない。
+
+あわせて「一般的なパッケージマネージャーのデフォルトリストも含める」も有効にしておく。無効だと
+`registry.npmjs.org` が拒否され、`pnpm install` も `pnpm exec` も `ERR_PNPM_FETCH_403` で
+止まる。ブラウザの配布元が通っていても `pnpm exec playwright install chromium` はその手前で
+失敗するため、E2E 以前にセッションの準備自体が成立しない。`.nvmrc` の Node.js を `nvm` で導入
+する `SessionStart` フックは `nodejs.org` も使う。
+
+### 途中の 403 は失敗ではない
+
+許可ドメインが `*.playwright.dev` だけでもブラウザは取得できる。Playwright は配布元を次の順に
+試し、前半2つが拒否されても3つ目で成功するためである。
+
+1. `https://cdn.playwright.dev/dbazure/download/playwright/builds/...`
+   → `playwright.download.prss.microsoft.com` へ 307 リダイレクトするので拒否される
+2. `https://playwright.download.prss.microsoft.com/dbazure/download/playwright/builds/...`
+   → 同じホストなので拒否される
+3. `https://cdn.playwright.dev/builds/...`
+   → リダイレクトが無く `*.playwright.dev` の範囲に収まるので取得できる
+
+つまり、次の 403 が2回続いた直後にダウンロードの進捗バーが出るのが正常な流れである。この 403 を
+見て中断したり、ダウンロードできないものとして扱ったりしてはいけない。
+
+```
+Error: Download failed: server returned code 403 body 'request blocked: no rule or allowlist entry
+allows host "playwright.download.prss.microsoft.com"'.
+```
+
+この 403 を出さずに1つ目で取得させたい場合は、許可ドメインに `*.prss.microsoft.com` を追加する。
+必須ではない。
+
+### 3つ目まで拒否された場合
+
+本当にダウンロードできないのは、3つ目の `cdn.playwright.dev/builds/...` まで 403 になったとき
+だけである。再試行しても結果は変わらず、プロキシを迂回してもいけない。この場合は共有ライブラリの
+ときと同様に、失敗した事実とエラー内容を PR に記載し、E2E の検証は CI に委ねる。
