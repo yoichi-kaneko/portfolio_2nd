@@ -72,7 +72,11 @@ export function useAudioPlayer({
       try {
         await audio.play();
       } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") {
+        // ブラウザによる中断・再生許可の拒否は、未再生のまま再操作できる正常系として扱う。
+        if (
+          error instanceof DOMException &&
+          (error.name === "AbortError" || error.name === "NotAllowedError")
+        ) {
           return;
         }
         throw error;
