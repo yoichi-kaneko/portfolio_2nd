@@ -137,20 +137,23 @@ describe("useAudioPlayer", () => {
     });
   });
 
-  it("playがAbortErrorを投げた場合は例外を握りつぶす", async () => {
-    audioElement.play = vi.fn(async () => {
-      throw new DOMException("aborted", "AbortError");
-    });
+  it.each(["AbortError", "NotAllowedError"])(
+    "playが%sを投げた場合は例外を握りつぶす",
+    async (errorName) => {
+      audioElement.play = vi.fn(async () => {
+        throw new DOMException("playback failed", errorName);
+      });
 
-    const { result } = renderHook(() =>
-      useAudioPlayer({ audioUrl: "https://example.com/sample.mp3" }),
-    );
+      const { result } = renderHook(() =>
+        useAudioPlayer({ audioUrl: "https://example.com/sample.mp3" }),
+      );
 
-    await expect(result.current.onToggle()).resolves.toBeUndefined();
-    expect(result.current.isPlaying).toBe(false);
-  });
+      await expect(result.current.onToggle()).resolves.toBeUndefined();
+      expect(result.current.isPlaying).toBe(false);
+    },
+  );
 
-  it("playがAbortError以外を投げた場合はPromiseをrejectし再生状態は変わらない", async () => {
+  it("playが既知の再生中断以外を投げた場合はPromiseをrejectし再生状態は変わらない", async () => {
     audioElement.play = vi.fn(async () => {
       throw new Error("play failed");
     });

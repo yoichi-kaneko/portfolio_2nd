@@ -376,6 +376,10 @@ test.describe("Cast セクションの要素確認", () => {
   });
 
   test("各登場人物の設定資料画像と肩書が表示される", async ({ page }) => {
+    // 実際の導線でCastへ移動する。ユーザー操作なしのscrollIntoViewだけで移動すると、
+    // ファーストビュー外の遅延画像をNext.jsのLCP検出が候補として扱ってしまう。
+    await page.getByRole("link", { name: "登場人物", exact: true }).click();
+    await expect(page).toHaveURL(/#cast$/);
     await expect(
       page.getByRole("img", { name: "碧衣 設定資料" }),
     ).toBeVisible();
