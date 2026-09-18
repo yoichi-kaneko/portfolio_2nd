@@ -250,6 +250,7 @@ for (const [label, target] of [
   ["登山×天気", "mountain"],
   ["登場人物", "cast"],
   ["画像生成", "generate-image"],
+  ["LINEスタンプ", "line-sticker"],
   ["仕組みを見る", "framework"],
   ["登場人物を見る", "cast"],
 ]) {

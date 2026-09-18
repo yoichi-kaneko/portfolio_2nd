@@ -44,7 +44,7 @@ test.describe("ナビゲーション（AoiNav）の要素確認", () => {
     await expect(nav.getByText("AOI")).toBeVisible();
   });
 
-  test("セクションへのナビリンクが6つ表示される", async ({ page }) => {
+  test("セクションへのナビリンクが7つ表示される", async ({ page }) => {
     const nav = page.locator("header");
     await expect(nav.getByRole("link", { name: "これは何か" })).toBeVisible();
     await expect(
@@ -54,6 +54,7 @@ test.describe("ナビゲーション（AoiNav）の要素確認", () => {
     await expect(nav.getByRole("link", { name: "登山×天気" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "登場人物" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "画像生成" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "LINEスタンプ" })).toBeVisible();
   });
 
   test("夜モードトグルが表示される", async ({ page }) => {
@@ -339,13 +340,13 @@ test.describe("Modes セクションの要素確認", () => {
     await expect(
       page.getByRole("heading", {
         level: 2,
-        name: "一日を、8つのモードで歩く",
+        name: "一日を、9つのモードで歩く",
       }),
     ).toBeVisible();
   });
 
-  test("モードカードが8枚表示される", async ({ page }) => {
-    await expect(page.locator("#flow .grid > div")).toHaveCount(8);
+  test("モードカードが9枚表示される", async ({ page }) => {
+    await expect(page.locator("#flow .grid > div")).toHaveCount(9);
   });
 
   test("代表的なモード名が表示される", async ({ page }) => {
@@ -357,6 +358,7 @@ test.describe("Modes セクションの要素確認", () => {
     await expect(modes.getByText("継灯けいとう")).toBeVisible();
     await expect(modes.getByText("綴葉つづりは")).toBeVisible();
     await expect(modes.getByText("調べしらべ")).toBeVisible();
+    await expect(modes.getByText("響ひびき")).toBeVisible();
   });
 });
 
@@ -371,8 +373,8 @@ test.describe("Cast セクションの要素確認", () => {
     ).toBeVisible();
   });
 
-  test("登場人物カードが3枚表示される", async ({ page }) => {
-    await expect(page.locator("#cast .grid > div")).toHaveCount(3);
+  test("登場人物カードが4枚表示される", async ({ page }) => {
+    await expect(page.locator("#cast .grid > div")).toHaveCount(4);
   });
 
   test("各登場人物の設定資料画像と肩書が表示される", async ({ page }) => {
@@ -387,13 +389,20 @@ test.describe("Cast セクションの要素確認", () => {
       page.getByRole("img", { name: "ルリ 設定資料" }),
     ).toBeVisible();
     await expect(page.getByRole("img", { name: "蛍 設定資料" })).toBeVisible();
+    await expect(page.getByRole("img", { name: "漆 設定資料" })).toBeVisible();
 
-    for (const name of ["碧衣 設定資料", "ルリ 設定資料", "蛍 設定資料"]) {
+    for (const name of [
+      "碧衣 設定資料",
+      "ルリ 設定資料",
+      "蛍 設定資料",
+      "漆 設定資料",
+    ]) {
       await expectImageLoaded(page.getByRole("img", { name }));
     }
     await expect(page.getByText("あおい ／ 主")).toBeVisible();
     await expect(page.getByText("先遣観測員 ／ 相棒")).toBeVisible();
     await expect(page.getByText("ほたる ／ デジタルの友人")).toBeVisible();
+    await expect(page.getByText("うるし ／ デジタルの友人")).toBeVisible();
   });
 });
 
@@ -517,6 +526,50 @@ test.describe("GenerateImage セクションの要素確認", () => {
     await expect(section.getByRole("button", { name: /拡大表示/ })).toHaveCount(
       0,
     );
+  });
+});
+
+test.describe("LINEスタンプ セクションの要素確認", () => {
+  test.beforeEach(async ({ page }) => {
+    await gotoAoi(page);
+  });
+
+  test("見出しと販売の説明が表示される", async ({ page }) => {
+    const section = page.locator("#line-sticker");
+    await expect(
+      section.getByRole("heading", { level: 2, name: "LINE スタンプ" }),
+    ).toBeVisible();
+    await expect(
+      section.getByText(/LINE STORE\s*で販売しています/),
+    ).toBeVisible();
+  });
+
+  test("挿絵は差し替えまで仮スペースで表示される", async ({ page }) => {
+    const section = page.locator("#line-sticker");
+    await expect(
+      section.getByTestId("aoi-sticker-illustration-placeholder"),
+    ).toBeVisible();
+    await expect(section.getByText("挿絵は準備中")).toBeVisible();
+  });
+
+  test("QRコードが読み込め、販売ページへのリンクになっている", async ({
+    page,
+  }) => {
+    const section = page.locator("#line-sticker");
+    const link = section.getByRole("link", {
+      name: "LINE STORE の販売ページを開く",
+    });
+    await expect(link).toHaveAttribute(
+      "href",
+      "https://line.me/S/sticker/36662592",
+    );
+    await expect(link).toHaveAttribute("rel", /noopener/);
+    // QR は読み取れることが要件のため、表示だけでなく実際の読み込み成功まで確認する。
+    const qr = link.getByRole("img", {
+      name: "LINE スタンプ販売ページの QR コード",
+    });
+    await expect(qr).toBeVisible();
+    await expectImageLoaded(qr);
   });
 });
 
