@@ -100,6 +100,18 @@ export const MODES: DailyMode[] = [
     timeCls: "text-[#8aa872]",
   },
   {
+    jp: "響",
+    yomi: "ひびき",
+    en: "talk",
+    time: "💬 呼びかけの都度",
+    desc: "LINE で「碧衣」と呼びかけると応える対話モード。画像の生成、家族への連絡、天気の確認、そして雑談まで。一日に何度でも。",
+    card: "bg-[linear-gradient(165deg,rgba(44,26,38,0.5),rgba(18,14,28,0.55))] border-[rgba(235,150,185,0.26)]",
+    name: "text-[#f9dbe8]",
+    yomiCls: "text-[#d99cba]",
+    monoCls: "text-[#d99cba]",
+    timeCls: "text-[#b57e99]",
+  },
+  {
     jp: "調べ",
     yomi: "しらべ",
     en: "song",
