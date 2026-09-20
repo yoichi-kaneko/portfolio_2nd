@@ -1,7 +1,5 @@
 // ---- LINE スタンプ ----
 // 販売ページの URL と、セクションに置く画像の参照先。
-// 挿絵は後日差し替える前提のため、パスを持たせるまでは null にしておく。
-// null の間は同じ縦横比の仮スペースを描画するので、差し替えてもレイアウトは動かない。
 
 /** LINE STORE の販売ページ */
 export const STICKER_STORE_URL = "https://line.me/S/sticker/36662592";
@@ -14,13 +12,13 @@ export const STICKER_QR = {
 } as const;
 
 export interface StickerIllustration {
-  /** `public/` 配下の公開パス。null の間は仮スペースを表示する */
-  src: string | null;
+  /** `public/` 配下の公開パス */
+  src: string;
   alt: string;
 }
 
-/** 挿絵（差し替え待ち）。src を埋めるだけで画像に切り替わる */
+/** セクションの挿絵。実ファイルは 1440×960 で、枠の縦横比もこの 3:2 に合わせている */
 export const STICKER_ILLUSTRATION: StickerIllustration = {
-  src: null,
-  alt: "碧衣の LINE スタンプ",
+  src: "/aoi/line.png",
+  alt: "LINE スタンプの紹介イラスト。碧衣・ルリ・蛍のスタンプ 5 種を並べたもの",
 };

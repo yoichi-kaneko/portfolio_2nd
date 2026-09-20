@@ -547,12 +547,13 @@ test.describe("LINEスタンプ セクションの要素確認", () => {
     ).toBeVisible();
   });
 
-  test("挿絵は差し替えまで仮スペースで表示される", async ({ page }) => {
+  test("挿絵が読み込める", async ({ page }) => {
     const section = page.locator("#line-sticker");
-    await expect(
-      section.getByTestId("aoi-sticker-illustration-placeholder"),
-    ).toBeVisible();
-    await expect(section.getByText("挿絵は準備中")).toBeVisible();
+    const illustration = section.getByRole("img", {
+      name: /LINE スタンプの紹介イラスト/,
+    });
+    await expect(illustration).toBeVisible();
+    await expectImageLoaded(illustration);
   });
 
   test("QRコードが読み込め、販売ページへのリンクになっている", async ({
