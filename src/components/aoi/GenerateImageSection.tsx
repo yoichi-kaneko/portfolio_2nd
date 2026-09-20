@@ -34,8 +34,9 @@ export function GenerateImageSection() {
     >
       <div className={SECTION_LABEL}>{"// 07 — GENERATE IMAGE"}</div>
       <h2 className={H2}>画像生成</h2>
-      <p className={`${LEAD_P} m-0 mb-[30px] max-w-[620px]`}>
-        毎日、その日のアクティビティに応じた情景の画像を生成します。
+      <p className={`${LEAD_P} m-0 mb-[30px] max-w-[640px]`}>
+        毎日、その日のアクティビティに応じた情景の画像を生成します。登山レポートを代筆するときなどは、できあがった画像に元のレポートへ飛ぶ
+        QR コードを埋め込むこともあります。
       </p>
       <div className="grid grid-cols-3 gap-[18px]">
         {hasImages

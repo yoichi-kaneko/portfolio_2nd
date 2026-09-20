@@ -21,6 +21,13 @@ const CAST_STYLES: Record<
     role: "text-[#b6a8d6]",
     body: "text-[#a99fc4]",
   },
+  crimson: {
+    card: "border-[rgba(230,120,140,0.24)]",
+    tag: "border-[rgba(230,120,140,0.34)] text-[#f0b6c2]",
+    name: "text-[#fbe9ec]",
+    role: "text-[#cf9aa6]",
+    body: "text-[#c09aa4]",
+  },
 };
 
 export function CastCard({ member }: { member: CastMember }) {
@@ -35,7 +42,7 @@ export function CastCard({ member }: { member: CastMember }) {
           src={member.img}
           alt={member.alt}
           fill
-          sizes="(min-width: 768px) 380px, 100vw"
+          sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw"
           className={`object-cover ${member.objectPosition}`}
         />
         <div

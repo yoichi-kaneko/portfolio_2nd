@@ -12,3 +12,4 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - "@types/node@24.13.5"
+  - tsx@4.23.14
