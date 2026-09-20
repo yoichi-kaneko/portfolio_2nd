@@ -7,6 +7,7 @@ const NAV_LINKS: Array<{ href: string; label: string }> = [
   { href: "#mountain", label: "登山×天気" },
   { href: "#cast", label: "登場人物" },
   { href: "#generate-image", label: "画像生成" },
+  { href: "#line-sticker", label: "LINEスタンプ" },
 ];
 
 export function AoiNav() {

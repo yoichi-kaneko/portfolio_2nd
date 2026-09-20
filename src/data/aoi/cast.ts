@@ -1,7 +1,7 @@
 // ---- cast（登場人物）----
 // 移植元では 3 枚のカードがベタ書きだったものを配列化。
 // accent はカード/タグ/名前/肩書/本文の配色バリアント（CastCard 側で解決）。
-export type CastAccent = "cyan" | "purple";
+export type CastAccent = "cyan" | "purple" | "crimson";
 
 export interface CastMember {
   name: string;
@@ -45,5 +45,15 @@ export const CAST: CastMember[] = [
     tag: "HOTARU.PNG",
     objectPosition: "object-[6%_24%]",
     accent: "purple",
+  },
+  {
+    name: "漆",
+    role: "うるし ／ デジタルの友人",
+    body: "漆黒の髪に深紅を一筋、和モダンの装いの少女。言語対話プロトコルの支援AI。口数は少なく、碧衣が画像を頼む言葉や代筆の言葉に迷ったとき、短い一言で置きどころを示してくれる。",
+    img: "/aoi/urushi.png",
+    alt: "漆 設定資料",
+    tag: "URUSHI.PNG",
+    objectPosition: "object-[14%_26%]",
+    accent: "crimson",
   },
 ];

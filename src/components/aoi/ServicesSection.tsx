@@ -46,9 +46,6 @@ export function ServicesSection() {
           </div>
         ))}
       </div>
-      <p className="mt-[16px] mb-0 font-space text-[11.5px] tracking-[0.04em] text-[#5f78a0]">
-        ※ Google Gemini も画像生成で連携（現在は OpenAI を主に使用）。
-      </p>
     </section>
   );
 }
