@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTimeTravel } from "@/components/aoi/TimeTravelProvider";
 import { AOI_MODE_ORDER, type AoiModeKey } from "@/lib/aoi/resolveMode";
 
@@ -33,6 +33,8 @@ export function RoomImage() {
 
   const [loaded, setLoaded] = useState<Partial<Record<AoiModeKey, true>>>({});
   const [failed, setFailed] = useState<Partial<Record<AoiModeKey, true>>>({});
+  // 初回表示を描画し終えたか。以降のモード切替だけクロスフェードさせる
+  const [crossfade, setCrossfade] = useState(false);
 
   const markLoaded = (key: AoiModeKey) =>
     setLoaded((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
@@ -46,6 +48,24 @@ export function RoomImage() {
   // 表示対象が成功したときだけ画像を出す。失敗時はエラー用プレースホルダへ
   const ready = settled && Boolean(loaded[current]);
   const showError = settled && Boolean(failed[current]);
+
+  // 初回表示が画面に出てから、切替演出用の transition を戻す。
+  // CSS の遷移は「変化後」のスタイルで判定されるため、opacity を 0 → 1 にするのと
+  // 同時に transition を持たせると、初回表示も 700ms のフェードになる。フェード中の
+  // 画像は LCP に数えられず、ファーストビューの LCP がフェード完了まで遅れてしまう。
+  // 描画済みの 1 フレーム後なら opacity は 1 のまま変わらないので、ここで transition を
+  // 足してもフェードは走らない。
+  useEffect(() => {
+    if (!ready || crossfade) return;
+    let next = 0;
+    const first = requestAnimationFrame(() => {
+      next = requestAnimationFrame(() => setCrossfade(true));
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(next);
+    };
+  }, [ready, crossfade]);
 
   return (
     <>
@@ -64,9 +84,8 @@ export function RoomImage() {
           onLoad={() => markLoaded(key)}
           onError={() => markFailed(key)}
           className={`block h-auto w-full ${
-            // 準備完了の瞬間だけは即時に出したいので、それまで transition を持たせない。
-            // 変化前のスタイルに transition-property が無ければフェードは走らない
-            ready ? "transition-opacity duration-700" : "transition-none"
+            // 初回表示は即時に出し、以降のモード切替だけをクロスフェードする
+            crossfade ? "transition-opacity duration-700" : "transition-none"
           } ${
             // 先頭の 1 枚がフレームの高さを決め、残りはその上に重ねる
             i === 0 ? "" : "absolute inset-0"
