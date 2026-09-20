@@ -21,9 +21,13 @@ export function AoiFooter() {
           「こういうものを、個人で勝手に作っている」—
           ただ、それだけのページです。
         </p>
-        <p className="m-0 mb-[22px] max-w-[620px] text-[13.5px] leading-[1.9] text-[#8aa0c0] text-pretty">
+        <p className="m-0 mb-[16px] max-w-[620px] text-[13.5px] leading-[1.9] text-[#8aa0c0] text-pretty">
           採算も KPI
           も、ロードマップもありません。あるのは、夜景の見える部屋と、水色の相棒と、空の機嫌を読む小さな仕組みだけ。気が向いたときに、少しずつ育てています。
+        </p>
+        <p className="m-0 mb-[22px] max-w-[620px] border-l border-[rgba(127,212,255,0.22)] pl-[14px] text-[13px] leading-[1.9] text-[#7e93b3] text-pretty">
+          ひとつだけ、売っているものがあります。LINE スタンプです。それ以外 —
+          碧衣という AI も、それを動かす仕組みも、非売品のままです。
         </p>
         <div className="flex flex-wrap items-center justify-between gap-[16px] border-t border-[rgba(127,212,255,0.12)] pt-[20px]">
           <div className="font-zen text-[14px] italic text-[#9fb6d4]">
