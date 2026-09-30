@@ -2,7 +2,7 @@
   "name": "portfolio_2nd",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@12.6.0",
+  "packageManager": "pnpm@12.8.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -44,11 +44,11 @@
     "eslint-config-next": "16.3.7",
     "eslint-config-prettier": "10.1.8",
     "husky": "9.1.7",
-    "jsdom": "30.1.0",
+    "jsdom": "30.1.1",
     "lint-staged": "17.5.1",
     "prettier": "3.9.6",
     "tailwindcss": "4.3.3",
-    "tsx": "4.23.14",
+    "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.0.1"
   },
