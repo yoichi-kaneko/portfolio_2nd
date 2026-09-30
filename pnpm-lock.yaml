@@ -184,8 +184,8 @@ importers:
         specifier: 2.0.0
         version: 2.0.0(next@16.3.7(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.13.6)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
       '@vis.gl/react-google-maps':
-        specifier: 1.10.0
-        version: 1.10.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: 1.10.1
+        version: 1.10.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       cloudinary:
         specifier: 2.11.0
         version: 2.11.0
@@ -1659,8 +1659,8 @@ packages:
       vue-router:
         optional: true
 
-  '@vis.gl/react-google-maps@1.10.0':
-    resolution: {integrity: sha512-J7vHSwZ+xQUopnNj3LFg+Ck+rETqU/jf07miH8nr7Fcs6+0C7Qcz4BqVsVgOMHpUuOrAJ4tODI8SLCEOXl1W7g==}
+  '@vis.gl/react-google-maps@1.10.1':
+    resolution: {integrity: sha512-2a6Bv04WcJIVN7IIjqygzVrmWKIgTXn/lmMdjeRWbKxX5FV6/Y3LhFScGJAKfAKqoAYIG6s31CWebhFUQdmBsw==}
     peerDependencies:
       react: '>=16.8.0 || ^19.0 || ^19.0.0-rc'
       react-dom: '>=16.8.0 || ^19.0 || ^19.0.0-rc'
@@ -4495,7 +4495,7 @@ snapshots:
       next: 16.3.7(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.13.6)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react: 19.3.0
 
-  '@vis.gl/react-google-maps@1.10.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@vis.gl/react-google-maps@1.10.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@googlemaps/js-api-loader': 2.1.1
       '@types/google.maps': 3.66.3
