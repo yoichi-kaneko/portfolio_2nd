@@ -225,8 +225,17 @@ git push origin <head>
 
 ### 8. PR にコメントする
 
-[comment-template.md](comment-template.md) の形式で本文を作業ファイルに書き、投稿する。本文の
-1行目のマーカーで、このスキルが以前に投稿したコメントを見分ける。
+[comment-template.md](comment-template.md) の形式で本文を作業ファイルに書き、投稿する。
+
+投稿する前に、外部リポジトリの PR・issue へのリンクや参照（comment-template.md の記載ルールで
+禁じている形）が紛れ込んでいないかを確かめる。公開リポジトリなので、投稿すると参照先へ自動で
+メンションが飛ぶ。何か出力されたら該当箇所を書き直し、出力が無くなってから投稿する。
+
+```sh
+grep -nE 'github\.com/[^/[:space:]]+/[^/[:space:]]+/(pull|issues)/[0-9]|[[:alnum:]_.-]+/[[:alnum:]_.-]+#[0-9]|(^|[^[:alnum:]_&])#[0-9]' <作業ファイル>
+```
+
+本文の1行目のマーカーで、このスキルが以前に投稿したコメントを見分ける。
 
 ```sh
 gh api "repos/<owner>/<repo>/issues/<PR番号>/comments" --paginate \
