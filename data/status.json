@@ -2,7 +2,11 @@
   "statuses": [
     {
       "label": "Available",
-      "description": "スリーエス / 定期巡回システム開発従事中"
+      "description": "スリーエス / 定期巡回システム 開発従事中"
+    },
+    {
+      "label": "Available",
+      "description": "LINE AI Bot「碧衣(Aoi)」 個人開発進行中"
     }
   ]
 }
