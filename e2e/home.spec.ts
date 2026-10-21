@@ -1,3 +1,4 @@
+import { statuses } from "../data/status.json";
 import { installAudioPlaybackStub, type AudioMockState } from "./support/audio";
 import { test, expect, MOCK_WEEKLY } from "./fixtures";
 
@@ -21,8 +22,12 @@ test.describe("Bento Grid 各要素の存在確認", () => {
     await expect(page.getByRole("heading", { name: "About" })).toBeVisible();
   });
 
-  test("稼働ステータスバッジが表示される", async ({ page }) => {
-    await expect(page.getByText(/Available/)).toBeVisible();
+  test("稼働ステータスバッジが status.json の全件分表示される", async ({
+    page,
+  }) => {
+    for (const { label, description } of statuses) {
+      await expect(page.getByText(`${label} — ${description}`)).toBeVisible();
+    }
   });
 
   test("GitHub Contributions カードが表示される", async ({ page }) => {

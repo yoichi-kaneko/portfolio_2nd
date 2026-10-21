@@ -23,7 +23,7 @@ export function AboutCard() {
       <div className="mt-8 flex flex-wrap gap-2">
         {statuses.map((s) => (
           <span
-            key={s.label}
+            key={`${s.label}-${s.description}`}
             className="bg-green-500/10 text-green-500 px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-2"
           >
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
