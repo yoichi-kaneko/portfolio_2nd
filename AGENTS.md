@@ -73,8 +73,8 @@ pnpm exec playwright install-deps chromium
 
 ### chromium は Chrome for Testing なので `*.playwright.dev` だけでは足りない
 
-`@playwright/test` 1.63.0 の `chromium` と `chromium-headless-shell` は Chrome for Testing（CfT）
-のビルドで、配布元を1つしか持たない（`playwright-core` の `cftUrl()`）。そしてその URL は
+このプロジェクトが使う `@playwright/test` では、`chromium` と `chromium-headless-shell` は Chrome for
+Testing（CfT）のビルドで、配布元を1つしか持たない（`playwright-core` の `cftUrl()`）。そしてその URL は
 `*.playwright.dev` の外へリダイレクトする。
 
 ```
@@ -88,6 +88,20 @@ https://cdn.playwright.dev/builds/cft/<version>/linux64/chrome-linux64.zip
 
 この経路はリダイレクトが1回だけで 403 を出さない。**chromium の導入では 403 が出ないのが正常**で、
 いきなり進捗バーが出る。
+
+この節と次の節の内容は、`@playwright/test` の版ごとのブラウザの配布方法に依存する。版を上げたときは、
+ダウンロードせずに導入内容だけを表示する次のコマンドで、前提が変わっていないかを確かめる。
+
+```sh
+pnpm exec playwright install --dry-run chromium
+```
+
+- `chromium` と `chromium-headless-shell` の見出しが `Chrome for Testing` / `Chrome Headless Shell` で始まり、
+  `Download url` が `https://cdn.playwright.dev/builds/cft/...` の1つだけ（`Download fallback` が無い）なら、
+  この節の記述がそのまま当てはまる。
+- CfT 以外のビルドには `Download url` と `Download fallback 1` / `Download fallback 2` の3つが並ぶ。
+  これが次の節の3段のフォールバックに当たる。
+- 上記と違う出力になったら配布方法が変わっているので、この節と次の節を見直す。
 
 ### 403 が2回出るのは chromium 以外
 
