@@ -150,9 +150,10 @@ git merge --no-edit -m "Merge branch '<base>' into <head>" origin/<base>
 - `@types/node`: メジャーが `.nvmrc` の Node.js のメジャーと一致するか。
 - `pnpm`（`packageManager`）: CI の `pnpm/action-setup` はこの値を読む。設定の既定値の変更
   （`pnpm-workspace.yaml` の `allowBuilds` や `minimumReleaseAge` に関わるもの）が無いか。
-- `@playwright/test`: AGENTS.md の E2E ブラウザ導入手順は 1.63.0 を前提に書かれている。版が変わる
-  ときは記述が古くなっていないかを確認し、ずれていればコメントで指摘する。E2E 自体はこのスキルでは
-  実行せず、CI に任せる。
+- `@playwright/test`: AGENTS.md の E2E ブラウザ導入手順は、版ごとのブラウザの配布方法に依存する。
+  版が変わるときは、手順 5 で依存を入れ直したあとに AGENTS.md に書いた
+  `pnpm exec playwright install --dry-run chromium` で記述が古くなっていないかを確認し、ずれていれば
+  コメントで指摘する。E2E 自体はこのスキルでは実行せず、CI に任せる。
 
 #### リスクの判定
 

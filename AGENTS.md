@@ -73,8 +73,8 @@ pnpm exec playwright install-deps chromium
 
 ### chromium は Chrome for Testing なので `*.playwright.dev` だけでは足りない
 
-`@playwright/test` 1.63.0 の `chromium` と `chromium-headless-shell` は Chrome for Testing（CfT）
-のビルドで、配布元を1つしか持たない（`playwright-core` の `cftUrl()`）。そしてその URL は
+このプロジェクトが使う `@playwright/test` では、`chromium` と `chromium-headless-shell` は Chrome for
+Testing（CfT）のビルドで、配布元を1つしか持たない（`playwright-core` の `cftUrl()`）。そしてその URL は
 `*.playwright.dev` の外へリダイレクトする。
 
 ```
@@ -86,14 +86,32 @@ https://cdn.playwright.dev/builds/cft/<version>/linux64/chrome-linux64.zip
 取得できることを確認済みなので、通常は何もしなくてよい。デフォルトリストを無効にする運用へ変える
 場合だけ、許可ドメインへ `storage.googleapis.com` を明示的に足す。
 
-この経路はリダイレクトが1回だけで 403 を出さない。**chromium の導入では 403 が出ないのが正常**で、
-いきなり進捗バーが出る。
+この経路はリダイレクトが1回だけで 403 を出さない。**chromium と chromium-headless-shell の取得では
+403 が出ないのが正常**で、いきなり進捗バーが出る。ただし `playwright install chromium` は ffmpeg も
+一緒に導入し、そちらでは 403 が2回出る（次の節）。
 
-### 403 が2回出るのは chromium 以外
+この節と次の節の内容は、`@playwright/test` の版ごとのブラウザの配布方法に依存する。版を上げたときは、
+ダウンロードせずに導入内容だけを表示する次のコマンドで、前提が変わっていないかを確かめる。
 
-3段のフォールバック（`playwright-core` の `PLAYWRIGHT_CDN_MIRRORS`）を使うのは firefox / webkit /
-ffmpeg といった CfT 以外のビルドで、chromium はここを通らない。このプロジェクトが導入するのは
-chromium だけなので通常は目にしないが、目にした場合は次の順に試されている。
+```sh
+pnpm exec playwright install --dry-run chromium
+```
+
+- `chromium` と `chromium-headless-shell` の見出しが `Chrome for Testing` / `Chrome Headless Shell` で始まり、
+  `Download url` が `https://cdn.playwright.dev/builds/cft/...` の1つだけ（`Download fallback` が無い）なら、
+  この節の記述がそのまま当てはまる。
+- 一緒に導入される ffmpeg などの CfT 以外のビルドには、`Download url` と `Download fallback 1` /
+  `Download fallback 2` の3つが並ぶ。これが次の節の3段のフォールバックに当たる。
+- 上記と違う出力になったら配布方法が変わっているので、この節と次の節を見直す。
+
+### chromium と一緒に入る ffmpeg の取得で 403 が2回出る
+
+`pnpm exec playwright install chromium` が導入するのは `chromium` と `chromium-headless-shell` だけ
+ではない。動画の録画に使う ffmpeg も一緒に導入し（Windows ではさらに winldd も）、chromium →
+ffmpeg → chromium-headless-shell の順に1つずつ取得する。
+
+ffmpeg は CfT 以外のビルドなので、chromium とは違って3段のフォールバック（`playwright-core` の
+`PLAYWRIGHT_CDN_MIRRORS`）で取得される。firefox / webkit も同じ経路を使う。次の順に試される。
 
 1. `https://cdn.playwright.dev/dbazure/download/playwright/builds/...`
    → `playwright.download.prss.microsoft.com` へ 307 リダイレクトするので拒否される
@@ -102,8 +120,10 @@ chromium だけなので通常は目にしないが、目にした場合は次�
 3. `https://cdn.playwright.dev/builds/...`
    → リダイレクトが無く `*.playwright.dev` の範囲に収まるので取得できる
 
-このときは次の 403 が2回続いた直後に進捗バーが出るのが正常な流れである。この 403 を見て中断したり、
-ダウンロードできないものとして扱ったりしてはいけない。
+そのためネットワークアクセスが「カスタム」の環境では、chromium の進捗バーが終わったあと、
+`Downloading FFmpeg ...` の行とともに次の 403 が2回続き、その直後に ffmpeg の進捗バーが出る。
+chromium を導入するたびに起きる正常な流れなので、この 403 を見て中断したり、ダウンロードできない
+ものとして扱ったりしてはいけない。
 
 ```
 Error: Download failed: server returned code 403 body 'request blocked: no rule or allowlist entry
@@ -115,6 +135,7 @@ allows host "playwright.download.prss.microsoft.com"'.
 
 ### 本当にダウンロードできない場合
 
-chromium ならリダイレクト先まで、CfT 以外なら3つ目の `cdn.playwright.dev/builds/...` まで拒否
-されたときだけである。再試行しても結果は変わらず、プロキシを迂回してもいけない。この場合は共有
-ライブラリのときと同様に、失敗した事実とエラー内容を PR に記載し、E2E の検証は CI に委ねる。
+chromium と chromium-headless-shell ならリダイレクト先まで、ffmpeg などの CfT 以外なら3つ目の
+`cdn.playwright.dev/builds/...` まで拒否されたときだけである。再試行しても結果は変わらず、プロキシを
+迂回してもいけない。この場合は共有ライブラリのときと同様に、失敗した事実とエラー内容を PR に記載し、
+E2E の検証は CI に委ねる。
