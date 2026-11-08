@@ -10,16 +10,30 @@ renovate-pr と renovate-batch の両方から参照する共通の手順。ど�
 ## 調べること
 
 1. 変更内容
-   - リポジトリ: `pnpm view <pkg>@<新版> repository.url`、または PR 本文の source リンク
+   - リポジトリ: npm パッケージは `pnpm view <pkg>@<新版> repository.url`、または PR 本文の source リンク。
+     GitHub Actions は `uses:` の `<owner>/<repo>` がそのままリポジトリになる。
    - リリースノート: `gh api "repos/<owner>/<repo>/releases?per_page=100"` から該当するタグを探して
      本文を読む。モノレポではタグの付け方がパッケージごとに違う（`v16.3.6`、`<pkg>@1.2.3` など）。
    - リリースノートが空または見つからない場合は CHANGELOG を読む（`gh api repos/<owner>/<repo>/contents/<path>`）。
      それも無ければ `gh api repos/<owner>/<repo>/compare/<旧タグ>...<新タグ>` のコミット一覧から判断する。
-   - 公開日時: `pnpm view <pkg> time --json`（lockfile を生成するときの公開日数制限の判断にも使う）
+   - 公開日時: npm パッケージは `pnpm view <pkg> time --json`（lockfile を生成するときの公開日数制限の
+     判断にも使う）
 2. 互換性
-   - `pnpm view <pkg>@<新版> engines peerDependencies --json` で、`engines.node` が `.nvmrc` の
-     メジャーを満たすかと、peer の要求がこのリポジトリの版と合うかを確認する。
-   - 破壊的変更（BREAKING CHANGES、非推奨化、既定値の変更、API の削除）を拾う。
+   - npm パッケージ: `pnpm view <pkg>@<新版> engines peerDependencies --json` で、`engines.node` が
+     `.nvmrc` のメジャーを満たすかと、peer の要求がこのリポジトリの版と合うかを確認する。
+   - GitHub Actions: 新しいタグの `action.yml`（無ければ `action.yaml`）を読み、`.github/workflows/*.yml`
+     での使い方と照合する。
+
+     ```sh
+     gh api -H "Accept: application/vnd.github.raw+json" "repos/<owner>/<repo>/contents/action.yml?ref=<新タグ>"
+     ```
+
+     - `runs.using`（`node20` → `node24` など）: アクションを動かす Node.js が変わる。ランナーの最低
+       バージョンなどの要求がリリースノートにあれば記録する。
+     - `inputs` / `outputs`: ワークフローの `with:` で渡している入力や参照している出力が、削除・改名
+       されていないか、既定値が変わっていないか。
+
+   - 破壊的変更（BREAKING CHANGES、非推奨化、既定値の変更、API の削除）をリリースノートから拾う。
 3. このリポジトリでの使われ方
    - `src/` / `e2e/` / 設定ファイル（`*.config.*`、`eslint.config.mjs` など）で該当パッケージを
      import・参照している箇所を検索し、変更点が当たるかを照合する。
