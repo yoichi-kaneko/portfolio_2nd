@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { H2, LEAD_P, SECTION, SCROLL_MT, SECTION_LABEL } from "@/config/aoi";
 import { useAoiGeneratedImages } from "@/hooks/useAoiGeneratedImages";
+import { GenerateAnimation } from "./GenerateAnimation";
 import { ImageLightbox } from "./ImageLightbox";
 
 /** 表示枠の枚数（取得件数・ローディング/フォールバックのプレースホルダ枚数） */
@@ -16,6 +17,7 @@ const TILE =
 /**
  * 画像生成セクション。
  *
+ * 生成画像の上に、画像ができるまでの流れを表すアニメーション（GenerateAnimation）を置く。
  * `/api/cloudinary/images` から生成画像（最新3件）を取得し、プレビュー画像を横並びで表示する。
  * ローディング中・取得失敗時は仮画像（thumbnail.png）にフォールバックする。
  * プレビューをクリックするとオリジナルサイズを Lightbox で拡大表示する。
@@ -38,6 +40,7 @@ export function GenerateImageSection() {
         毎日、その日のアクティビティに応じた情景の画像を生成します。登山レポートを代筆するときなどは、できあがった画像に元のレポートへ飛ぶ
         QR コードを埋め込むこともあります。
       </p>
+      <GenerateAnimation />
       <div className="grid grid-cols-3 gap-[18px]">
         {hasImages
           ? images.map((image, i) => (

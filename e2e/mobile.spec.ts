@@ -102,3 +102,38 @@ for (const index of [1, 2]) {
     await expect(trigger).toBeFocused();
   });
 }
+
+test("モバイルで画像生成アニメーションが生成画像と同じ横幅で画面内に収まり、タップで再生・一時停止できる", async ({
+  page,
+}) => {
+  await page.goto("/aoi", { waitUntil: "domcontentloaded" });
+  await expect(
+    page.getByRole("img", { name: "碧衣のプライベートルーム", exact: true }),
+  ).toBeVisible({ timeout: 30000 });
+  const section = page.locator("#generate-image");
+  const animation = section.getByTestId("aoi-generate-animation");
+  await animation.scrollIntoViewIfNeeded();
+  await expectInsideViewport(animation, page);
+
+  const box = (await animation.boundingBox())!;
+  const firstBox = (await section
+    .getByRole("button", { name: "生成画像 1 を拡大表示" })
+    .boundingBox())!;
+  const lastBox = (await section
+    .getByRole("button", { name: "生成画像 3 を拡大表示" })
+    .boundingBox())!;
+  expect(Math.abs(box.x - firstBox.x)).toBeLessThanOrEqual(1);
+  expect(
+    Math.abs(box.x + box.width - (lastBox.x + lastBox.width)),
+  ).toBeLessThanOrEqual(1);
+
+  await animation
+    .getByRole("button", { name: "画像生成プロセスのアニメーションを再生" })
+    .tap();
+  await expect(animation).toHaveAttribute("data-state", "playing");
+  await animation.tap({ position: { x: 20, y: 20 } });
+  await expect(animation).toHaveAttribute("data-state", "paused");
+  await expect(
+    animation.getByTestId("aoi-generate-animation-play-icon"),
+  ).toBeVisible();
+});

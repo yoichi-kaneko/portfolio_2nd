@@ -10,6 +10,7 @@ Next.js 16 (App Router) + Tailwind CSS v4 で構築された、Bento Grid レイ
 | フレームワーク       | Next.js 16 (App Router)  |
 | 言語                 | TypeScript               |
 | スタイリング         | Tailwind CSS v4          |
+| 3D 描画              | Three.js                 |
 | ユニットテスト       | Vitest / Testing Library |
 | E2E テスト           | Playwright               |
 | 画像配信             | Cloudinary               |
@@ -34,6 +35,10 @@ Next.js 16 (App Router) + Tailwind CSS v4 で構築された、Bento Grid レイ
 - 現在の日本時間に応じたモード・部屋画像・時計表示
 - 「時間旅行きっぷ」による暁・望・小夜モードのプレビュー
 - ナビゲーションとフッターから切り替えられる夜モード
+- 画像生成プロセスを表す 3D アニメーション（Three.js）
+  - 再生ボタンを押すまで Three.js を読み込まず、表示要素を押すと一時停止する
+  - URL に `?debug` を付けると、ループ内の時刻と場面名（タイムライン）を表示する
+  - 場面の振り付けは `src/lib/aoi/generateAnimation/`（`story.ts` が場面、`motion.ts` が光の線の進み方）
 - Cloudinary から取得した最新生成画像3件の表示
 - 生成画像の Lightbox 表示（フォーカス管理、Esc・背景クリック・閉じるボタンに対応）
 
