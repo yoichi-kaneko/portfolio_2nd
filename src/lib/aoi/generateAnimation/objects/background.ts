@@ -39,15 +39,16 @@ void main() {
 }
 `;
 
+// smoothstep は edge0 < edge1 でないと結果が未定義のため、外へ向かって減る形は 1 から引いて表す。
 const dustFragment = /* glsl */ `
 varying float vAlpha;
 varying float vShape;
 varying vec3 vColor;
 void main() {
   vec2 c = gl_PointCoord - 0.5;
-  float soft = smoothstep(0.5, 0.0, length(c));
+  float soft = 1.0 - smoothstep(0.0, 0.5, length(c));
   soft *= soft;
-  float pixel = smoothstep(0.5, 0.3, max(abs(c.x), abs(c.y)));
+  float pixel = 1.0 - smoothstep(0.3, 0.5, max(abs(c.x), abs(c.y)));
   float a = mix(soft, pixel * 0.8, vShape);
   gl_FragColor = vec4(vColor * a * vAlpha, 1.0);
 }

@@ -185,6 +185,8 @@ export class CurveBeam {
       position.setXYZ(i * 2 + 1, p.x + nx, p.y + ny, 0);
     }
     position.needsUpdate = true;
+    // getLength() は弧長を使い回すため、制御点を変えたら計算し直させる
+    this.curve.updateArcLengths();
     this.length = this.curve.getLength();
     this.mesh.material.uniforms.uLength!.value = this.length;
   }

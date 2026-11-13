@@ -19,6 +19,7 @@ void main() {
 /**
  * ノイズから絵が立ち上がる表現。progress が進むにつれて、
  * ノイズが段階的に減り、粗いモザイクが細かくなって元の絵に落ち着く。
+ * 走査線からの距離 scanDistance は符号付き。pow は底が負だと結果が未定義のため、二乗は掛け算で求める。
  */
 const fragmentShader = /* glsl */ `
 uniform sampler2D uMap;
@@ -40,7 +41,8 @@ void main() {
   float reveal = smoothstep(0.0, 1.0, p * 1.35 - n * 0.35);
   vec3 color = mix(noiseColor, picture, reveal);
 
-  float scan = exp(-pow((vUv.y - fract(uTime * 0.5)) * 40.0, 2.0));
+  float scanDistance = (vUv.y - fract(uTime * 0.5)) * 40.0;
+  float scan = exp(-scanDistance * scanDistance);
   color += vec3(0.35, 0.8, 1.0) * scan * 0.25 * (1.0 - p);
   gl_FragColor = vec4(color, uOpacity);
 }

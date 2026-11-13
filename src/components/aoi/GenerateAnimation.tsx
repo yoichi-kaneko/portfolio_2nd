@@ -135,7 +135,11 @@ export function GenerateAnimation() {
       )}
 
       {status === "error" ? (
-        <p className="absolute inset-0 m-0 flex items-center justify-center p-[24px] text-center text-[13px] leading-[1.8] text-[#90a4c2]">
+        // 操作していたボタンが消えてこの文に置き換わるため、読み上げでも即座に伝える
+        <p
+          role="alert"
+          className="absolute inset-0 m-0 flex items-center justify-center p-[24px] text-center text-[13px] leading-[1.8] text-[#90a4c2]"
+        >
           この環境ではアニメーションを再生できませんでした。
         </p>
       ) : (

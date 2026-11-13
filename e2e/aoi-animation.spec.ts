@@ -201,9 +201,11 @@ test("WebGL を使えない環境では、再生できなかったことを表�
   const animation = await gotoAoi(page);
   await animation.getByRole("button", { name: PLAY }).click();
   await expect(animation).toHaveAttribute("data-state", "error");
-  await expect(
-    animation.getByText("この環境ではアニメーションを再生できませんでした。"),
-  ).toBeVisible();
+  // 操作していたボタンが消えるため、失敗は alert として読み上げられる。
+  await expect(animation.getByRole("alert")).toHaveText(
+    "この環境ではアニメーションを再生できませんでした。",
+  );
+  await expect(animation.getByRole("alert")).toBeVisible();
   await expect(animation.getByRole("button")).toHaveCount(0);
   await expect(animation.locator("canvas")).toHaveCount(0);
 });
