@@ -4,7 +4,7 @@ import { SECTION, SCROLL_MT, SECTION_LABEL, H2, LEAD_P } from "@/config/aoi";
 const COLLECT_ITEMS = [
   "📅 Google カレンダーの予定",
   "✓ Todoist のタスク",
-  "📍 Swarm のチェックイン",
+  "📍 LINE で送るチェックイン",
   "⛰ YAMAP の活動記録",
   "☂ OpenWeatherMap の天気",
 ];
@@ -12,7 +12,7 @@ const COLLECT_ITEMS = [
 const OUTPUT_ITEMS = [
   "💬 テキストメッセージ",
   "🖼 その日の情景を描いた画像",
-  "🎵 一週間から綴る楽曲",
+  "🌌 一週間を結ぶ星図",
   "✍ 登山レポートの代筆投稿",
 ];
 
@@ -85,7 +85,7 @@ export function FrameworkSection() {
             STEP 03 ／ 出力
           </div>
           <h3 className="m-0 mb-[14px] font-zen text-[18px] font-black text-[#eafff8]">
-            言葉・絵・歌で還す
+            言葉と絵で還す
           </h3>
           <div className="flex flex-col gap-[8px]">
             {OUTPUT_ITEMS.map((t) => (

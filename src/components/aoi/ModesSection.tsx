@@ -10,7 +10,7 @@ export function ModesSection() {
       <div className={SECTION_LABEL}>{"// 05 — A DAY IN MODES"}</div>
       <h2 className={H2}>一日を、9つのモードで歩く</h2>
       <p className={`${LEAD_P} m-0 mb-[30px] max-w-[640px]`}>
-        時間帯と状況に応じて、碧衣は表情を変えます。朝・昼・夜の定期モードに、山行を見守る三つの灯り、そして代筆・対話・創作の特別モード。それぞれ和の名前を持っています。
+        時間帯と状況に応じて、碧衣は表情を変えます。朝・昼・夜の定期モードに、山行を見守る三つの灯り、代筆と対話の特別モード、そして週に一度の振り返り。それぞれ和の名前を持っています。
       </p>
       <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3">
         {MODES.map((m) => (

@@ -37,7 +37,7 @@ export function GenerateImageSection() {
       <div className={SECTION_LABEL}>{"// 07 — GENERATE IMAGE"}</div>
       <h2 className={H2}>画像生成</h2>
       <p className={`${LEAD_P} m-0 mb-[30px] max-w-[640px]`}>
-        毎日、その日のアクティビティに応じた情景の画像を生成します。登山レポートを代筆するときなどは、できあがった画像に元のレポートへ飛ぶ
+        毎日、その日のアクティビティに応じた情景の画像を生成します。週に一度は、一週間の出来事を星座に結んだプラネタリウムの一枚も。登山レポートを代筆するときなどは、できあがった画像に元のレポートへ飛ぶ
         QR コードを埋め込むこともあります。
       </p>
       <GenerateAnimation />
