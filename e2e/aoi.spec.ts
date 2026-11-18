@@ -263,7 +263,7 @@ test.describe("Framework セクションの要素確認", () => {
 
   test("収集・出力のチップ項目が表示される", async ({ page }) => {
     await expect(page.getByText("📅 Google カレンダーの予定")).toBeVisible();
-    await expect(page.getByText("🎵 一週間から綴る楽曲")).toBeVisible();
+    await expect(page.getByText("🌌 一週間を結ぶ星図")).toBeVisible();
   });
 });
 
@@ -291,6 +291,7 @@ test.describe("Services セクションの要素確認", () => {
     // サービス名は Framework セクションの収集チップにも現れるため #services に限定する。
     const services = page.locator("#services");
     await expect(services.getByText("LINE Messaging API")).toBeVisible();
+    await expect(services.getByText("LINE チェックイン")).toBeVisible();
     await expect(
       services.getByText("OpenWeatherMap", { exact: true }),
     ).toBeVisible();
@@ -352,7 +353,7 @@ test.describe("Modes セクションの要素確認", () => {
     await expect(modes.getByText("小夜さよ")).toBeVisible();
     await expect(modes.getByText("継灯けいとう")).toBeVisible();
     await expect(modes.getByText("綴葉つづりは")).toBeVisible();
-    await expect(modes.getByText("調べしらべ")).toBeVisible();
+    await expect(modes.getByText("結星ゆいぼし")).toBeVisible();
     await expect(modes.getByText("響ひびき")).toBeVisible();
   });
 });

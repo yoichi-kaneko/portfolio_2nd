@@ -10,7 +10,7 @@ export interface Service {
 export const SERVICES: Service[] = [
   {
     name: "LINE Messaging API",
-    desc: "メッセージ・画像・音声の送受信と Webhook 取り込み",
+    desc: "メッセージ・画像の送受信と Webhook 取り込み",
     color: "teal",
   },
   {
@@ -29,8 +29,8 @@ export const SERVICES: Service[] = [
     color: "blue",
   },
   {
-    name: "Swarm",
-    desc: "チェックイン履歴から行動の足取りを読む",
+    name: "LINE チェックイン",
+    desc: "観測ドローン「地写」へ送った位置情報と写真から、行動の足取りを読む",
     color: "blue",
   },
   {
@@ -49,7 +49,11 @@ export const SERVICES: Service[] = [
     color: "blue",
   },
   { name: "OpenAI", desc: "碧衣のキャラクターに沿った画像生成", color: "teal" },
-  { name: "Mureka", desc: "歌詞の生成と作曲。週に一度の一曲", color: "teal" },
+  {
+    name: "Codex CLI",
+    desc: "画像生成プロンプトと SNS 投稿文を、実行前にレビュー",
+    color: "teal",
+  },
   {
     name: "Twitter (X) API",
     desc: "代筆した登山レポートを画像付きで投稿",
@@ -57,7 +61,7 @@ export const SERVICES: Service[] = [
   },
   {
     name: "Cloudinary",
-    desc: "画像・音声を公開 URL としてホスティング",
+    desc: "送る画像の公開ホスティングと、受け取った写真の非公開保存",
     color: "teal",
   },
   {
