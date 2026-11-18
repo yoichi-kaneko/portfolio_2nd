@@ -23,8 +23,14 @@ export async function expectInsideViewport(locator: Locator, page: Page) {
   expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
 }
 
-export async function expectScrollLocked(page: Page) {
-  // focus / scrollIntoView による smooth scroll が終了してからホイール入力を検証する。
+/**
+ * スクロール位置が3フレーム続けて変わらなくなるまで待つ。
+ *
+ * `html` に `scroll-behavior: smooth` を指定しているため、focus / scrollIntoView / キー操作による
+ * スクロールは数百ミリ秒かけて進む。直後に読んだ `scrollY` は途中の値になりうるので、
+ * スクロール位置を比べる前にこれで止まるのを待つ。
+ */
+export async function waitForScrollToSettle(page: Page) {
   await page.evaluate(
     () =>
       new Promise<void>((resolve) => {
@@ -39,6 +45,11 @@ export async function expectScrollLocked(page: Page) {
         requestAnimationFrame(check);
       }),
   );
+}
+
+export async function expectScrollLocked(page: Page) {
+  // focus / scrollIntoView による smooth scroll が終了してからホイール入力を検証する。
+  await waitForScrollToSettle(page);
   const before = await page.evaluate(() => window.scrollY);
   await page.mouse.move(2, 2);
   await page.mouse.wheel(0, 600);

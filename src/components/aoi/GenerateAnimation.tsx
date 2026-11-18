@@ -4,6 +4,7 @@ import { JetBrains_Mono, Rajdhani } from "next/font/google";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { GenerateAnimationPlayer } from "@/lib/aoi/generateAnimation/player";
 import { formatTimelineStatus } from "@/lib/aoi/generateAnimation/timeline";
+import { isWebGL2Available } from "@/lib/aoi/generateAnimation/webgl";
 
 // キャンバスに描くラベルのフォント。再生を始めたときにだけ使うため preload しない。
 const rajdhani = Rajdhani({
@@ -95,6 +96,7 @@ export function GenerateAnimation() {
         player.play();
         setStatus("playing");
       } catch (error) {
+        // WebGL を使えないことは再生ボタンを押した時点で判定済みのため、ここに来るのは想定外の失敗
         console.error(error);
         if (!cancelled) setStatus("error");
       }
@@ -107,7 +109,8 @@ export function GenerateAnimation() {
   const handleClick = () => {
     const player = playerRef.current;
     if (status === "idle") {
-      setStatus("loading");
+      // WebGL を使えない環境では、three.js を読み込まずにその旨を表示する
+      setStatus(isWebGL2Available() ? "loading" : "error");
     } else if (status === "playing" && player) {
       player.pause();
       setStatus("paused");
