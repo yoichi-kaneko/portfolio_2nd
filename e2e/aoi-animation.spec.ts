@@ -1,16 +1,14 @@
 import { type Locator, type Page } from "@playwright/test";
 import { test, expect } from "./fixtures";
+import { gotoAoi } from "./support/aoi";
+import { waitForScrollToSettle } from "./support/assertions";
 
 const PLAY = "画像生成プロセスのアニメーションを再生";
 const PAUSE = "画像生成プロセスのアニメーションを一時停止";
 
-// aoi.spec.ts の gotoAoi と同じく、ファーストビューの部屋画像が出てから先へ進む
-// （LCP が確定する前に画面外へスクロールすると、Next.js が遅延読み込みの画像について警告するため）。
-async function gotoAoi(page: Page, query = ""): Promise<Locator> {
-  await page.goto(`/aoi${query}`, { waitUntil: "domcontentloaded" });
-  await expect(
-    page.getByRole("img", { name: "碧衣のプライベートルーム", exact: true }),
-  ).toBeVisible({ timeout: 30000 });
+/** `/aoi` を開き、画像生成アニメーションの表示要素を返す。 */
+async function gotoAnimation(page: Page, query = ""): Promise<Locator> {
+  await gotoAoi(page, query);
   return page.locator("#generate-image").getByTestId("aoi-generate-animation");
 }
 
@@ -53,7 +51,7 @@ async function timeAdvancedOver(
 test("アクセス直後は再生されず、生成画像の上に同じ横幅で表示され、中央に再生ボタンがある", async ({
   page,
 }) => {
-  const animation = await gotoAoi(page);
+  const animation = await gotoAnimation(page);
   const section = page.locator("#generate-image");
   const first = section.getByRole("button", { name: "生成画像 1 を拡大表示" });
   const last = section.getByRole("button", { name: "生成画像 3 を拡大表示" });
@@ -91,7 +89,7 @@ test("アクセス直後は再生されず、生成画像の上に同じ横幅�
 test("debug 付きでは、再生ボタンで再生が始まり、表示要素を押すと一時停止し、再び押すと続きから進む", async ({
   page,
 }) => {
-  const animation = await gotoAoi(page, "?debug");
+  const animation = await gotoAnimation(page, "?debug");
   const timeline = animation.getByTestId("aoi-generate-animation-timeline");
   const icon = animation.getByTestId("aoi-generate-animation-play-icon");
   await animation.scrollIntoViewIfNeeded();
@@ -130,7 +128,7 @@ test("debug 付きでは、再生ボタンで再生が始まり、表示要素�
 test("キーボードの Enter / Space でも再生と一時停止を切り替えられ、フォーカスとスクロール位置が保たれる", async ({
   page,
 }) => {
-  const animation = await gotoAoi(page);
+  const animation = await gotoAnimation(page);
   const play = animation.getByRole("button", { name: PLAY });
   await play.focus();
   await page.keyboard.press("Enter");
@@ -138,10 +136,15 @@ test("キーボードの Enter / Space でも再生と一時停止を切り替�
   const pause = animation.getByRole("button", { name: PAUSE });
   await expect(pause).toBeFocused();
 
+  // focus() で始まった smooth scroll は、再生が始まった時点ではまだ途中のことがある。
+  // 止まってから基準の位置を読む。
+  await waitForScrollToSettle(page);
   const scrollY = await page.evaluate(() => window.scrollY);
   await page.keyboard.press("Space");
   await expect(animation).toHaveAttribute("data-state", "paused");
   await expect(play).toBeFocused();
+  // Space でページがスクロールした場合も smooth scroll で進むため、止まるのを待ってから比べる。
+  await waitForScrollToSettle(page);
   expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
 
   await page.keyboard.press("Enter");
@@ -152,7 +155,7 @@ test("キーボードの Enter / Space でも再生と一時停止を切り替�
 test("debug を付けない URL では、再生してもタイムラインを表示しない", async ({
   page,
 }) => {
-  const animation = await gotoAoi(page);
+  const animation = await gotoAnimation(page);
   await animation.getByRole("button", { name: PLAY }).click();
   await expect(animation).toHaveAttribute("data-state", "playing");
   await expect(
@@ -163,7 +166,7 @@ test("debug を付けない URL では、再生してもタイムラインを表
 test("再生中に画面外へスクロールすると進行が止まり、画面内へ戻ると続きから進む", async ({
   page,
 }) => {
-  const animation = await gotoAoi(page, "?debug");
+  const animation = await gotoAnimation(page, "?debug");
   const timeline = animation.getByTestId("aoi-generate-animation-timeline");
   await animation.getByRole("button", { name: PLAY }).click();
   await expect.poll(() => readTime(timeline)).toBeGreaterThan(0.3);
@@ -181,9 +184,14 @@ test("再生中に画面外へスクロールすると進行が止まり、画�
   await expect.poll(() => readTime(timeline)).toBeGreaterThan(hiddenAt);
 });
 
-test("WebGL を使えない環境では、再生できなかったことを表示する", async ({
+test("WebGL を使えない環境では、コンソールにエラーを出さずに、再生できなかったことを表示する", async ({
   page,
 }) => {
+  // WebGL を使えないのは想定内の環境の制約なので、エラーとして記録しない。
+  const consoleErrors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
@@ -198,7 +206,7 @@ test("WebGL を使えない環境では、再生できなかったことを表�
       },
     });
   });
-  const animation = await gotoAoi(page);
+  const animation = await gotoAnimation(page);
   await animation.getByRole("button", { name: PLAY }).click();
   await expect(animation).toHaveAttribute("data-state", "error");
   // 操作していたボタンが消えるため、失敗は alert として読み上げられる。
@@ -208,4 +216,5 @@ test("WebGL を使えない環境では、再生できなかったことを表�
   await expect(animation.getByRole("alert")).toBeVisible();
   await expect(animation.getByRole("button")).toHaveCount(0);
   await expect(animation.locator("canvas")).toHaveCount(0);
+  expect(consoleErrors).toEqual([]);
 });

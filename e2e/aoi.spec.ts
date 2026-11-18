@@ -1,19 +1,7 @@
 import { type Page } from "@playwright/test";
 import { test, expect, MOCK_IMAGES } from "./fixtures";
+import { gotoAoi } from "./support/aoi";
 import { expectImageLoaded } from "./support/assertions";
-
-// 要素の存在確認が目的のため、全画像の load 完了は待たず DOM 構築完了で遷移する。
-// （aoi ページは next/image が多く、dev の都度最適化で load イベントの待機が遅い。）
-// ただしファーストビューの部屋画像が出るまでは待つ。これを待たずに画面外へ
-// スクロールすると、まだ LCP が確定していないうちに遅延読み込みの画像が LCP 候補となり、
-// Next.js が「loading="eager" を付けよ」と警告する。実利用では起きない順序なので、
-// テスト側で初期表示の確定を待ってから先へ進む。
-async function gotoAoi(page: Page): Promise<void> {
-  await page.goto("/aoi", { waitUntil: "domcontentloaded" });
-  await expect(
-    page.getByRole("img", { name: "碧衣のプライベートルーム", exact: true }),
-  ).toBeVisible({ timeout: 30000 });
-}
 
 // 夜オーバーレイ（NightOverlay）の現在の opacity を読む。
 // オーバーレイは常時 DOM に存在し opacity の 0/1 で点灯を表現するため、
