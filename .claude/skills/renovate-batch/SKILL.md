@@ -123,7 +123,8 @@ git diff origin/<base>...origin/<head> -- . ':(exclude)pnpm-lock.yaml'
   Node.js / GitHub Actions）。PR 本文の表（Package / Change）とも突き合わせ、食い違えば差分の方を正とする。
 - npm のパッケージ（`packageManager` の pnpm を含む）は、新しい版の公開日時を
   `pnpm view <pkg> time --json` で調べ、公開から 1440 分（`minimumReleaseAge` の既定値）経っていない
-  ものに印を付ける。手順 8 で失敗する見込みが高いので、手順 4 でユーザーに示す。
+  ものに印を付ける。手順 8 で `ERR_PNPM_NO_MATURE_MATCHING_VERSION` になるので、手順 4 でユーザーに
+  示す。推移的な依存の版はここでは調べないので、印が無い PR でも手順 8 で止まることはある。
 
 次に当てはまる候補は、理由を控えて外す。base の現在の値は `git show origin/<base>:<file>` で確かめる。
 
@@ -205,9 +206,10 @@ git diff origin/<base> -- . ':(exclude)pnpm-lock.yaml'
 とき」に従う。base の正しい lockfile から始めるので、変わるのは更新したパッケージとその依存だけに
 なる。
 
-`ERR_PNPM_NO_MATURE_MATCHING_VERSION` などで失敗したときは、shared/lockfile.md の選択肢に
-「原因のパッケージを含む PR をバッチから外して続行する」を加えて尋ねる。外す場合は、手順 9 の
-「PR を外すとき」に従う。
+`ERR_PNPM_NO_MATURE_MATCHING_VERSION` などで失敗したとき（「成功したとき」で pnpm が自分で除外を
+追記していたのに気付いた場合を含む）は、shared/lockfile.md の選択肢に「原因のパッケージを含む PR を
+バッチから外して続行する」を加えて尋ねる。推移的な依存の版が列挙されたときは、それを持ち込む PR を
+特定してから尋ねる。外す場合は、手順 9 の「PR を外すとき」に従う。
 
 「成功したとき」の最後にある、依存を入れ直したあとの確認（`next` のドキュメント、`@playwright/test`
 の dry-run）で破壊的変更などが見つかったら、手順 6 の判定を見直す。新たに「高」になった PR があれば、
