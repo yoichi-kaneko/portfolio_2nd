@@ -26,7 +26,7 @@
     "react-dom": "19.3.1",
     "react-tooltip": "6.0.13",
     "recharts": "3.10.1",
-    "redis": "6.3.1",
+    "redis": "6.4.0",
     "three": "0.187.0"
   },
   "devDependencies": {
